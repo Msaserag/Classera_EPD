@@ -166,6 +166,24 @@ html[dir="rtl"] .card h3 a{background-position:100% 100%}
   font-size:14px;font-weight:600;padding:9px 18px;border-radius:9px;transition:filter .18s ease,gap .18s ease}
 .cta:hover{filter:brightness(1.07);gap:13px}
 .ctarow{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+
+/* add-to-calendar controls */
+.calbtns{display:inline-flex;gap:7px}
+.calbtn{width:38px;height:38px;display:grid;place-items:center;border-radius:10px;border:1px solid var(--line);
+  background:var(--surface-2);color:var(--ink-2);text-decoration:none;transition:border-color .18s ease,background .18s ease,transform .18s ease}
+.calbtn:hover{border-color:var(--c);color:var(--c);transform:translateY(-1px)}
+.calbtn svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.calbtn .g{font-family:var(--f-display);font-weight:700;font-size:17px;line-height:1}
+
+.calbar{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin:0 0 26px;
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);padding:14px 18px;box-shadow:var(--ring-shadow)}
+.calbar .ct{flex:1;min-width:220px;font-size:14px;color:var(--ink-2)}
+.calbar .ct b{display:block;color:var(--ink);font-family:var(--f-display);font-size:15.5px;font-weight:700;margin-bottom:2px}
+.dlbtn{display:inline-flex;align-items:center;gap:10px;background:var(--gold);color:var(--on-accent);text-decoration:none;
+  font-family:var(--f-body);font-size:14px;font-weight:700;padding:11px 20px;border-radius:999px;
+  transition:filter .18s ease,gap .18s ease;border:0;cursor:pointer}
+.dlbtn:hover{filter:brightness(1.06);gap:13px}
+.dlbtn svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .soon{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;color:var(--muted);font-style:italic}
 .soon::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--muted);opacity:.7;flex:none}
 .cta svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
@@ -279,6 +297,11 @@ html[data-lang="ar"] [lang="en"]{display:none !important}
   <symbol id="i-leaf" viewBox="0 0 24 24"><path d="M19 4.6c1 7.4-2.6 12.4-8.6 13.2-2.6.4-4.6-.8-5.2-3-.8-3 1-5.6 4.4-6.6 3-.9 6.5-1.8 9.4-3.6Z"/><path d="M9.6 15.8c-1.6 1.4-2.6 2.9-3.2 4.6"/></symbol>
   <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.4"/><path d="M12 2.6v2.4M12 19v2.4M4.2 12H1.8M22.2 12h-2.4M6.5 6.5 4.8 4.8M19.2 19.2l-1.7-1.7M17.5 6.5l1.7-1.7M4.8 19.2l1.7-1.7"/></symbol>
   <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20.4 14.6A8.8 8.8 0 0 1 9.4 3.6a8.8 8.8 0 1 0 11 11Z"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3.6v11.2M7.6 10.6 12 15l4.4-4.4"/><path d="M4.2 17.2v1.6a1.6 1.6 0 0 0 1.6 1.6h12.4a1.6 1.6 0 0 0 1.6-1.6v-1.6"/></symbol>
+  <symbol id="i-calplus" viewBox="0 0 24 24">
+    <rect x="3.4" y="5.2" width="17.2" height="15.4" rx="2.4"/>
+    <path d="M3.4 10h17.2M8.2 3.4v3.6M15.8 3.4v3.6M12 12.8v5M9.5 15.3h5"/>
+  </symbol>
   <symbol id="i-horizon" viewBox="0 0 24 24"><path d="M2.6 17.4h18.8M6.4 17.4a5.6 5.6 0 0 1 11.2 0"/><path d="M12 4.2v2.6M4.9 7.1 6.7 8.9M19.1 7.1 17.3 8.9"/></symbol>
 </svg>
 
@@ -345,12 +368,24 @@ html[data-lang="ar"] [lang="en"]{display:none !important}
       </div>
     </div>
 
+    <div class="calbar">
+      <div class="ct">
+        <b><span lang="en">Add the full series to your calendar</span><span lang="ar">أضف السلسلة كاملة إلى تقويمك</span></b>
+        <span lang="en">One file with every session — opens in Outlook, Apple Calendar, Google Calendar and others.</span>
+        <span lang="ar">ملف واحد يضم جميع الجلسات — يعمل مع Outlook وتقويم Apple وتقويم Google وغيرها.</span>
+      </div>
+      <a class="dlbtn" href="data:text/calendar;charset=utf-8;base64,QkVHSU46VkNBTEVOREFSDQpWRVJTSU9OOjIuMA0KUFJPRElEOi0vL0NsYXNzZXJhLy9Jbm5vdmF0aW9uIFBsYXRmb3JtIFBEIFBsYW4gQVkyNi0yNy8vRU4NCkNBTFNDQUxFOkdSRUdPUklBTg0KTUVUSE9EOlBVQkxJU0gNClgtV1ItQ0FMTkFNRTpDbGFzc2VyYSBQRCBQbGFuIOKAlCBTZW1lc3RlciAxIEFZIDIwMjYtMjAyNw0KWC1XUi1USU1FWk9ORTpBc2lhL1JpeWFkaA0KQkVHSU46VlRJTUVaT05FDQpUWklEOkFzaWEvUml5YWRoDQpCRUdJTjpTVEFOREFSRA0KRFRTVEFSVDoxOTcwMDEwMVQwMDAwMDANClRaT0ZGU0VURlJPTTorMDMwMA0KVFpPRkZTRVRUTzorMDMwMA0KVFpOQU1FOiswMw0KRU5EOlNUQU5EQVJEDQpFTkQ6VlRJTUVaT05FDQpCRUdJTjpWRVZFTlQNClVJRDpheTI2MjctczAxQGliZGFhLmNsYXNzZXJhDQpEVFNUQU1QOjIwMjYwOTA3VDEyMjAwM1oNCkRUU1RBUlQ7VFpJRD1Bc2lhL1JpeWFkaDoyMDI2MDkzMFQxNzAwMDANCkRURU5EO1RaSUQ9QXNpYS9SaXlhZGg6MjAyNjA5MzBUMTgxNTAwDQpTVU1NQVJZOkFjYWRlbWljIFllYXIgS2lja29mZiAmIENsYXNzZXJhIExNUyBVcGRhdGVzIOKAlCBOZXcgRmVhdHVyZXMgJiBSZWwNCiBlYXNlIEhpZ2hsaWdodHMNCkRFU0NSSVBUSU9OOkFjYWRlbWljIFllYXIgS2lja29mZiAmIENsYXNzZXJhIExNUyBVcGRhdGVzIOKAlCBOZXcgRmVhdHVyZXMgJg0KICBSZWxlYXNlIEhpZ2hsaWdodHNcbtin2YbYt9mE2KfZgtipINin2YTYudin2YUg2KfZhNij2YPYp9iv2YrZhdmKINmI2KrYrdivDQog2YrYq9in2Kog2YbYuNin2YUg2YPZhNin2LPZitix2Kcg4oCUINin2YTZhdiy2KfZitinINin2YTYrNiv2YrYr9ipINmI2KPYqA0KINix2LIg2KfZhNil2LXYr9in2LHYp9iqXG5cbkF1ZGllbmNlOiBBbGwgTE1TIFVzZXJzIC8g2KzZhdmK2Lkg2YXYs9iq2K7Yr9mFDQog2Yog2KfZhNmG2LjYp9mFXG5UaW1lOiA1OjAwIFBNIFNhdWRpIEFyYWJpYSB0aW1lIChHTVQrMylcblxuUmVnaXN0ZXI6IGh0dHANCiBzOi8vZWxlYXJuaW5nLmNsYXNzZXJhLmNvbS9cblRoZSBjb3Vyc2UgbGluayB3aWxsIGJlIHVwZGF0ZWQgb25jZSByZWdpc3RyYQ0KIHRpb24gb3BlbnMuXG7Ys9mK2KrZhSDYqtit2K/ZitirINix2KfYqNi3INin2YTYr9mI2LHYqSDZgdmI2LEg2YHYqtitINin2YQNCiDYqtiz2KzZitmELg0KTE9DQVRJT046T25saW5lIOKAlCBDbGFzc2VyYSBJbm5vdmF0aW9uIFBsYXRmb3JtIC8g2LnZhiDYqNmP2LnYryDigJQg2YXZhti1DQog2Kkg2KfZhNil2KjYr9in2Lkg2YXZhiDZg9mE2KfYs9mK2LHYpw0KVVJMOmh0dHBzOi8vZWxlYXJuaW5nLmNsYXNzZXJhLmNvbS8NCkNBVEVHT1JJRVM6UHJvZmVzc2lvbmFsIERldmVsb3BtZW50DQpTVEFUVVM6Q09ORklSTUVEDQpUUkFOU1A6T1BBUVVFDQpTRVFVRU5DRTowDQpCRUdJTjpWQUxBUk0NClRSSUdHRVI6LVAxRA0KQUNUSU9OOkRJU1BMQVkNCkRFU0NSSVBUSU9OOlRvbW9ycm93OiBBY2FkZW1pYyBZZWFyIEtpY2tvZmYgJiBDbGFzc2VyYSBMTVMgVXBkYXRlcyDigJQgTmV3IA0KIEZlYXR1cmVzICYgUmVsZWFzZSBIaWdobGlnaHRzDQpFTkQ6VkFMQVJNDQpCRUdJTjpWQUxBUk0NClRSSUdHRVI6LVBUMTVNDQpBQ1RJT046RElTUExBWQ0KREVTQ1JJUFRJT046U3RhcnRpbmcgaW4gMTUgbWludXRlczogQWNhZGVtaWMgWWVhciBLaWNrb2ZmICYgQ2xhc3NlcmEgTE1TIFVwDQogZGF0ZXMg4oCUIE5ldyBGZWF0dXJlcyAmIFJlbGVhc2UgSGlnaGxpZ2h0cw0KRU5EOlZBTEFSTQ0KRU5EOlZFVkVOVA0KQkVHSU46VkVWRU5UDQpVSUQ6YXkyNjI3LXMwMkBpYmRhYS5jbGFzc2VyYQ0KRFRTVEFNUDoyMDI2MDkwN1QxMjIwMDNaDQpEVFNUQVJUO1RaSUQ9QXNpYS9SaXlhZGg6MjAyNjEwMTRUMTcwMDAwDQpEVEVORDtUWklEPUFzaWEvUml5YWRoOjIwMjYxMDE0VDE4MTUwMA0KU1VNTUFSWTpJbnRlbMKuIFNraWxscyBmb3IgSW5ub3ZhdGlvbiDigJQgQUkgUHJvZmVzc2lvbmFsIERldmVsb3BtZW50IGZvciBUDQogZWFjaGVycyAoMSkNCkRFU0NSSVBUSU9OOkludGVswq4gU2tpbGxzIGZvciBJbm5vdmF0aW9uIOKAlCBBSSBQcm9mZXNzaW9uYWwgRGV2ZWxvcG1lbnQgZg0KIG9yIFRlYWNoZXJzICgxKVxu4oCPSW50ZWzCriBTa2lsbHMgZm9yIElubm92YXRpb24g4oCUINin2YTYqti32YjZitixINin2YQNCiDZhdmH2YbZiiDZgdmKINin2YTYsNmD2KfYoSDYp9mE2KfYtdi32YbYp9i52Yog2YTZhNmF2LnZhNmF2YrZhiAoMSlcblxuQXVkaQ0KIGVuY2U6IFRlYWNoZXJzIC8g2KfZhNmF2LnZhNmF2YjZhlxuVGltZTogNTowMCBQTSBTYXVkaSBBcmFiaWEgdGltZSAoR01UKzMpDQogXG5cblJlZ2lzdGVyOiBodHRwczovL2VsZWFybmluZy5jbGFzc2VyYS5jb20vXG5UaGUgY291cnNlIGxpbmsgd2lsbCBiZSB1cGQNCiBhdGVkIG9uY2UgcmVnaXN0cmF0aW9uIG9wZW5zLlxu2LPZitiq2YUg2KrYrdiv2YrYqyDYsdin2KjYtyDYp9mE2K/ZiNix2KkgDQog2YHZiNixINmB2KrYrSDYp9mE2KrYs9is2YrZhC4NCkxPQ0FUSU9OOk9ubGluZSDigJQgQ2xhc3NlcmEgSW5ub3ZhdGlvbiBQbGF0Zm9ybSAvINi52YYg2KjZj9i52K8g4oCUINmF2YbYtQ0KINipINin2YTYpdio2K/Yp9i5INmF2YYg2YPZhNin2LPZitix2KcNClVSTDpodHRwczovL2VsZWFybmluZy5jbGFzc2VyYS5jb20vDQpDQVRFR09SSUVTOlByb2Zlc3Npb25hbCBEZXZlbG9wbWVudA0KU1RBVFVTOkNPTkZJUk1FRA0KVFJBTlNQOk9QQVFVRQ0KU0VRVUVOQ0U6MA0KQkVHSU46VkFMQVJNDQpUUklHR0VSOi1QMUQNCkFDVElPTjpESVNQTEFZDQpERVNDUklQVElPTjpUb21vcnJvdzogSW50ZWzCriBTa2lsbHMgZm9yIElubm92YXRpb24g4oCUIEFJIFByb2Zlc3Npb25hbCBEZXYNCiBlbG9wbWVudCBmb3IgVGVhY2hlcnMgKDEpDQpFTkQ6VkFMQVJNDQpCRUdJTjpWQUxBUk0NClRSSUdHRVI6LVBUMTVNDQpBQ1RJT046RElTUExBWQ0KREVTQ1JJUFRJT046U3RhcnRpbmcgaW4gMTUgbWludXRlczogSW50ZWzCriBTa2lsbHMgZm9yIElubm92YXRpb24g4oCUIEFJIFByDQogb2Zlc3Npb25hbCBEZXZlbG9wbWVudCBmb3IgVGVhY2hlcnMgKDEpDQpFTkQ6VkFMQVJNDQpFTkQ6VkVWRU5UDQpCRUdJTjpWRVZFTlQNClVJRDpheTI2MjctczAzQGliZGFhLmNsYXNzZXJhDQpEVFNUQU1QOjIwMjYwOTA3VDEyMjAwM1oNCkRUU1RBUlQ7VFpJRD1Bc2lhL1JpeWFkaDoyMDI2MTAyOFQxNzAwMDANCkRURU5EO1RaSUQ9QXNpYS9SaXlhZGg6MjAyNjEwMjhUMTgxNTAwDQpTVU1NQVJZOlRlY2hub2xvZ3kgaW4gRWR1Y2F0aW9uIFdlYmluYXIgU2VyaWVzIOKAlCBTZXNzaW9uIDENCkRFU0NSSVBUSU9OOlRlY2hub2xvZ3kgaW4gRWR1Y2F0aW9uIFdlYmluYXIgU2VyaWVzIOKAlCBTZXNzaW9uIDFcbtiz2YTYs9mEDQog2Kkg2KrZgtmG2YrYp9iqINin2YTYqti52YTZitmFIOKAlCDYp9mE2KzZhNiz2Kkg2KfZhNij2YjZhNmJXG5cbkF1ZGllbmNlOiANCiBUZWFjaGVycyAmIFN1cGVydmlzb3JzIC8g2KfZhNmF2LnZhNmF2YjZhiDZiNin2YTZhdi02LHZgdmI2YZcblRpbWU6IDU6MDAgUA0KIE0gU2F1ZGkgQXJhYmlhIHRpbWUgKEdNVCszKVxuXG5SZWdpc3RlcjogaHR0cHM6Ly9lbGVhcm5pbmcuY2xhc3NlcmEuY29tL1xuDQogVGhlIGNvdXJzZSBsaW5rIHdpbGwgYmUgdXBkYXRlZCBvbmNlIHJlZ2lzdHJhdGlvbiBvcGVucy5cbtiz2YrYqtmFINiq2K3Yrw0KINmK2Ksg2LHYp9io2Lcg2KfZhNiv2YjYsdipINmB2YjYsSDZgdiq2K0g2KfZhNiq2LPYrNmK2YQuDQpMT0NBVElPTjpPbmxpbmUg4oCUIENsYXNzZXJhIElubm92YXRpb24gUGxhdGZvcm0gLyDYudmGINio2Y/YudivIOKAlCDZhdmG2LUNCiDYqSDYp9mE2KXYqNiv2KfYuSDZhdmGINmD2YTYp9iz2YrYsdinDQpVUkw6aHR0cHM6Ly9lbGVhcm5pbmcuY2xhc3NlcmEuY29tLw0KQ0FURUdPUklFUzpQcm9mZXNzaW9uYWwgRGV2ZWxvcG1lbnQNClNUQVRVUzpDT05GSVJNRUQNClRSQU5TUDpPUEFRVUUNClNFUVVFTkNFOjANCkJFR0lOOlZBTEFSTQ0KVFJJR0dFUjotUDFEDQpBQ1RJT046RElTUExBWQ0KREVTQ1JJUFRJT046VG9tb3Jyb3c6IFRlY2hub2xvZ3kgaW4gRWR1Y2F0aW9uIFdlYmluYXIgU2VyaWVzIOKAlCBTZXNzaW9uIDENCkVORDpWQUxBUk0NCkJFR0lOOlZBTEFSTQ0KVFJJR0dFUjotUFQxNU0NCkFDVElPTjpESVNQTEFZDQpERVNDUklQVElPTjpTdGFydGluZyBpbiAxNSBtaW51dGVzOiBUZWNobm9sb2d5IGluIEVkdWNhdGlvbiBXZWJpbmFyIFNlcmllcyANCiDigJQgU2Vzc2lvbiAxDQpFTkQ6VkFMQVJNDQpFTkQ6VkVWRU5UDQpCRUdJTjpWRVZFTlQNClVJRDpheTI2MjctczA0QGliZGFhLmNsYXNzZXJhDQpEVFNUQU1QOjIwMjYwOTA3VDEyMjAwM1oNCkRUU1RBUlQ7VFpJRD1Bc2lhL1JpeWFkaDoyMDI2MTExMVQxNzAwMDANCkRURU5EO1RaSUQ9QXNpYS9SaXlhZGg6MjAyNjExMTFUMTgxNTAwDQpTVU1NQVJZOlRlY2hub2xvZ3kgaW4gRWR1Y2F0aW9uIFdlYmluYXIgU2VyaWVzIOKAlCBTZXNzaW9uIDINCkRFU0NSSVBUSU9OOlRlY2hub2xvZ3kgaW4gRWR1Y2F0aW9uIFdlYmluYXIgU2VyaWVzIOKAlCBTZXNzaW9uIDJcbtiz2YTYs9mEDQog2Kkg2KrZgtmG2YrYp9iqINin2YTYqti52YTZitmFIOKAlCDYp9mE2KzZhNiz2Kkg2KfZhNir2KfZhtmK2KlcblxuQXVkaWVuY2UNCiA6IFRlYWNoZXJzICYgU3VwZXJ2aXNvcnMgLyDYp9mE2YXYudmE2YXZiNmGINmI2KfZhNmF2LTYsdmB2YjZhlxuVGltZTogNTowMA0KICBQTSBTYXVkaSBBcmFiaWEgdGltZSAoR01UKzMpXG5cblJlZ2lzdGVyOiBodHRwczovL2VsZWFybmluZy5jbGFzc2VyYS5jb20vDQogXG5UaGUgY291cnNlIGxpbmsgd2lsbCBiZSB1cGRhdGVkIG9uY2UgcmVnaXN0cmF0aW9uIG9wZW5zLlxu2LPZitiq2YUg2KrYrQ0KINiv2YrYqyDYsdin2KjYtyDYp9mE2K/ZiNix2Kkg2YHZiNixINmB2KrYrSDYp9mE2KrYs9is2YrZhC4NCkxPQ0FUSU9OOk9ubGluZSDigJQgQ2xhc3NlcmEgSW5ub3ZhdGlvbiBQbGF0Zm9ybSAvINi52YYg2KjZj9i52K8g4oCUINmF2YbYtQ0KINipINin2YTYpdio2K/Yp9i5INmF2YYg2YPZhNin2LPZitix2KcNClVSTDpodHRwczovL2VsZWFybmluZy5jbGFzc2VyYS5jb20vDQpDQVRFR09SSUVTOlByb2Zlc3Npb25hbCBEZXZlbG9wbWVudA0KU1RBVFVTOkNPTkZJUk1FRA0KVFJBTlNQOk9QQVFVRQ0KU0VRVUVOQ0U6MA0KQkVHSU46VkFMQVJNDQpUUklHR0VSOi1QMUQNCkFDVElPTjpESVNQTEFZDQpERVNDUklQVElPTjpUb21vcnJvdzogVGVjaG5vbG9neSBpbiBFZHVjYXRpb24gV2ViaW5hciBTZXJpZXMg4oCUIFNlc3Npb24gMg0KRU5EOlZBTEFSTQ0KQkVHSU46VkFMQVJNDQpUUklHR0VSOi1QVDE1TQ0KQUNUSU9OOkRJU1BMQVkNCkRFU0NSSVBUSU9OOlN0YXJ0aW5nIGluIDE1IG1pbnV0ZXM6IFRlY2hub2xvZ3kgaW4gRWR1Y2F0aW9uIFdlYmluYXIgU2VyaWVzIA0KIOKAlCBTZXNzaW9uIDINCkVORDpWQUxBUk0NCkVORDpWRVZFTlQNCkJFR0lOOlZFVkVOVA0KVUlEOmF5MjYyNy1zMDVAaWJkYWEuY2xhc3NlcmENCkRUU1RBTVA6MjAyNjA5MDdUMTIyMDAzWg0KRFRTVEFSVDtUWklEPUFzaWEvUml5YWRoOjIwMjYxMjA5VDE3MDAwMA0KRFRFTkQ7VFpJRD1Bc2lhL1JpeWFkaDoyMDI2MTIwOVQxODE1MDANClNVTU1BUlk6SW50ZWzCriBTa2lsbHMgZm9yIElubm92YXRpb24g4oCUIEFJIFByb2Zlc3Npb25hbCBEZXZlbG9wbWVudCBmb3IgVA0KIGVhY2hlcnMgKDIpDQpERVNDUklQVElPTjpJbnRlbMKuIFNraWxscyBmb3IgSW5ub3ZhdGlvbiDigJQgQUkgUHJvZmVzc2lvbmFsIERldmVsb3BtZW50IGYNCiBvciBUZWFjaGVycyAoMilcbuKAj0ludGVswq4gU2tpbGxzIGZvciBJbm5vdmF0aW9uIOKAlCDYp9mE2KrYt9mI2YrYsSDYp9mEDQog2YXZh9mG2Yog2YHZiiDYp9mE2LDZg9in2KEg2KfZhNin2LXYt9mG2KfYudmKINmE2YTZhdi52YTZhdmK2YYgKDIpXG5cbkF1ZGkNCiBlbmNlOiBUZWFjaGVycyAvINin2YTZhdi52YTZhdmI2YZcblRpbWU6IDU6MDAgUE0gU2F1ZGkgQXJhYmlhIHRpbWUgKEdNVCszKQ0KIFxuXG5SZWdpc3RlcjogaHR0cHM6Ly9lbGVhcm5pbmcuY2xhc3NlcmEuY29tL1xuVGhlIGNvdXJzZSBsaW5rIHdpbGwgYmUgdXBkDQogYXRlZCBvbmNlIHJlZ2lzdHJhdGlvbiBvcGVucy5cbtiz2YrYqtmFINiq2K3Yr9mK2Ksg2LHYp9io2Lcg2KfZhNiv2YjYsdipIA0KINmB2YjYsSDZgdiq2K0g2KfZhNiq2LPYrNmK2YQuDQpMT0NBVElPTjpPbmxpbmUg4oCUIENsYXNzZXJhIElubm92YXRpb24gUGxhdGZvcm0gLyDYudmGINio2Y/YudivIOKAlCDZhdmG2LUNCiDYqSDYp9mE2KXYqNiv2KfYuSDZhdmGINmD2YTYp9iz2YrYsdinDQpVUkw6aHR0cHM6Ly9lbGVhcm5pbmcuY2xhc3NlcmEuY29tLw0KQ0FURUdPUklFUzpQcm9mZXNzaW9uYWwgRGV2ZWxvcG1lbnQNClNUQVRVUzpDT05GSVJNRUQNClRSQU5TUDpPUEFRVUUNClNFUVVFTkNFOjANCkJFR0lOOlZBTEFSTQ0KVFJJR0dFUjotUDFEDQpBQ1RJT046RElTUExBWQ0KREVTQ1JJUFRJT046VG9tb3Jyb3c6IEludGVswq4gU2tpbGxzIGZvciBJbm5vdmF0aW9uIOKAlCBBSSBQcm9mZXNzaW9uYWwgRGV2DQogZWxvcG1lbnQgZm9yIFRlYWNoZXJzICgyKQ0KRU5EOlZBTEFSTQ0KQkVHSU46VkFMQVJNDQpUUklHR0VSOi1QVDE1TQ0KQUNUSU9OOkRJU1BMQVkNCkRFU0NSSVBUSU9OOlN0YXJ0aW5nIGluIDE1IG1pbnV0ZXM6IEludGVswq4gU2tpbGxzIGZvciBJbm5vdmF0aW9uIOKAlCBBSSBQcg0KIG9mZXNzaW9uYWwgRGV2ZWxvcG1lbnQgZm9yIFRlYWNoZXJzICgyKQ0KRU5EOlZBTEFSTQ0KRU5EOlZFVkVOVA0KQkVHSU46VkVWRU5UDQpVSUQ6YXkyNjI3LXMwNkBpYmRhYS5jbGFzc2VyYQ0KRFRTVEFNUDoyMDI2MDkwN1QxMjIwMDNaDQpEVFNUQVJUO1RaSUQ9QXNpYS9SaXlhZGg6MjAyNjEyMjNUMTcwMDAwDQpEVEVORDtUWklEPUFzaWEvUml5YWRoOjIwMjYxMjIzVDE4MTUwMA0KU1VNTUFSWTpUZWNobm9sb2d5IGluIEVkdWNhdGlvbiBXZWJpbmFyIFNlcmllcyDigJQgU2Vzc2lvbiAzDQpERVNDUklQVElPTjpUZWNobm9sb2d5IGluIEVkdWNhdGlvbiBXZWJpbmFyIFNlcmllcyDigJQgU2Vzc2lvbiAzXG7Ys9mE2LPZhA0KINipINiq2YLZhtmK2KfYqiDYp9mE2KrYudmE2YrZhSDigJQg2KfZhNis2YTYs9ipINin2YTYq9in2YTYq9ipXG5cbkF1ZGllbmNlDQogOiBUZWFjaGVycyAmIFN1cGVydmlzb3JzIC8g2KfZhNmF2LnZhNmF2YjZhiDZiNin2YTZhdi02LHZgdmI2YZcblRpbWU6IDU6MDANCiAgUE0gU2F1ZGkgQXJhYmlhIHRpbWUgKEdNVCszKVxuXG5SZWdpc3RlcjogaHR0cHM6Ly9lbGVhcm5pbmcuY2xhc3NlcmEuY29tLw0KIFxuVGhlIGNvdXJzZSBsaW5rIHdpbGwgYmUgdXBkYXRlZCBvbmNlIHJlZ2lzdHJhdGlvbiBvcGVucy5cbtiz2YrYqtmFINiq2K0NCiDYr9mK2Ksg2LHYp9io2Lcg2KfZhNiv2YjYsdipINmB2YjYsSDZgdiq2K0g2KfZhNiq2LPYrNmK2YQuDQpMT0NBVElPTjpPbmxpbmUg4oCUIENsYXNzZXJhIElubm92YXRpb24gUGxhdGZvcm0gLyDYudmGINio2Y/YudivIOKAlCDZhdmG2LUNCiDYqSDYp9mE2KXYqNiv2KfYuSDZhdmGINmD2YTYp9iz2YrYsdinDQpVUkw6aHR0cHM6Ly9lbGVhcm5pbmcuY2xhc3NlcmEuY29tLw0KQ0FURUdPUklFUzpQcm9mZXNzaW9uYWwgRGV2ZWxvcG1lbnQNClNUQVRVUzpDT05GSVJNRUQNClRSQU5TUDpPUEFRVUUNClNFUVVFTkNFOjANCkJFR0lOOlZBTEFSTQ0KVFJJR0dFUjotUDFEDQpBQ1RJT046RElTUExBWQ0KREVTQ1JJUFRJT046VG9tb3Jyb3c6IFRlY2hub2xvZ3kgaW4gRWR1Y2F0aW9uIFdlYmluYXIgU2VyaWVzIOKAlCBTZXNzaW9uIDMNCkVORDpWQUxBUk0NCkJFR0lOOlZBTEFSTQ0KVFJJR0dFUjotUFQxNU0NCkFDVElPTjpESVNQTEFZDQpERVNDUklQVElPTjpTdGFydGluZyBpbiAxNSBtaW51dGVzOiBUZWNobm9sb2d5IGluIEVkdWNhdGlvbiBXZWJpbmFyIFNlcmllcyANCiDigJQgU2Vzc2lvbiAzDQpFTkQ6VkFMQVJNDQpFTkQ6VkVWRU5UDQpFTkQ6VkNBTEVOREFSDQo=" download="AY26-27 Semester 1 Sessions.ics">
+        <svg><use href="#i-download"></use></svg>
+        <span lang="en">Download calendar file (.ics)</span><span lang="ar">تنزيل ملف التقويم (.ics)</span>
+      </a>
+    </div>
+
     <div class="rail" id="rail">
       <div class="month">
         <div class="mm"><span lang="en">September 2026</span><span lang="ar">سبتمبر 2026</span></div>
         <div class="ml"></div>
       </div>
-      <article class="item reveal" data-track="partner" style="--c:var(--cyan);--cs:var(--cyan-soft)">
+      <article class="item reveal" data-track="classera" style="--c:var(--gold);--cs:var(--gold-soft)">
         <span class="badge" aria-hidden="true">
           <svg class="ring" viewBox="0 0 100 100">
             <circle class="disc" cx="50" cy="50" r="38"/>
@@ -362,24 +397,30 @@ html[data-lang="ar"] [lang="en"]{display:none !important}
         </span>
         <div class="card">
           <div class="top">
-            <span class="pill"><span lang="en">EdTech Partner</span><span lang="ar">شريك تقني</span></span>
+            <span class="pill"><span lang="en">Classera LMS</span><span lang="ar">نظام كلاسيرا</span></span>
             <span class="snum"><span lang="en">SESSION 01</span><span lang="ar">الجلسة 01</span></span>
           </div>
           <h3>
             <a href="https://elearning.classera.com/" target="_blank" rel="noopener">
-              <span lang="en">Academic Year Kickoff &amp; Technology in Education Webinar — Session 1</span><span lang="ar">انطلاقة العام الأكاديمي وسلسلة تقنيات التعليم — الجلسة الأولى</span>
+              <span lang="en">Academic Year Kickoff &amp; Classera LMS Updates — New Features &amp; Release Highlights</span><span lang="ar">انطلاقة العام الأكاديمي وتحديثات نظام كلاسيرا — المزايا الجديدة وأبرز الإصدارات</span>
             </a>
           </h3>
           <div class="meta">
             <div><svg><use href="#i-calendar"></use></svg><span lang="en">Wednesday, 30 September 2026</span><span lang="ar">الأربعاء 30 سبتمبر 2026</span></div>
             <div><svg><use href="#i-clock"></use></svg><span lang="en">5:00 PM (GMT+3)</span><span lang="ar">5:00 مساءً (بتوقيت السعودية)</span></div>
-            <div><svg><use href="#i-users"></use></svg><span lang="en">Teachers &amp; Supervisors</span><span lang="ar">المعلمون والمشرفون</span></div>
+            <div><svg><use href="#i-users"></use></svg><span lang="en">All LMS Users</span><span lang="ar">جميع مستخدمي النظام</span></div>
           </div>
           <div class="ctarow">
             <a class="cta" href="https://elearning.classera.com/" target="_blank" rel="noopener">
               <span lang="en">Register on the platform</span><span lang="ar">التسجيل عبر المنصة</span>
               <svg><use href="#i-arrow"></use></svg>
             </a>
+            <span class="calbtns">
+              <a class="calbtn" href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Academic+Year+Kickoff+%26+Classera+LMS+Updates+%E2%80%94+New+Features+%26+Release+Highlights&dates=20260930T140000Z%2F20260930T151500Z&details=%D8%A7%D9%86%D8%B7%D9%84%D8%A7%D9%82%D8%A9+%D8%A7%D9%84%D8%B9%D8%A7%D9%85+%D8%A7%D9%84%D8%A3%D9%83%D8%A7%D8%AF%D9%8A%D9%85%D9%8A+%D9%88%D8%AA%D8%AD%D8%AF%D9%8A%D8%AB%D8%A7%D8%AA+%D9%86%D8%B8%D8%A7%D9%85+%D9%83%D9%84%D8%A7%D8%B3%D9%8A%D8%B1%D8%A7+%E2%80%94+%D8%A7%D9%84%D9%85%D8%B2%D8%A7%D9%8A%D8%A7+%D8%A7%D9%84%D8%AC%D8%AF%D9%8A%D8%AF%D8%A9+%D9%88%D8%A3%D8%A8%D8%B1%D8%B2+%D8%A7%D9%84%D8%A5%D8%B5%D8%AF%D8%A7%D8%B1%D8%A7%D8%AA%0A%0AAudience%3A+All+LMS+Users+%2F+%D8%AC%D9%85%D9%8A%D8%B9+%D9%85%D8%B3%D8%AA%D8%AE%D8%AF%D9%85%D9%8A+%D8%A7%D9%84%D9%86%D8%B8%D8%A7%D9%85%0ARegister%3A+https%3A%2F%2Felearning.classera.com%2F%0AThe+course+link+will+be+updated+once+registration+opens.&location=Online+%E2%80%94+Classera+Innovation+Platform&ctz=Asia%2FRiyadh" target="_blank" rel="noopener"
+                 title="Add to Google Calendar" aria-label="Add to Google Calendar"><span class="g">G</span></a>
+              <a class="calbtn" href="data:text/calendar;charset=utf-8;base64,QkVHSU46VkNBTEVOREFSDQpWRVJTSU9OOjIuMA0KUFJPRElEOi0vL0NsYXNzZXJhLy9Jbm5vdmF0aW9uIFBsYXRmb3JtIFBEIFBsYW4gQVkyNi0yNy8vRU4NCkNBTFNDQUxFOkdSRUdPUklBTg0KTUVUSE9EOlBVQkxJU0gNClgtV1ItQ0FMTkFNRTpDbGFzc2VyYSBQRCBQbGFuIOKAlCBTZW1lc3RlciAxIEFZIDIwMjYtMjAyNw0KWC1XUi1USU1FWk9ORTpBc2lhL1JpeWFkaA0KQkVHSU46VlRJTUVaT05FDQpUWklEOkFzaWEvUml5YWRoDQpCRUdJTjpTVEFOREFSRA0KRFRTVEFSVDoxOTcwMDEwMVQwMDAwMDANClRaT0ZGU0VURlJPTTorMDMwMA0KVFpPRkZTRVRUTzorMDMwMA0KVFpOQU1FOiswMw0KRU5EOlNUQU5EQVJEDQpFTkQ6VlRJTUVaT05FDQpCRUdJTjpWRVZFTlQNClVJRDpheTI2MjctczAxQGliZGFhLmNsYXNzZXJhDQpEVFNUQU1QOjIwMjYwOTA3VDEyMjAwM1oNCkRUU1RBUlQ7VFpJRD1Bc2lhL1JpeWFkaDoyMDI2MDkzMFQxNzAwMDANCkRURU5EO1RaSUQ9QXNpYS9SaXlhZGg6MjAyNjA5MzBUMTgxNTAwDQpTVU1NQVJZOkFjYWRlbWljIFllYXIgS2lja29mZiAmIENsYXNzZXJhIExNUyBVcGRhdGVzIOKAlCBOZXcgRmVhdHVyZXMgJiBSZWwNCiBlYXNlIEhpZ2hsaWdodHMNCkRFU0NSSVBUSU9OOkFjYWRlbWljIFllYXIgS2lja29mZiAmIENsYXNzZXJhIExNUyBVcGRhdGVzIOKAlCBOZXcgRmVhdHVyZXMgJg0KICBSZWxlYXNlIEhpZ2hsaWdodHNcbtin2YbYt9mE2KfZgtipINin2YTYudin2YUg2KfZhNij2YPYp9iv2YrZhdmKINmI2KrYrdivDQog2YrYq9in2Kog2YbYuNin2YUg2YPZhNin2LPZitix2Kcg4oCUINin2YTZhdiy2KfZitinINin2YTYrNiv2YrYr9ipINmI2KPYqA0KINix2LIg2KfZhNil2LXYr9in2LHYp9iqXG5cbkF1ZGllbmNlOiBBbGwgTE1TIFVzZXJzIC8g2KzZhdmK2Lkg2YXYs9iq2K7Yr9mFDQog2Yog2KfZhNmG2LjYp9mFXG5UaW1lOiA1OjAwIFBNIFNhdWRpIEFyYWJpYSB0aW1lIChHTVQrMylcblxuUmVnaXN0ZXI6IGh0dHANCiBzOi8vZWxlYXJuaW5nLmNsYXNzZXJhLmNvbS9cblRoZSBjb3Vyc2UgbGluayB3aWxsIGJlIHVwZGF0ZWQgb25jZSByZWdpc3RyYQ0KIHRpb24gb3BlbnMuXG7Ys9mK2KrZhSDYqtit2K/ZitirINix2KfYqNi3INin2YTYr9mI2LHYqSDZgdmI2LEg2YHYqtitINin2YQNCiDYqtiz2KzZitmELg0KTE9DQVRJT046T25saW5lIOKAlCBDbGFzc2VyYSBJbm5vdmF0aW9uIFBsYXRmb3JtIC8g2LnZhiDYqNmP2LnYryDigJQg2YXZhti1DQog2Kkg2KfZhNil2KjYr9in2Lkg2YXZhiDZg9mE2KfYs9mK2LHYpw0KVVJMOmh0dHBzOi8vZWxlYXJuaW5nLmNsYXNzZXJhLmNvbS8NCkNBVEVHT1JJRVM6UHJvZmVzc2lvbmFsIERldmVsb3BtZW50DQpTVEFUVVM6Q09ORklSTUVEDQpUUkFOU1A6T1BBUVVFDQpTRVFVRU5DRTowDQpCRUdJTjpWQUxBUk0NClRSSUdHRVI6LVAxRA0KQUNUSU9OOkRJU1BMQVkNCkRFU0NSSVBUSU9OOlRvbW9ycm93OiBBY2FkZW1pYyBZZWFyIEtpY2tvZmYgJiBDbGFzc2VyYSBMTVMgVXBkYXRlcyDigJQgTmV3IA0KIEZlYXR1cmVzICYgUmVsZWFzZSBIaWdobGlnaHRzDQpFTkQ6VkFMQVJNDQpCRUdJTjpWQUxBUk0NClRSSUdHRVI6LVBUMTVNDQpBQ1RJT046RElTUExBWQ0KREVTQ1JJUFRJT046U3RhcnRpbmcgaW4gMTUgbWludXRlczogQWNhZGVtaWMgWWVhciBLaWNrb2ZmICYgQ2xhc3NlcmEgTE1TIFVwDQogZGF0ZXMg4oCUIE5ldyBGZWF0dXJlcyAmIFJlbGVhc2UgSGlnaGxpZ2h0cw0KRU5EOlZBTEFSTQ0KRU5EOlZFVkVOVA0KRU5EOlZDQUxFTkRBUg0K" download="ibdaa-session-01.ics"
+                 title="Add to calendar (.ics)" aria-label="Download this session as a calendar file"><svg><use href="#i-calplus"></use></svg></a>
+            </span>
             <span class="soon">
               <span lang="en">Course link will be updated soon</span><span lang="ar">سيتم تحديث رابط الدورة قريباً</span>
             </span>
@@ -390,42 +431,6 @@ html[data-lang="ar"] [lang="en"]{display:none !important}
         <div class="mm"><span lang="en">October 2026</span><span lang="ar">أكتوبر 2026</span></div>
         <div class="ml"></div>
       </div>
-      <article class="item reveal" data-track="classera" style="--c:var(--gold);--cs:var(--gold-soft)">
-        <span class="badge" aria-hidden="true">
-          <svg class="ring" viewBox="0 0 100 100">
-            <circle class="disc" cx="50" cy="50" r="38"/>
-            <circle class="dots" cx="50" cy="50" r="45.5"/>
-            <circle class="solid" cx="50" cy="50" r="44"/>
-            <path class="lens" d="M17 24c-9 8-9 44 0 52 9-8 9-44 0-52Z"/>
-          </svg>
-          <svg class="ico"><use href="#i-refresh"></use></svg>
-        </span>
-        <div class="card">
-          <div class="top">
-            <span class="pill"><span lang="en">Classera LMS</span><span lang="ar">نظام كلاسيرا</span></span>
-            <span class="snum"><span lang="en">SESSION 02</span><span lang="ar">الجلسة 02</span></span>
-          </div>
-          <h3>
-            <a href="https://elearning.classera.com/" target="_blank" rel="noopener">
-              <span lang="en">Classera LMS Updates — New Features &amp; Release Highlights</span><span lang="ar">تحديثات نظام كلاسيرا — المزايا الجديدة وأبرز الإصدارات</span>
-            </a>
-          </h3>
-          <div class="meta">
-            <div><svg><use href="#i-calendar"></use></svg><span lang="en">Wednesday, 7 October 2026</span><span lang="ar">الأربعاء 7 أكتوبر 2026</span></div>
-            <div><svg><use href="#i-clock"></use></svg><span lang="en">5:00 PM (GMT+3)</span><span lang="ar">5:00 مساءً (بتوقيت السعودية)</span></div>
-            <div><svg><use href="#i-users"></use></svg><span lang="en">All LMS Users</span><span lang="ar">جميع مستخدمي النظام</span></div>
-          </div>
-          <div class="ctarow">
-            <a class="cta" href="https://elearning.classera.com/" target="_blank" rel="noopener">
-              <span lang="en">Register on the platform</span><span lang="ar">التسجيل عبر المنصة</span>
-              <svg><use href="#i-arrow"></use></svg>
-            </a>
-            <span class="soon">
-              <span lang="en">Course link will be updated soon</span><span lang="ar">سيتم تحديث رابط الدورة قريباً</span>
-            </span>
-          </div>
-        </div>
-      </article>
       <article class="item reveal" data-track="intel" style="--c:var(--blue);--cs:var(--blue-soft)">
         <span class="badge" aria-hidden="true">
           <svg class="ring" viewBox="0 0 100 100">
@@ -439,7 +444,7 @@ html[data-lang="ar"] [lang="en"]{display:none !important}
         <div class="card">
           <div class="top">
             <span class="pill"><span lang="en">Intel® SFI</span><span lang="ar">Intel® SFI</span></span>
-            <span class="snum"><span lang="en">SESSION 03</span><span lang="ar">الجلسة 03</span></span>
+            <span class="snum"><span lang="en">SESSION 02</span><span lang="ar">الجلسة 02</span></span>
           </div>
           <h3>
             <a href="https://elearning.classera.com/" target="_blank" rel="noopener">
@@ -456,6 +461,12 @@ html[data-lang="ar"] [lang="en"]{display:none !important}
               <span lang="en">Register on the platform</span><span lang="ar">التسجيل عبر المنصة</span>
               <svg><use href="#i-arrow"></use></svg>
             </a>
+            <span class="calbtns">
+              <a class="calbtn" href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Intel%C2%AE+Skills+for+Innovation+%E2%80%94+AI+Professional+Development+for+Teachers+%281%29&dates=20261014T140000Z%2F20261014T151500Z&details=%E2%80%8FIntel%C2%AE+Skills+for+Innovation+%E2%80%94+%D8%A7%D9%84%D8%AA%D8%B7%D9%88%D9%8A%D8%B1+%D8%A7%D9%84%D9%85%D9%87%D9%86%D9%8A+%D9%81%D9%8A+%D8%A7%D9%84%D8%B0%D9%83%D8%A7%D8%A1+%D8%A7%D9%84%D8%A7%D8%B5%D8%B7%D9%86%D8%A7%D8%B9%D9%8A+%D9%84%D9%84%D9%85%D8%B9%D9%84%D9%85%D9%8A%D9%86+%281%29%0A%0AAudience%3A+Teachers+%2F+%D8%A7%D9%84%D9%85%D8%B9%D9%84%D9%85%D9%88%D9%86%0ARegister%3A+https%3A%2F%2Felearning.classera.com%2F%0AThe+course+link+will+be+updated+once+registration+opens.&location=Online+%E2%80%94+Classera+Innovation+Platform&ctz=Asia%2FRiyadh" target="_blank" rel="noopener"
+                 title="Add to Google Calendar" aria-label="Add to Google Calendar"><span class="g">G</span></a>
+              <a class="calbtn" href="data:text/calendar;charset=utf-8;base64,QkVHSU46VkNBTEVOREFSDQpWRVJTSU9OOjIuMA0KUFJPRElEOi0vL0NsYXNzZXJhLy9Jbm5vdmF0aW9uIFBsYXRmb3JtIFBEIFBsYW4gQVkyNi0yNy8vRU4NCkNBTFNDQUxFOkdSRUdPUklBTg0KTUVUSE9EOlBVQkxJU0gNClgtV1ItQ0FMTkFNRTpDbGFzc2VyYSBQRCBQbGFuIOKAlCBTZW1lc3RlciAxIEFZIDIwMjYtMjAyNw0KWC1XUi1USU1FWk9ORTpBc2lhL1JpeWFkaA0KQkVHSU46VlRJTUVaT05FDQpUWklEOkFzaWEvUml5YWRoDQpCRUdJTjpTVEFOREFSRA0KRFRTVEFSVDoxOTcwMDEwMVQwMDAwMDANClRaT0ZGU0VURlJPTTorMDMwMA0KVFpPRkZTRVRUTzorMDMwMA0KVFpOQU1FOiswMw0KRU5EOlNUQU5EQVJEDQpFTkQ6VlRJTUVaT05FDQpCRUdJTjpWRVZFTlQNClVJRDpheTI2MjctczAyQGliZGFhLmNsYXNzZXJhDQpEVFNUQU1QOjIwMjYwOTA3VDEyMjAwM1oNCkRUU1RBUlQ7VFpJRD1Bc2lhL1JpeWFkaDoyMDI2MTAxNFQxNzAwMDANCkRURU5EO1RaSUQ9QXNpYS9SaXlhZGg6MjAyNjEwMTRUMTgxNTAwDQpTVU1NQVJZOkludGVswq4gU2tpbGxzIGZvciBJbm5vdmF0aW9uIOKAlCBBSSBQcm9mZXNzaW9uYWwgRGV2ZWxvcG1lbnQgZm9yIFQNCiBlYWNoZXJzICgxKQ0KREVTQ1JJUFRJT046SW50ZWzCriBTa2lsbHMgZm9yIElubm92YXRpb24g4oCUIEFJIFByb2Zlc3Npb25hbCBEZXZlbG9wbWVudCBmDQogb3IgVGVhY2hlcnMgKDEpXG7igI9JbnRlbMKuIFNraWxscyBmb3IgSW5ub3ZhdGlvbiDigJQg2KfZhNiq2LfZiNmK2LEg2KfZhA0KINmF2YfZhtmKINmB2Yog2KfZhNiw2YPYp9ihINin2YTYp9i12LfZhtin2LnZiiDZhNmE2YXYudmE2YXZitmGICgxKVxuXG5BdWRpDQogZW5jZTogVGVhY2hlcnMgLyDYp9mE2YXYudmE2YXZiNmGXG5UaW1lOiA1OjAwIFBNIFNhdWRpIEFyYWJpYSB0aW1lIChHTVQrMykNCiBcblxuUmVnaXN0ZXI6IGh0dHBzOi8vZWxlYXJuaW5nLmNsYXNzZXJhLmNvbS9cblRoZSBjb3Vyc2UgbGluayB3aWxsIGJlIHVwZA0KIGF0ZWQgb25jZSByZWdpc3RyYXRpb24gb3BlbnMuXG7Ys9mK2KrZhSDYqtit2K/ZitirINix2KfYqNi3INin2YTYr9mI2LHYqSANCiDZgdmI2LEg2YHYqtitINin2YTYqtiz2KzZitmELg0KTE9DQVRJT046T25saW5lIOKAlCBDbGFzc2VyYSBJbm5vdmF0aW9uIFBsYXRmb3JtIC8g2LnZhiDYqNmP2LnYryDigJQg2YXZhti1DQog2Kkg2KfZhNil2KjYr9in2Lkg2YXZhiDZg9mE2KfYs9mK2LHYpw0KVVJMOmh0dHBzOi8vZWxlYXJuaW5nLmNsYXNzZXJhLmNvbS8NCkNBVEVHT1JJRVM6UHJvZmVzc2lvbmFsIERldmVsb3BtZW50DQpTVEFUVVM6Q09ORklSTUVEDQpUUkFOU1A6T1BBUVVFDQpTRVFVRU5DRTowDQpCRUdJTjpWQUxBUk0NClRSSUdHRVI6LVAxRA0KQUNUSU9OOkRJU1BMQVkNCkRFU0NSSVBUSU9OOlRvbW9ycm93OiBJbnRlbMKuIFNraWxscyBmb3IgSW5ub3ZhdGlvbiDigJQgQUkgUHJvZmVzc2lvbmFsIERldg0KIGVsb3BtZW50IGZvciBUZWFjaGVycyAoMSkNCkVORDpWQUxBUk0NCkJFR0lOOlZBTEFSTQ0KVFJJR0dFUjotUFQxNU0NCkFDVElPTjpESVNQTEFZDQpERVNDUklQVElPTjpTdGFydGluZyBpbiAxNSBtaW51dGVzOiBJbnRlbMKuIFNraWxscyBmb3IgSW5ub3ZhdGlvbiDigJQgQUkgUHINCiBvZmVzc2lvbmFsIERldmVsb3BtZW50IGZvciBUZWFjaGVycyAoMSkNCkVORDpWQUxBUk0NCkVORDpWRVZFTlQNCkVORDpWQ0FMRU5EQVINCg==" download="ibdaa-session-02.ics"
+                 title="Add to calendar (.ics)" aria-label="Download this session as a calendar file"><svg><use href="#i-calplus"></use></svg></a>
+            </span>
             <span class="soon">
               <span lang="en">Course link will be updated soon</span><span lang="ar">سيتم تحديث رابط الدورة قريباً</span>
             </span>
@@ -475,11 +486,11 @@ html[data-lang="ar"] [lang="en"]{display:none !important}
         <div class="card">
           <div class="top">
             <span class="pill"><span lang="en">EdTech Partner</span><span lang="ar">شريك تقني</span></span>
-            <span class="snum"><span lang="en">SESSION 04</span><span lang="ar">الجلسة 04</span></span>
+            <span class="snum"><span lang="en">SESSION 03</span><span lang="ar">الجلسة 03</span></span>
           </div>
           <h3>
             <a href="https://elearning.classera.com/" target="_blank" rel="noopener">
-              <span lang="en">Technology in Education Webinar Series — Session 2</span><span lang="ar">سلسلة تقنيات التعليم — الجلسة الثانية</span>
+              <span lang="en">Technology in Education Webinar Series — Session 1</span><span lang="ar">سلسلة تقنيات التعليم — الجلسة الأولى</span>
             </a>
           </h3>
           <div class="meta">
@@ -492,6 +503,12 @@ html[data-lang="ar"] [lang="en"]{display:none !important}
               <span lang="en">Register on the platform</span><span lang="ar">التسجيل عبر المنصة</span>
               <svg><use href="#i-arrow"></use></svg>
             </a>
+            <span class="calbtns">
+              <a class="calbtn" href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Technology+in+Education+Webinar+Series+%E2%80%94+Session+1&dates=20261028T140000Z%2F20261028T151500Z&details=%D8%B3%D9%84%D8%B3%D9%84%D8%A9+%D8%AA%D9%82%D9%86%D9%8A%D8%A7%D8%AA+%D8%A7%D9%84%D8%AA%D8%B9%D9%84%D9%8A%D9%85+%E2%80%94+%D8%A7%D9%84%D8%AC%D9%84%D8%B3%D8%A9+%D8%A7%D9%84%D8%A3%D9%88%D9%84%D9%89%0A%0AAudience%3A+Teachers+%26+Supervisors+%2F+%D8%A7%D9%84%D9%85%D8%B9%D9%84%D9%85%D9%88%D9%86+%D9%88%D8%A7%D9%84%D9%85%D8%B4%D8%B1%D9%81%D9%88%D9%86%0ARegister%3A+https%3A%2F%2Felearning.classera.com%2F%0AThe+course+link+will+be+updated+once+registration+opens.&location=Online+%E2%80%94+Classera+Innovation+Platform&ctz=Asia%2FRiyadh" target="_blank" rel="noopener"
+                 title="Add to Google Calendar" aria-label="Add to Google Calendar"><span class="g">G</span></a>
+              <a class="calbtn" href="data:text/calendar;charset=utf-8;base64,QkVHSU46VkNBTEVOREFSDQpWRVJTSU9OOjIuMA0KUFJPRElEOi0vL0NsYXNzZXJhLy9Jbm5vdmF0aW9uIFBsYXRmb3JtIFBEIFBsYW4gQVkyNi0yNy8vRU4NCkNBTFNDQUxFOkdSRUdPUklBTg0KTUVUSE9EOlBVQkxJU0gNClgtV1ItQ0FMTkFNRTpDbGFzc2VyYSBQRCBQbGFuIOKAlCBTZW1lc3RlciAxIEFZIDIwMjYtMjAyNw0KWC1XUi1USU1FWk9ORTpBc2lhL1JpeWFkaA0KQkVHSU46VlRJTUVaT05FDQpUWklEOkFzaWEvUml5YWRoDQpCRUdJTjpTVEFOREFSRA0KRFRTVEFSVDoxOTcwMDEwMVQwMDAwMDANClRaT0ZGU0VURlJPTTorMDMwMA0KVFpPRkZTRVRUTzorMDMwMA0KVFpOQU1FOiswMw0KRU5EOlNUQU5EQVJEDQpFTkQ6VlRJTUVaT05FDQpCRUdJTjpWRVZFTlQNClVJRDpheTI2MjctczAzQGliZGFhLmNsYXNzZXJhDQpEVFNUQU1QOjIwMjYwOTA3VDEyMjAwM1oNCkRUU1RBUlQ7VFpJRD1Bc2lhL1JpeWFkaDoyMDI2MTAyOFQxNzAwMDANCkRURU5EO1RaSUQ9QXNpYS9SaXlhZGg6MjAyNjEwMjhUMTgxNTAwDQpTVU1NQVJZOlRlY2hub2xvZ3kgaW4gRWR1Y2F0aW9uIFdlYmluYXIgU2VyaWVzIOKAlCBTZXNzaW9uIDENCkRFU0NSSVBUSU9OOlRlY2hub2xvZ3kgaW4gRWR1Y2F0aW9uIFdlYmluYXIgU2VyaWVzIOKAlCBTZXNzaW9uIDFcbtiz2YTYs9mEDQog2Kkg2KrZgtmG2YrYp9iqINin2YTYqti52YTZitmFIOKAlCDYp9mE2KzZhNiz2Kkg2KfZhNij2YjZhNmJXG5cbkF1ZGllbmNlOiANCiBUZWFjaGVycyAmIFN1cGVydmlzb3JzIC8g2KfZhNmF2LnZhNmF2YjZhiDZiNin2YTZhdi02LHZgdmI2YZcblRpbWU6IDU6MDAgUA0KIE0gU2F1ZGkgQXJhYmlhIHRpbWUgKEdNVCszKVxuXG5SZWdpc3RlcjogaHR0cHM6Ly9lbGVhcm5pbmcuY2xhc3NlcmEuY29tL1xuDQogVGhlIGNvdXJzZSBsaW5rIHdpbGwgYmUgdXBkYXRlZCBvbmNlIHJlZ2lzdHJhdGlvbiBvcGVucy5cbtiz2YrYqtmFINiq2K3Yrw0KINmK2Ksg2LHYp9io2Lcg2KfZhNiv2YjYsdipINmB2YjYsSDZgdiq2K0g2KfZhNiq2LPYrNmK2YQuDQpMT0NBVElPTjpPbmxpbmUg4oCUIENsYXNzZXJhIElubm92YXRpb24gUGxhdGZvcm0gLyDYudmGINio2Y/YudivIOKAlCDZhdmG2LUNCiDYqSDYp9mE2KXYqNiv2KfYuSDZhdmGINmD2YTYp9iz2YrYsdinDQpVUkw6aHR0cHM6Ly9lbGVhcm5pbmcuY2xhc3NlcmEuY29tLw0KQ0FURUdPUklFUzpQcm9mZXNzaW9uYWwgRGV2ZWxvcG1lbnQNClNUQVRVUzpDT05GSVJNRUQNClRSQU5TUDpPUEFRVUUNClNFUVVFTkNFOjANCkJFR0lOOlZBTEFSTQ0KVFJJR0dFUjotUDFEDQpBQ1RJT046RElTUExBWQ0KREVTQ1JJUFRJT046VG9tb3Jyb3c6IFRlY2hub2xvZ3kgaW4gRWR1Y2F0aW9uIFdlYmluYXIgU2VyaWVzIOKAlCBTZXNzaW9uIDENCkVORDpWQUxBUk0NCkJFR0lOOlZBTEFSTQ0KVFJJR0dFUjotUFQxNU0NCkFDVElPTjpESVNQTEFZDQpERVNDUklQVElPTjpTdGFydGluZyBpbiAxNSBtaW51dGVzOiBUZWNobm9sb2d5IGluIEVkdWNhdGlvbiBXZWJpbmFyIFNlcmllcyANCiDigJQgU2Vzc2lvbiAxDQpFTkQ6VkFMQVJNDQpFTkQ6VkVWRU5UDQpFTkQ6VkNBTEVOREFSDQo=" download="ibdaa-session-03.ics"
+                 title="Add to calendar (.ics)" aria-label="Download this session as a calendar file"><svg><use href="#i-calplus"></use></svg></a>
+            </span>
             <span class="soon">
               <span lang="en">Course link will be updated soon</span><span lang="ar">سيتم تحديث رابط الدورة قريباً</span>
             </span>
@@ -515,11 +532,11 @@ html[data-lang="ar"] [lang="en"]{display:none !important}
         <div class="card">
           <div class="top">
             <span class="pill"><span lang="en">EdTech Partner</span><span lang="ar">شريك تقني</span></span>
-            <span class="snum"><span lang="en">SESSION 05</span><span lang="ar">الجلسة 05</span></span>
+            <span class="snum"><span lang="en">SESSION 04</span><span lang="ar">الجلسة 04</span></span>
           </div>
           <h3>
             <a href="https://elearning.classera.com/" target="_blank" rel="noopener">
-              <span lang="en">Technology in Education Webinar Series — Session 3</span><span lang="ar">سلسلة تقنيات التعليم — الجلسة الثالثة</span>
+              <span lang="en">Technology in Education Webinar Series — Session 2</span><span lang="ar">سلسلة تقنيات التعليم — الجلسة الثانية</span>
             </a>
           </h3>
           <div class="meta">
@@ -532,6 +549,12 @@ html[data-lang="ar"] [lang="en"]{display:none !important}
               <span lang="en">Register on the platform</span><span lang="ar">التسجيل عبر المنصة</span>
               <svg><use href="#i-arrow"></use></svg>
             </a>
+            <span class="calbtns">
+              <a class="calbtn" href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Technology+in+Education+Webinar+Series+%E2%80%94+Session+2&dates=20261111T140000Z%2F20261111T151500Z&details=%D8%B3%D9%84%D8%B3%D9%84%D8%A9+%D8%AA%D9%82%D9%86%D9%8A%D8%A7%D8%AA+%D8%A7%D9%84%D8%AA%D8%B9%D9%84%D9%8A%D9%85+%E2%80%94+%D8%A7%D9%84%D8%AC%D9%84%D8%B3%D8%A9+%D8%A7%D9%84%D8%AB%D8%A7%D9%86%D9%8A%D8%A9%0A%0AAudience%3A+Teachers+%26+Supervisors+%2F+%D8%A7%D9%84%D9%85%D8%B9%D9%84%D9%85%D9%88%D9%86+%D9%88%D8%A7%D9%84%D9%85%D8%B4%D8%B1%D9%81%D9%88%D9%86%0ARegister%3A+https%3A%2F%2Felearning.classera.com%2F%0AThe+course+link+will+be+updated+once+registration+opens.&location=Online+%E2%80%94+Classera+Innovation+Platform&ctz=Asia%2FRiyadh" target="_blank" rel="noopener"
+                 title="Add to Google Calendar" aria-label="Add to Google Calendar"><span class="g">G</span></a>
+              <a class="calbtn" href="data:text/calendar;charset=utf-8;base64,QkVHSU46VkNBTEVOREFSDQpWRVJTSU9OOjIuMA0KUFJPRElEOi0vL0NsYXNzZXJhLy9Jbm5vdmF0aW9uIFBsYXRmb3JtIFBEIFBsYW4gQVkyNi0yNy8vRU4NCkNBTFNDQUxFOkdSRUdPUklBTg0KTUVUSE9EOlBVQkxJU0gNClgtV1ItQ0FMTkFNRTpDbGFzc2VyYSBQRCBQbGFuIOKAlCBTZW1lc3RlciAxIEFZIDIwMjYtMjAyNw0KWC1XUi1USU1FWk9ORTpBc2lhL1JpeWFkaA0KQkVHSU46VlRJTUVaT05FDQpUWklEOkFzaWEvUml5YWRoDQpCRUdJTjpTVEFOREFSRA0KRFRTVEFSVDoxOTcwMDEwMVQwMDAwMDANClRaT0ZGU0VURlJPTTorMDMwMA0KVFpPRkZTRVRUTzorMDMwMA0KVFpOQU1FOiswMw0KRU5EOlNUQU5EQVJEDQpFTkQ6VlRJTUVaT05FDQpCRUdJTjpWRVZFTlQNClVJRDpheTI2MjctczA0QGliZGFhLmNsYXNzZXJhDQpEVFNUQU1QOjIwMjYwOTA3VDEyMjAwM1oNCkRUU1RBUlQ7VFpJRD1Bc2lhL1JpeWFkaDoyMDI2MTExMVQxNzAwMDANCkRURU5EO1RaSUQ9QXNpYS9SaXlhZGg6MjAyNjExMTFUMTgxNTAwDQpTVU1NQVJZOlRlY2hub2xvZ3kgaW4gRWR1Y2F0aW9uIFdlYmluYXIgU2VyaWVzIOKAlCBTZXNzaW9uIDINCkRFU0NSSVBUSU9OOlRlY2hub2xvZ3kgaW4gRWR1Y2F0aW9uIFdlYmluYXIgU2VyaWVzIOKAlCBTZXNzaW9uIDJcbtiz2YTYs9mEDQog2Kkg2KrZgtmG2YrYp9iqINin2YTYqti52YTZitmFIOKAlCDYp9mE2KzZhNiz2Kkg2KfZhNir2KfZhtmK2KlcblxuQXVkaWVuY2UNCiA6IFRlYWNoZXJzICYgU3VwZXJ2aXNvcnMgLyDYp9mE2YXYudmE2YXZiNmGINmI2KfZhNmF2LTYsdmB2YjZhlxuVGltZTogNTowMA0KICBQTSBTYXVkaSBBcmFiaWEgdGltZSAoR01UKzMpXG5cblJlZ2lzdGVyOiBodHRwczovL2VsZWFybmluZy5jbGFzc2VyYS5jb20vDQogXG5UaGUgY291cnNlIGxpbmsgd2lsbCBiZSB1cGRhdGVkIG9uY2UgcmVnaXN0cmF0aW9uIG9wZW5zLlxu2LPZitiq2YUg2KrYrQ0KINiv2YrYqyDYsdin2KjYtyDYp9mE2K/ZiNix2Kkg2YHZiNixINmB2KrYrSDYp9mE2KrYs9is2YrZhC4NCkxPQ0FUSU9OOk9ubGluZSDigJQgQ2xhc3NlcmEgSW5ub3ZhdGlvbiBQbGF0Zm9ybSAvINi52YYg2KjZj9i52K8g4oCUINmF2YbYtQ0KINipINin2YTYpdio2K/Yp9i5INmF2YYg2YPZhNin2LPZitix2KcNClVSTDpodHRwczovL2VsZWFybmluZy5jbGFzc2VyYS5jb20vDQpDQVRFR09SSUVTOlByb2Zlc3Npb25hbCBEZXZlbG9wbWVudA0KU1RBVFVTOkNPTkZJUk1FRA0KVFJBTlNQOk9QQVFVRQ0KU0VRVUVOQ0U6MA0KQkVHSU46VkFMQVJNDQpUUklHR0VSOi1QMUQNCkFDVElPTjpESVNQTEFZDQpERVNDUklQVElPTjpUb21vcnJvdzogVGVjaG5vbG9neSBpbiBFZHVjYXRpb24gV2ViaW5hciBTZXJpZXMg4oCUIFNlc3Npb24gMg0KRU5EOlZBTEFSTQ0KQkVHSU46VkFMQVJNDQpUUklHR0VSOi1QVDE1TQ0KQUNUSU9OOkRJU1BMQVkNCkRFU0NSSVBUSU9OOlN0YXJ0aW5nIGluIDE1IG1pbnV0ZXM6IFRlY2hub2xvZ3kgaW4gRWR1Y2F0aW9uIFdlYmluYXIgU2VyaWVzIA0KIOKAlCBTZXNzaW9uIDINCkVORDpWQUxBUk0NCkVORDpWRVZFTlQNCkVORDpWQ0FMRU5EQVINCg==" download="ibdaa-session-04.ics"
+                 title="Add to calendar (.ics)" aria-label="Download this session as a calendar file"><svg><use href="#i-calplus"></use></svg></a>
+            </span>
             <span class="soon">
               <span lang="en">Course link will be updated soon</span><span lang="ar">سيتم تحديث رابط الدورة قريباً</span>
             </span>
@@ -555,7 +578,7 @@ html[data-lang="ar"] [lang="en"]{display:none !important}
         <div class="card">
           <div class="top">
             <span class="pill"><span lang="en">Intel® SFI</span><span lang="ar">Intel® SFI</span></span>
-            <span class="snum"><span lang="en">SESSION 06</span><span lang="ar">الجلسة 06</span></span>
+            <span class="snum"><span lang="en">SESSION 05</span><span lang="ar">الجلسة 05</span></span>
           </div>
           <h3>
             <a href="https://elearning.classera.com/" target="_blank" rel="noopener">
@@ -572,6 +595,12 @@ html[data-lang="ar"] [lang="en"]{display:none !important}
               <span lang="en">Register on the platform</span><span lang="ar">التسجيل عبر المنصة</span>
               <svg><use href="#i-arrow"></use></svg>
             </a>
+            <span class="calbtns">
+              <a class="calbtn" href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Intel%C2%AE+Skills+for+Innovation+%E2%80%94+AI+Professional+Development+for+Teachers+%282%29&dates=20261209T140000Z%2F20261209T151500Z&details=%E2%80%8FIntel%C2%AE+Skills+for+Innovation+%E2%80%94+%D8%A7%D9%84%D8%AA%D8%B7%D9%88%D9%8A%D8%B1+%D8%A7%D9%84%D9%85%D9%87%D9%86%D9%8A+%D9%81%D9%8A+%D8%A7%D9%84%D8%B0%D9%83%D8%A7%D8%A1+%D8%A7%D9%84%D8%A7%D8%B5%D8%B7%D9%86%D8%A7%D8%B9%D9%8A+%D9%84%D9%84%D9%85%D8%B9%D9%84%D9%85%D9%8A%D9%86+%282%29%0A%0AAudience%3A+Teachers+%2F+%D8%A7%D9%84%D9%85%D8%B9%D9%84%D9%85%D9%88%D9%86%0ARegister%3A+https%3A%2F%2Felearning.classera.com%2F%0AThe+course+link+will+be+updated+once+registration+opens.&location=Online+%E2%80%94+Classera+Innovation+Platform&ctz=Asia%2FRiyadh" target="_blank" rel="noopener"
+                 title="Add to Google Calendar" aria-label="Add to Google Calendar"><span class="g">G</span></a>
+              <a class="calbtn" href="data:text/calendar;charset=utf-8;base64,QkVHSU46VkNBTEVOREFSDQpWRVJTSU9OOjIuMA0KUFJPRElEOi0vL0NsYXNzZXJhLy9Jbm5vdmF0aW9uIFBsYXRmb3JtIFBEIFBsYW4gQVkyNi0yNy8vRU4NCkNBTFNDQUxFOkdSRUdPUklBTg0KTUVUSE9EOlBVQkxJU0gNClgtV1ItQ0FMTkFNRTpDbGFzc2VyYSBQRCBQbGFuIOKAlCBTZW1lc3RlciAxIEFZIDIwMjYtMjAyNw0KWC1XUi1USU1FWk9ORTpBc2lhL1JpeWFkaA0KQkVHSU46VlRJTUVaT05FDQpUWklEOkFzaWEvUml5YWRoDQpCRUdJTjpTVEFOREFSRA0KRFRTVEFSVDoxOTcwMDEwMVQwMDAwMDANClRaT0ZGU0VURlJPTTorMDMwMA0KVFpPRkZTRVRUTzorMDMwMA0KVFpOQU1FOiswMw0KRU5EOlNUQU5EQVJEDQpFTkQ6VlRJTUVaT05FDQpCRUdJTjpWRVZFTlQNClVJRDpheTI2MjctczA1QGliZGFhLmNsYXNzZXJhDQpEVFNUQU1QOjIwMjYwOTA3VDEyMjAwM1oNCkRUU1RBUlQ7VFpJRD1Bc2lhL1JpeWFkaDoyMDI2MTIwOVQxNzAwMDANCkRURU5EO1RaSUQ9QXNpYS9SaXlhZGg6MjAyNjEyMDlUMTgxNTAwDQpTVU1NQVJZOkludGVswq4gU2tpbGxzIGZvciBJbm5vdmF0aW9uIOKAlCBBSSBQcm9mZXNzaW9uYWwgRGV2ZWxvcG1lbnQgZm9yIFQNCiBlYWNoZXJzICgyKQ0KREVTQ1JJUFRJT046SW50ZWzCriBTa2lsbHMgZm9yIElubm92YXRpb24g4oCUIEFJIFByb2Zlc3Npb25hbCBEZXZlbG9wbWVudCBmDQogb3IgVGVhY2hlcnMgKDIpXG7igI9JbnRlbMKuIFNraWxscyBmb3IgSW5ub3ZhdGlvbiDigJQg2KfZhNiq2LfZiNmK2LEg2KfZhA0KINmF2YfZhtmKINmB2Yog2KfZhNiw2YPYp9ihINin2YTYp9i12LfZhtin2LnZiiDZhNmE2YXYudmE2YXZitmGICgyKVxuXG5BdWRpDQogZW5jZTogVGVhY2hlcnMgLyDYp9mE2YXYudmE2YXZiNmGXG5UaW1lOiA1OjAwIFBNIFNhdWRpIEFyYWJpYSB0aW1lIChHTVQrMykNCiBcblxuUmVnaXN0ZXI6IGh0dHBzOi8vZWxlYXJuaW5nLmNsYXNzZXJhLmNvbS9cblRoZSBjb3Vyc2UgbGluayB3aWxsIGJlIHVwZA0KIGF0ZWQgb25jZSByZWdpc3RyYXRpb24gb3BlbnMuXG7Ys9mK2KrZhSDYqtit2K/ZitirINix2KfYqNi3INin2YTYr9mI2LHYqSANCiDZgdmI2LEg2YHYqtitINin2YTYqtiz2KzZitmELg0KTE9DQVRJT046T25saW5lIOKAlCBDbGFzc2VyYSBJbm5vdmF0aW9uIFBsYXRmb3JtIC8g2LnZhiDYqNmP2LnYryDigJQg2YXZhti1DQog2Kkg2KfZhNil2KjYr9in2Lkg2YXZhiDZg9mE2KfYs9mK2LHYpw0KVVJMOmh0dHBzOi8vZWxlYXJuaW5nLmNsYXNzZXJhLmNvbS8NCkNBVEVHT1JJRVM6UHJvZmVzc2lvbmFsIERldmVsb3BtZW50DQpTVEFUVVM6Q09ORklSTUVEDQpUUkFOU1A6T1BBUVVFDQpTRVFVRU5DRTowDQpCRUdJTjpWQUxBUk0NClRSSUdHRVI6LVAxRA0KQUNUSU9OOkRJU1BMQVkNCkRFU0NSSVBUSU9OOlRvbW9ycm93OiBJbnRlbMKuIFNraWxscyBmb3IgSW5ub3ZhdGlvbiDigJQgQUkgUHJvZmVzc2lvbmFsIERldg0KIGVsb3BtZW50IGZvciBUZWFjaGVycyAoMikNCkVORDpWQUxBUk0NCkJFR0lOOlZBTEFSTQ0KVFJJR0dFUjotUFQxNU0NCkFDVElPTjpESVNQTEFZDQpERVNDUklQVElPTjpTdGFydGluZyBpbiAxNSBtaW51dGVzOiBJbnRlbMKuIFNraWxscyBmb3IgSW5ub3ZhdGlvbiDigJQgQUkgUHINCiBvZmVzc2lvbmFsIERldmVsb3BtZW50IGZvciBUZWFjaGVycyAoMikNCkVORDpWQUxBUk0NCkVORDpWRVZFTlQNCkVORDpWQ0FMRU5EQVINCg==" download="ibdaa-session-05.ics"
+                 title="Add to calendar (.ics)" aria-label="Download this session as a calendar file"><svg><use href="#i-calplus"></use></svg></a>
+            </span>
             <span class="soon">
               <span lang="en">Course link will be updated soon</span><span lang="ar">سيتم تحديث رابط الدورة قريباً</span>
             </span>
@@ -591,11 +620,11 @@ html[data-lang="ar"] [lang="en"]{display:none !important}
         <div class="card">
           <div class="top">
             <span class="pill"><span lang="en">EdTech Partner</span><span lang="ar">شريك تقني</span></span>
-            <span class="snum"><span lang="en">SESSION 07</span><span lang="ar">الجلسة 07</span></span>
+            <span class="snum"><span lang="en">SESSION 06</span><span lang="ar">الجلسة 06</span></span>
           </div>
           <h3>
             <a href="https://elearning.classera.com/" target="_blank" rel="noopener">
-              <span lang="en">Technology in Education Webinar Series — Session 4</span><span lang="ar">سلسلة تقنيات التعليم — الجلسة الرابعة</span>
+              <span lang="en">Technology in Education Webinar Series — Session 3</span><span lang="ar">سلسلة تقنيات التعليم — الجلسة الثالثة</span>
             </a>
           </h3>
           <div class="meta">
@@ -608,6 +637,12 @@ html[data-lang="ar"] [lang="en"]{display:none !important}
               <span lang="en">Register on the platform</span><span lang="ar">التسجيل عبر المنصة</span>
               <svg><use href="#i-arrow"></use></svg>
             </a>
+            <span class="calbtns">
+              <a class="calbtn" href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Technology+in+Education+Webinar+Series+%E2%80%94+Session+3&dates=20261223T140000Z%2F20261223T151500Z&details=%D8%B3%D9%84%D8%B3%D9%84%D8%A9+%D8%AA%D9%82%D9%86%D9%8A%D8%A7%D8%AA+%D8%A7%D9%84%D8%AA%D8%B9%D9%84%D9%8A%D9%85+%E2%80%94+%D8%A7%D9%84%D8%AC%D9%84%D8%B3%D8%A9+%D8%A7%D9%84%D8%AB%D8%A7%D9%84%D8%AB%D8%A9%0A%0AAudience%3A+Teachers+%26+Supervisors+%2F+%D8%A7%D9%84%D9%85%D8%B9%D9%84%D9%85%D9%88%D9%86+%D9%88%D8%A7%D9%84%D9%85%D8%B4%D8%B1%D9%81%D9%88%D9%86%0ARegister%3A+https%3A%2F%2Felearning.classera.com%2F%0AThe+course+link+will+be+updated+once+registration+opens.&location=Online+%E2%80%94+Classera+Innovation+Platform&ctz=Asia%2FRiyadh" target="_blank" rel="noopener"
+                 title="Add to Google Calendar" aria-label="Add to Google Calendar"><span class="g">G</span></a>
+              <a class="calbtn" href="data:text/calendar;charset=utf-8;base64,QkVHSU46VkNBTEVOREFSDQpWRVJTSU9OOjIuMA0KUFJPRElEOi0vL0NsYXNzZXJhLy9Jbm5vdmF0aW9uIFBsYXRmb3JtIFBEIFBsYW4gQVkyNi0yNy8vRU4NCkNBTFNDQUxFOkdSRUdPUklBTg0KTUVUSE9EOlBVQkxJU0gNClgtV1ItQ0FMTkFNRTpDbGFzc2VyYSBQRCBQbGFuIOKAlCBTZW1lc3RlciAxIEFZIDIwMjYtMjAyNw0KWC1XUi1USU1FWk9ORTpBc2lhL1JpeWFkaA0KQkVHSU46VlRJTUVaT05FDQpUWklEOkFzaWEvUml5YWRoDQpCRUdJTjpTVEFOREFSRA0KRFRTVEFSVDoxOTcwMDEwMVQwMDAwMDANClRaT0ZGU0VURlJPTTorMDMwMA0KVFpPRkZTRVRUTzorMDMwMA0KVFpOQU1FOiswMw0KRU5EOlNUQU5EQVJEDQpFTkQ6VlRJTUVaT05FDQpCRUdJTjpWRVZFTlQNClVJRDpheTI2MjctczA2QGliZGFhLmNsYXNzZXJhDQpEVFNUQU1QOjIwMjYwOTA3VDEyMjAwM1oNCkRUU1RBUlQ7VFpJRD1Bc2lhL1JpeWFkaDoyMDI2MTIyM1QxNzAwMDANCkRURU5EO1RaSUQ9QXNpYS9SaXlhZGg6MjAyNjEyMjNUMTgxNTAwDQpTVU1NQVJZOlRlY2hub2xvZ3kgaW4gRWR1Y2F0aW9uIFdlYmluYXIgU2VyaWVzIOKAlCBTZXNzaW9uIDMNCkRFU0NSSVBUSU9OOlRlY2hub2xvZ3kgaW4gRWR1Y2F0aW9uIFdlYmluYXIgU2VyaWVzIOKAlCBTZXNzaW9uIDNcbtiz2YTYs9mEDQog2Kkg2KrZgtmG2YrYp9iqINin2YTYqti52YTZitmFIOKAlCDYp9mE2KzZhNiz2Kkg2KfZhNir2KfZhNir2KlcblxuQXVkaWVuY2UNCiA6IFRlYWNoZXJzICYgU3VwZXJ2aXNvcnMgLyDYp9mE2YXYudmE2YXZiNmGINmI2KfZhNmF2LTYsdmB2YjZhlxuVGltZTogNTowMA0KICBQTSBTYXVkaSBBcmFiaWEgdGltZSAoR01UKzMpXG5cblJlZ2lzdGVyOiBodHRwczovL2VsZWFybmluZy5jbGFzc2VyYS5jb20vDQogXG5UaGUgY291cnNlIGxpbmsgd2lsbCBiZSB1cGRhdGVkIG9uY2UgcmVnaXN0cmF0aW9uIG9wZW5zLlxu2LPZitiq2YUg2KrYrQ0KINiv2YrYqyDYsdin2KjYtyDYp9mE2K/ZiNix2Kkg2YHZiNixINmB2KrYrSDYp9mE2KrYs9is2YrZhC4NCkxPQ0FUSU9OOk9ubGluZSDigJQgQ2xhc3NlcmEgSW5ub3ZhdGlvbiBQbGF0Zm9ybSAvINi52YYg2KjZj9i52K8g4oCUINmF2YbYtQ0KINipINin2YTYpdio2K/Yp9i5INmF2YYg2YPZhNin2LPZitix2KcNClVSTDpodHRwczovL2VsZWFybmluZy5jbGFzc2VyYS5jb20vDQpDQVRFR09SSUVTOlByb2Zlc3Npb25hbCBEZXZlbG9wbWVudA0KU1RBVFVTOkNPTkZJUk1FRA0KVFJBTlNQOk9QQVFVRQ0KU0VRVUVOQ0U6MA0KQkVHSU46VkFMQVJNDQpUUklHR0VSOi1QMUQNCkFDVElPTjpESVNQTEFZDQpERVNDUklQVElPTjpUb21vcnJvdzogVGVjaG5vbG9neSBpbiBFZHVjYXRpb24gV2ViaW5hciBTZXJpZXMg4oCUIFNlc3Npb24gMw0KRU5EOlZBTEFSTQ0KQkVHSU46VkFMQVJNDQpUUklHR0VSOi1QVDE1TQ0KQUNUSU9OOkRJU1BMQVkNCkRFU0NSSVBUSU9OOlN0YXJ0aW5nIGluIDE1IG1pbnV0ZXM6IFRlY2hub2xvZ3kgaW4gRWR1Y2F0aW9uIFdlYmluYXIgU2VyaWVzIA0KIOKAlCBTZXNzaW9uIDMNCkVORDpWQUxBUk0NCkVORDpWRVZFTlQNCkVORDpWQ0FMRU5EQVINCg==" download="ibdaa-session-06.ics"
+                 title="Add to calendar (.ics)" aria-label="Download this session as a calendar file"><svg><use href="#i-calplus"></use></svg></a>
+            </span>
             <span class="soon">
               <span lang="en">Course link will be updated soon</span><span lang="ar">سيتم تحديث رابط الدورة قريباً</span>
             </span>
