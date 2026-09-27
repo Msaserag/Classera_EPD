@@ -263,6 +263,8 @@ html[dir="rtl"] .vback svg{transform:scaleX(-1)}
   .prog:hover{transform:none}
 }
 </style>
+<!-- Interactive effects layer: remove these two lines to turn all effects off -->
+<link rel="stylesheet" href="assets/classera-fx-v1.css">
 </head>
 <body>
 
@@ -666,5 +668,6 @@ document.addEventListener('keydown',e=>{ if(e.key==='Escape' && current) documen
 
 applyTheme(); applyLang(); route();
 </script>
+<script src="assets/classera-fx-v1.js" defer></script>
 </body>
 </html>

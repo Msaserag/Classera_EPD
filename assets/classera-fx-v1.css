@@ -1,0 +1,105 @@
+/* =====================================================================
+   Classera Programs AY26-27 - Interactive effects layer (v1)
+   ---------------------------------------------------------------------
+   One shared file for every page. Safe to remove: delete the <link>
+   to this file and the <script> to classera-fx-v1.js and the pages
+   return to their original look. To switch single effects on or off,
+   edit the FX_CONFIG block at the top of classera-fx-v1.js.
+   ===================================================================== */
+
+:root{
+  --fx-cyan:#2FA9BC; --fx-gold:#F0AC3E; --fx-blue:#6E90E0; --fx-green:#4CC38A; --fx-violet:#B48AE8;
+  --fx-ease:cubic-bezier(.22,.8,.26,1);
+  --fx-glow:rgba(47,169,188,.16);
+}
+:root[data-theme="dark"]{ --fx-glow:rgba(84,198,216,.14) }
+
+/* 1. Scroll progress bar ------------------------------------------------ */
+.fx-progress{position:fixed;inset-inline:0;top:0;height:3px;z-index:9999;pointer-events:none;
+  background:linear-gradient(90deg,var(--fx-cyan),var(--fx-gold) 35%,var(--fx-blue) 68%,var(--fx-green));
+  transform:scaleX(var(--fx-p,0));transform-origin:0 50%;transition:transform .08s linear}
+[dir="rtl"] .fx-progress{transform-origin:100% 50%}
+
+/* 2. Reveal on scroll (uses the independent "translate" property so it
+      never fights the pages' own hover transforms) --------------------- */
+.fx-pre{opacity:0;translate:0 22px}
+.fx-in{opacity:1;translate:0 0;
+  transition:opacity .7s var(--fx-ease) var(--fx-d,0ms),translate .7s var(--fx-ease) var(--fx-d,0ms)}
+
+/* 3. Hero: drifting brand orbs + title shine ----------------------------- */
+.fx-hero{isolation:isolate}
+.fx-orbs{position:absolute;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
+.fx-orbs i{position:absolute;display:block;border-radius:50%;filter:blur(60px);opacity:.38;will-change:transform}
+.fx-orbs i:nth-child(1){width:340px;height:340px;background:var(--fx-cyan);top:-90px;inset-inline-start:8%;animation:fx-drift1 18s ease-in-out infinite alternate}
+.fx-orbs i:nth-child(2){width:260px;height:260px;background:var(--fx-gold);bottom:-110px;inset-inline-end:14%;opacity:.22;animation:fx-drift2 22s ease-in-out infinite alternate}
+.fx-orbs i:nth-child(3){width:220px;height:220px;background:var(--fx-blue);top:30%;inset-inline-end:-60px;opacity:.26;animation:fx-drift3 26s ease-in-out infinite alternate}
+@keyframes fx-drift1{to{transform:translate(120px,70px) scale(1.15)}}
+@keyframes fx-drift2{to{transform:translate(-140px,-60px) scale(.9)}}
+@keyframes fx-drift3{to{transform:translate(-90px,90px) scale(1.2)}}
+.fx-orbs{translate:var(--fx-px,0) var(--fx-py,0);transition:translate .6s var(--fx-ease)}
+
+.fx-shine{background-image:linear-gradient(100deg,currentColor 0 40%,#FFE2A8 50%,currentColor 60% 100%);
+  background-size:260% 100%;background-position:100% 0;-webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;animation:fx-shine 2.4s .5s var(--fx-ease) both}
+@keyframes fx-shine{to{background-position:0 0}}
+
+/* 4. Cursor spotlight on cards (desktop mouse only) ---------------------- */
+.fx-glow{position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:0;opacity:0;
+  background:radial-gradient(420px circle at var(--fx-x,50%) var(--fx-y,50%),var(--fx-glow),transparent 45%);
+  transition:opacity .3s}
+.fx-spot:hover > .fx-glow{opacity:1}
+.fx-spot{--fx-ring:transparent}
+.fx-tilt{transition:transform .25s var(--fx-ease),box-shadow .25s!important;transform-style:preserve-3d;will-change:transform}
+
+/* 5. Click ripple on buttons -------------------------------------------- */
+.fx-ripple-host{position:relative;overflow:hidden}
+.fx-ripple{position:absolute;border-radius:50%;pointer-events:none;background:currentColor;opacity:.28;
+  transform:scale(0);animation:fx-ripple .6s var(--fx-ease) forwards}
+@keyframes fx-ripple{to{transform:scale(1);opacity:0}}
+
+/* 6. Arrow nudge + button lift ------------------------------------------ */
+a:hover > svg.arr, button:hover > svg.arr{translate:4px 0;transition:translate .25s var(--fx-ease)}
+[dir="rtl"] a:hover > svg.arr, [dir="rtl"] button:hover > svg.arr{translate:-4px 0}
+svg.arr{transition:translate .25s var(--fx-ease)}
+
+/* 7. Counters: keep digits steady while they count ----------------------- */
+.fx-count{font-variant-numeric:tabular-nums}
+
+/* 8. Back to top --------------------------------------------------------- */
+.fx-top{position:fixed;bottom:22px;inset-inline-end:22px;z-index:9000;width:46px;height:46px;border-radius:50%;
+  border:1px solid rgba(255,255,255,.18);background:#0E3350;color:#fff;cursor:pointer;display:grid;place-items:center;
+  box-shadow:0 10px 26px -10px rgba(14,51,80,.6);opacity:0;translate:0 14px;pointer-events:none;
+  transition:opacity .3s,translate .3s var(--fx-ease),background .2s}
+.fx-top.on{opacity:1;translate:0 0;pointer-events:auto}
+.fx-top:hover{background:#2FA9BC}
+.fx-top svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+:root[data-theme="dark"] .fx-top{background:#2FA9BC;color:#06202D}
+.fx-top:focus-visible{outline:2.5px solid var(--fx-gold);outline-offset:3px}
+
+/* 9. Theme button spin -------------------------------------------------- */
+.fx-spin svg{animation:fx-spin .5s var(--fx-ease)}
+@keyframes fx-spin{from{transform:rotate(-120deg) scale(.6);opacity:.2}}
+
+/* 10. Hub: plan frames slide in when opened ------------------------------ */
+.vstage iframe.on{animation:fx-frame .45s var(--fx-ease)}
+@keyframes fx-frame{from{opacity:0;translate:0 16px}}
+
+/* 11. Live "pulse" dots get a soft halo --------------------------------- */
+.pulse{box-shadow:0 0 0 0 rgba(76,195,138,.55);animation:fx-halo 2s infinite}
+@keyframes fx-halo{70%{box-shadow:0 0 0 10px rgba(76,195,138,0)}100%{box-shadow:0 0 0 0 rgba(76,195,138,0)}}
+
+/* Accessibility: respect reduced-motion settings ------------------------- */
+@media (prefers-reduced-motion: reduce){
+  .fx-pre{opacity:1;translate:none}
+  .fx-orbs i,.fx-shine,.pulse,.vstage iframe.on,.fx-spin svg{animation:none!important}
+  .fx-shine{-webkit-text-fill-color:currentColor;background:none}
+  .fx-tilt{transform:none!important}
+}
+
+/* Print / PDF: show everything, no decorations -------------------------- */
+@media print{
+  .fx-pre{opacity:1!important;translate:none!important}
+  .fx-progress,.fx-top,.fx-orbs,.fx-glow,.fx-ripple{display:none!important}
+  .fx-shine{-webkit-text-fill-color:currentColor!important;background:none!important;animation:none!important}
+  .fx-tilt{transform:none!important}
+}

@@ -159,6 +159,8 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
   footer{margin-top:8px;padding:6px 0;font-size:8px}
 }
 </style>
+<!-- Interactive effects layer: remove these two lines to turn all effects off -->
+<link rel="stylesheet" href="../assets/classera-fx-v1.css">
 </head>
 <body>
 
@@ -364,5 +366,6 @@ $('#printBtn').addEventListener('click',()=>{
 const qs=new URLSearchParams(location.search);if(qs.get('lang')==='en'||qs.get('lang')==='ar')lang=qs.get('lang');
 applyTheme();render();
 </script>
+<script src="../assets/classera-fx-v1.js" defer></script>
 </body>
 </html>
