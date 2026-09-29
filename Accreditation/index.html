@@ -230,6 +230,19 @@ footer a{color:var(--cyan-deep);text-decoration:none;font-weight:600}
 .rn-card.t2{--tone:var(--blue);--tone-soft:var(--blue-soft)}
 .rn-card.t3{--tone:var(--gold);--tone-soft:var(--gold-soft)}
 .rn-card.t4{--tone:var(--green);--tone-soft:var(--green-soft)}
+.rn-card.intel{--tone:#0068B5;--tone-soft:#E3EEF9}
+:root[data-theme="dark"] .rn-card.intel{--tone:#5AA9EE;--tone-soft:#0F2A45}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .rn-card.intel{--tone:#5AA9EE;--tone-soft:#0F2A45}}
+.rn-card.intel .rn-top{display:inline-block;margin-top:4px;font-size:10.5px;font-weight:700;letter-spacing:.04em;color:var(--tone);background:var(--tone-soft);border-radius:999px;padding:2px 9px}
+.rn-intel{margin-top:18px;display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:start;background:var(--surface);border:1px solid var(--line);border-inline-start:5px solid #0068B5;border-radius:var(--r);padding:16px 20px;box-shadow:var(--shadow)}
+.rn-intel svg{width:24px;height:24px;stroke:#0068B5;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;margin-top:2px}
+:root[data-theme="dark"] .rn-intel svg{stroke:#5AA9EE}
+.rn-intel > div > b{display:block;font-family:var(--f-display);font-size:15px;color:var(--ink);margin-bottom:4px}
+.rn-intel p{margin:0;font-size:14px;color:var(--ink-2);line-height:1.7}
+.rn-intel ul{margin:8px 0 0;padding-inline-start:18px;font-size:14px;color:var(--ink-2);line-height:1.7}
+html[data-lang="ar"] .rn-table td.num{text-align:right}
+.rn-table td.hl,.rn-table th.hl{background:rgba(0,104,181,.07)}
+@media print{.rn-intel{box-shadow:none;page-break-inside:avoid}}
 .rn-card::before{content:"";display:block;height:4px;background:var(--tone)}
 .rn-ch{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 18px 12px;border-bottom:1px solid var(--line-2)}
 .rn-lv{display:flex;align-items:center;gap:10px;min-width:0}
@@ -475,6 +488,18 @@ html[data-lang="ar"] .rn-table thead th{letter-spacing:0;text-transform:none;fon
       </div>
     </div>
 
+    <div class="rn-intel">
+      <svg viewBox="0 0 24 24"><path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.4 6.8 19.1l1-5.8L3.5 9.2l5.9-.9z"/></svg>
+      <div><b><span data-ar>معايير الشراكة مع إنتل (Intel SFI)</span><span data-en>Intel SFI partnership criteria</span></b>
+        <p><span data-ar>تضيف الشراكة مع إنتل طبقة أعلى للتقييم: تأهيل المعلمين وفق إطار Intel® Skills for Innovation، وجاهزية البنية التقنية داخل المدرسة.</span><span data-en>The Intel partnership adds a higher layer of assessment: teacher qualification on the Intel® Skills for Innovation framework, and the school's technical readiness.</span></p>
+        <ul>
+          <li><span data-ar><b>للمعلم:</b> ساعات تدريب مسار Intel SFI PD على منصة الإبداع تُحتسب ضمن ساعات الاعتماد، وعند إكمال المستوى التالي تصدر شهادة مشتركة من كلاسيرا وإنتل.</span><span data-en><b>Teachers:</b> Intel SFI PD hours on the Innovation Platform count toward accreditation hours; completing the next level issues a joint Classera &amp; Intel certificate.</span></li>
+          <li><span data-ar><b>للمدرسة:</b> شهادات Intel SFI شرط للفئتين الذهبية والماسية، والفئة الرابعة <b>مدرسة Intel SFI المعتمدة</b> = معايير الماسية + 10 معلمين بالمستوى الثاني + <span class="ltr">30</span> جهازاً بمعالج Intel® Core.</span><span data-en><b>Schools:</b> Intel SFI certificates are required for Gold and Diamond, and the fourth tier, <b>Intel SFI Certified School</b> = Diamond criteria + 10 teachers at Level 2 + 30 Intel® Core devices.</span></li>
+          <li><span data-ar><b>ندوات Intel SFI هذا العام:</b> 14 أكتوبر و9 ديسمبر 2026، و17 مارس 2027، دون أي تكلفة إضافية.</span><span data-en><b>Intel SFI webinars this year:</b> 14 Oct and 9 Dec 2026, and 17 Mar 2027, at no extra cost.</span></li>
+        </ul>
+      </div>
+    </div>
+
     <div class="rn-tabs" role="tablist" aria-label="Renewal categories">
       <button type="button" class="rn-tab" role="tab" data-rn="teacher" aria-selected="true" aria-controls="rnp-teacher" id="rnt-teacher">
         <svg viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M7 9.5V15c0 1.7 2.2 3 5 3s5-1.3 5-3V9.5"/></svg>
@@ -577,7 +602,7 @@ html[data-lang="ar"] .rn-table thead th{letter-spacing:0;text-transform:none;fon
 
     <!-- schools -->
     <div class="rn-panel" id="rnp-school" role="tabpanel" aria-labelledby="rnt-school" data-rnp="school" hidden>
-      <div class="rn-grid three">
+      <div class="rn-grid">
 
         <article class="rn-card t2">
           <div class="rn-ch">
@@ -623,6 +648,46 @@ html[data-lang="ar"] .rn-table thead th{letter-spacing:0;text-transform:none;fon
           </ul>
         </article>
 
+        <article class="rn-card intel">
+          <div class="rn-ch">
+            <div class="rn-lv"><span class="rn-n">4</span>
+              <h3><span data-ar>مدرسة Intel SFI المعتمدة</span><span data-en>Intel SFI Certified School</span><small><span data-ar>الفئة الأعلى · جديد</span><span data-en>Top tier · New</span></small></h3></div>
+            <span class="rn-pass review"><b><span data-ar>مراجعة شواهد</span><span data-en>Evidence review</span></b></span>
+          </div>
+          <ul class="rn-req">
+            <li><span data-ar>استيفاء معايير <b>الفئة الماسية</b> كاملة: <b><span class="ltr">50%</span></b> من المعلمين بفئة المتقدم و<b><span class="ltr">15%</span></b> بفئة الخبير.</span><span data-en>Meets every <b>Diamond</b> criterion: <b>50%</b> of teachers at Advanced level and <b>15%</b> at Expert level.</span></li>
+            <li><span data-ar>تقرير نسب الدخول: المعلم/الطالب <b><span class="ltr">90%</span></b> · أولياء الأمور <b><span class="ltr">40%</span></b> · نسبة التفاعل معلم/طالب <b><span class="ltr">50%</span></b>.</span><span data-en>Login report: teacher/student <b>90%</b> · parents <b>40%</b> · teacher/student engagement <b>50%</b>.</span></li>
+            <li><span data-ar>تقرير حضور الطلاب لفعاليات البرامج الإثرائية: <b><span class="ltr">20%</span></b> من الطلاب.</span><span data-en>Enrichment program attendance report: <b>20%</b> of students.</span></li>
+            <li><span data-ar><b>معيار التعلم:</b> <b>10 معلمين</b> على الأقل لديهم تقدّم فعّال في برنامج Intel SFI PD وأتمّوا <b>المستوى الثاني</b> أو أعلى.</span><span data-en><b>Learning criterion:</b> at least <b>10 teachers</b> actively progressing in the Intel SFI PD program who completed <b>PD Level 2</b> or higher.</span></li>
+            <li><span data-ar><b>معيار الجاهزية التقنية:</b> <b><span class="ltr">30</span> جهازاً</b> على الأقل بمعالج Intel® Core داخل المدرسة (معامل الحاسب، أجهزة المعلمين، أجهزة الطلاب في الفصول).</span><span data-en><b>Tech-readiness criterion:</b> at least <b>30 Intel® Core devices</b> in the school (computer labs, teacher devices, student classroom devices).</span></li>
+            <li><span data-ar>قصة نجاح للمدرسة — رابط فيديو قصير وحديث.<em>تُمنح المدرسة شهادة تقدير مشتركة من كلاسيرا وإنتل.</em></span><span data-en>A school success story — a link to a recent short video.<em>The school receives a joint Classera &amp; Intel certificate of recognition.</em></span></li>
+          </ul>
+        </article>
+
+      </div>
+
+      <div class="rn-tablewrap">
+        <table class="rn-table">
+          <caption><span data-ar>مقارنة سريعة بين فئات المدارس</span><span data-en>School tiers at a glance</span></caption>
+          <thead>
+            <tr>
+              <th scope="col"><span data-ar>المعيار</span><span data-en>Criterion</span></th>
+              <th scope="col"><span data-ar>الفضية</span><span data-en>Silver</span></th>
+              <th scope="col"><span data-ar>الذهبية</span><span data-en>Gold</span></th>
+              <th scope="col"><span data-ar>الماسية</span><span data-en>Diamond</span></th>
+              <th scope="col" class="hl"><span data-ar>معتمدة من إنتل</span><span data-en>Intel SFI Certified</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row"><span data-ar>اعتماد المعلمين</span><span data-en>Teacher accreditation</span></th><td><span data-ar><span class="ltr">90%</span> مستخدم</span><span data-en>90% User</span></td><td><span data-ar><span class="ltr">50%</span> ممارس + <span class="ltr">15%</span> متقدم</span><span data-en>50% Practitioner + 15% Advanced</span></td><td><span data-ar><span class="ltr">50%</span> متقدم + <span class="ltr">15%</span> خبير</span><span data-en>50% Advanced + 15% Expert</span></td><td class="hl"><span data-ar><span class="ltr">50%</span> متقدم + <span class="ltr">15%</span> خبير</span><span data-en>50% Advanced + 15% Expert</span></td></tr>
+            <tr><th scope="row"><span data-ar>دخول المعلم/الطالب</span><span data-en>Teacher/student login</span></th><td class="num">70%</td><td class="num">80%</td><td class="num">90%</td><td class="num hl">90%</td></tr>
+            <tr><th scope="row"><span data-ar>دخول أولياء الأمور</span><span data-en>Parent login</span></th><td class="num">15%</td><td class="num">30%</td><td class="num">40%</td><td class="num hl">40%</td></tr>
+            <tr><th scope="row"><span data-ar>التفاعل معلم/طالب</span><span data-en>Teacher/student engagement</span></th><td class="num">30%</td><td class="num">40%</td><td class="num">50%</td><td class="num hl">50%</td></tr>
+            <tr><th scope="row"><span data-ar>حضور البرامج الإثرائية</span><span data-en>Enrichment attendance</span></th><td class="num">10%</td><td class="num">15%</td><td class="num">20%</td><td class="num hl">20%</td></tr>
+            <tr><th scope="row"><span data-ar>معلمو Intel SFI PD</span><span data-en>Intel SFI PD teachers</span></th><td>—</td><td><span data-ar>5 معلمين · المستوى 1</span><span data-en>5 teachers · Level 1</span></td><td><span data-ar>10 معلمين · المستوى 2</span><span data-en>10 teachers · Level 2</span></td><td class="hl"><span data-ar>10 معلمين · المستوى 2 أو أعلى</span><span data-en>10 teachers · Level 2+</span></td></tr>
+            <tr><th scope="row"><span data-ar>أجهزة بمعالج Intel® Core</span><span data-en>Intel® Core devices</span></th><td>—</td><td>—</td><td>—</td><td class="num hl">30+</td></tr>
+          </tbody>
+        </table>
       </div>
     </div>
 
