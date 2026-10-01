@@ -29,15 +29,19 @@ const FX_CONFIG = {
   const isHub = !!doc.getElementById('viewer');
   const safe = fn => { try{ fn() }catch(e){ console && console.warn && console.warn('[classera-fx]', e) } };
 
+  /* Page extras: a page can add its own selectors before loading this file,
+     e.g. window.FX_EXTRA = { reveal:'.kpi', spot:'.kpi', ripple:'.step', count:'.kpi .val', hero:'.band' } */
+  const X = window.FX_EXTRA || {};
+  const more = k => X[k] ? ',' + X[k] : '';
   const REVEAL_SEL = [
     '.prog','.calband',                                   // hub
     'article.item','.statstrip .st','.stats .stat',       // eLearning / Enrichment
     'article.ev','.month > .mm',                          // Product / In-person events
     '.rn-card','.step','.status','.box',                  // Accreditation
     '.shead','.sect','.mo','.legend'                      // shared headers, calendar
-  ].join(',');
-  const SPOT_SEL = '.prog, .card, .ev, .rn-card, .stat, .st, .step, .calband';
-  const RIPPLE_SEL = '.btn, .cta, .abtn, .calbtn, .fbtn, .track, .rn-tab, .vtab, .vback, .printbtn, .rn-jump, .langtoggle button';
+  ].join(',') + more('reveal');
+  const SPOT_SEL = '.prog, .card, .ev, .rn-card, .stat, .st, .step, .calband' + more('spot');
+  const RIPPLE_SEL = '.btn, .cta, .abtn, .calbtn, .fbtn, .track, .rn-tab, .vtab, .vback, .printbtn, .rn-jump, .langtoggle button' + more('ripple');
 
   /* 1. Progress bar ---------------------------------------------------- */
   if(C.progressBar) safe(()=>{
@@ -70,13 +74,13 @@ const FX_CONFIG = {
     const dur = Math.min(1800, 700 + Math.log10(target+1)*300), t0 = performance.now();
     const step = now => {
       if(!el.isConnected) return;
-      const p = Math.min(1,(now-t0)/dur), e = 1-Math.pow(1-p,3);
+      const p = Math.max(0, Math.min(1,(now-t0)/dur)), e = 1-Math.pow(1-p,3);
       el.textContent = fmt(target*e);
       if(p<1) requestAnimationFrame(step); else el.textContent = txt;
     };
     el.textContent = fmt(0); requestAnimationFrame(step);
   }
-  const COUNT_SEL = '.statstrip .st > b, .stats .stat > b';
+  const COUNT_SEL = '.statstrip .st > b, .stats .stat > b' + more('count');
 
   if((C.reveal || C.counters) && 'IntersectionObserver' in window && !reduced) safe(()=>{
     const seen = new WeakSet();
@@ -113,7 +117,7 @@ const FX_CONFIG = {
 
   /* 3. Hero orbs, parallax and title shine ----------------------------- */
   safe(()=>{
-    const hero = doc.querySelector('.hero'); if(!hero) return;
+    const hero = doc.querySelector(X.hero || '.hero'); if(!hero) return;
     if(C.heroOrbs && !reduced){
       hero.classList.add('fx-hero');
       const o = doc.createElement('div'); o.className='fx-orbs'; o.setAttribute('aria-hidden','true');

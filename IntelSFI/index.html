@@ -181,7 +181,20 @@ td .sub{display:block;text-align:left;font-size:11.5px;color:var(--muted);max-wi
 footer{color:var(--muted);font-size:12px;padding-block:0 30px}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+#toggle-manage[hidden]{display:none!important}
+.kpi > :not(.fx-glow){position:relative;z-index:1}
+/* Print / Save as PDF: the current filtered view, without controls */
+@media print{
+  @page{size:A4 landscape;margin:10mm}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  #manage,#banner,#toggle-manage,#print-pdf,#reset,.fx-top,.fx-progress{display:none!important}
+  .rail{position:static!important;box-shadow:none!important}
+  .kpi,.card,.step{break-inside:avoid}
+  .sec-h p{display:none}
+}
 </style>
+<script>window.FX_EXTRA={reveal:'.kpi, .card', spot:'.kpi', ripple:'.step, .seg button', count:'.kpi .val', hero:'.band'};</script>
+<link rel="stylesheet" href="../assets/classera-fx-v1.css">
 
 <header class="band">
   <div class="wrap">
@@ -211,7 +224,9 @@ footer{color:var(--muted);font-size:12px;padding-block:0 30px}
     <div class="fld"><label for="f-to">To</label><select id="f-to"></select></div>
     <button class="btn" id="reset" type="button">Reset filters</button>
     <div class="spacer"></div>
-    <button class="btn primary" id="toggle-manage" type="button" aria-expanded="false">
+    <button class="btn" id="print-pdf" type="button" title="Print or save the current view as PDF">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9V3h12v6M6 18H4a1 1 0 0 1-1-1v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6a1 1 0 0 1-1 1h-2"/><rect x="6" y="14" width="12" height="7"/></svg>Print / PDF</button>
+    <button class="btn primary" id="toggle-manage" type="button" aria-expanded="false" hidden>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"/></svg>Update data</button>
     <div class="chips" id="chips"></div>
   </div>
@@ -741,4 +756,12 @@ boot();
 })();
 </script>
 
+<script>
+/* Update data is for the dashboard owner: open the page with ?admin at the end of the address to show it */
+(function(){
+  if(/[?&#]admin\b/i.test(location.search+location.hash)) document.getElementById('toggle-manage').hidden=false;
+  document.getElementById('print-pdf').addEventListener('click',function(){ window.print() });
+})();
+</script>
+<script src="../assets/classera-fx-v1.js" defer></script>
 </body></html>
