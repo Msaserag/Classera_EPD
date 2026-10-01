@@ -219,23 +219,13 @@ footer{color:var(--muted);font-size:12px;padding-block:0 30px}
 
 <main>
   <div class="wrap">
-    <section id="manage" class="manage" hidden aria-label="Update data and logos">
+    <section id="manage" class="manage" hidden aria-label="Update data">
       <h3>Update the dashboard</h3>
       <div class="manage-grid">
         <div class="drop" id="drop-xlsx">
           <strong>Enrollment export (.xlsx / .csv)</strong>
           <p>Upload the latest Classera SFI export. The sheet needs these columns: Course Title, Name, classera school group, Classera school country, Classera school, Certificates, Enrollment Date. Drag the file here or choose it.</p>
           <input type="file" id="file-xlsx" accept=".xlsx,.xls,.xlsm,.csv">
-        </div>
-        <div class="drop" id="drop-sfi">
-          <strong>SFI logo</strong>
-          <p>PNG or SVG, transparent background works best.</p>
-          <input type="file" id="file-sfi" accept="image/png,image/svg+xml,image/jpeg,image/webp">
-        </div>
-        <div class="drop" id="drop-intel">
-          <strong>Intel logo</strong>
-          <p>PNG or SVG, transparent background works best.</p>
-          <input type="file" id="file-intel" accept="image/png,image/svg+xml,image/jpeg,image/webp">
         </div>
       </div>
     </section>
@@ -704,8 +694,6 @@ function logoFlow(k,label){
     wireSave();
   };
 }
-wireDrop($('drop-sfi'),$('file-sfi'),logoFlow('sfi','SFI'));
-wireDrop($('drop-intel'),$('file-intel'),logoFlow('intel','Intel'));
 function wireSave(){
   $('b-discard').onclick=()=>{if(savedD){D=savedD;savedD=null;}pending=null;load();banner('');};
   $('b-save').onclick=save;

@@ -49,6 +49,7 @@ fell back.
 | Modules / Minutes | The two chips on the card, and the total shown above the track list |
 | **Course Link** | The **Start track** button. Paste a full URL or a `sh.classera.com` short link |
 | **Manual Link** | The **Read the manual** button. Leave empty and the button is hidden |
+| **Plan Link** | Optional **View the plan** button, for example `https://plans.classera.com/#acc` on the accreditation tracks. Leave empty and the button is hidden |
 | Status | `Live`, `Coming soon` (button disabled) or `Hidden` (row removed) |
 
 ### Summary sheet
