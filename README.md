@@ -47,3 +47,14 @@ If the Excel file is missing or cannot be read, every page shows its built-in co
 
 Everything in `events-tracker.xlsx` is public: anyone can download it from the site, including owners, notes and
 attendance figures. Keep anything confidential out of the file you upload.
+
+---
+
+## Intel SFI dashboard (/IntelSFI/)
+
+`IntelSFI/index.html` is a self-contained dashboard (data embedded, no participant names). To refresh it:
+
+1. Open https://plans.classera.com/IntelSFI/ and click **Update data**.
+2. Upload the latest Classera SFI enrollment export (.xlsx) and check the preview.
+3. Click **Download updated dashboard** (saves `index.html`).
+4. On GitHub, open the **IntelSFI** folder, click **Add file > Upload files**, drop in `index.html` and commit.
