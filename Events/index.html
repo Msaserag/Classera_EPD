@@ -1,0 +1,791 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Events Dashboard | Classera AY26-27</title>
+<meta name="description" content="AY26-27 Classera programs events dashboard, live from the events tracker.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='4' width='56' height='56' rx='14' fill='%230E3350'/%3E%3Crect x='14' y='14' width='16' height='16' rx='3' fill='%232FA9BC'/%3E%3Crect x='34' y='14' width='16' height='16' rx='3' fill='%23D68A21'/%3E%3Crect x='14' y='34' width='16' height='16' rx='3' fill='%236E90E0'/%3E%3Crect x='34' y='34' width='16' height='16' rx='3' fill='%234CC38A'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Sora:wght@500;600;700&display=swap">
+<style>
+/* Layout: navy band -> sticky filter rail -> headline KPIs -> next-up countdowns -> trend -> breakdowns -> outcomes -> event list */
+:root{
+  --bg:#EEF3F8; --surface:#FFFFFF; --surface-2:#F3F7FA; --ink:#0B2236; --ink-2:#3E5468; --muted:#66798C; --line:#D9E3EC;
+  --accent:#1D7F92; --accent-soft:#E2F2F5; --on-accent:#FFFFFF; --bar:#2A78D6;
+  --navy:#0E3350; --navy-2:#13466B; --cyan:#2FA9BC; --gold:#F0AC3E;
+  --p1:#2a78d6; --p2:#eb6834; --p3:#1baf7a; --p4:#eda100; --p5:#e87ba4; --p6:#008300; --p7:#4a3aa7; --p8:#e34948; --pother:#8A97A5;
+  --good:#1E8A4C; --warn:#B26A00; --crit:#C0392B;
+  --grid:rgba(11,34,54,.08);
+  --shadow:0 1px 2px rgba(11,34,54,.06),0 4px 16px rgba(11,34,54,.05);
+  --f-display:"Sora","Segoe UI",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans","Segoe UI",Tahoma,system-ui,sans-serif;
+  --r:12px;
+}
+@media (prefers-color-scheme: dark){:root:where(:not([data-theme="light"])){
+  --bg:#071420; --surface:#0E1E2E; --surface-2:#13273A; --ink:#E6EEF5; --ink-2:#AFC0D0; --muted:#8397AA; --line:#21384D;
+  --accent:#4CC0D2; --accent-soft:#123545; --on-accent:#04161F; --bar:#3987e5;
+  --p1:#3987e5; --p2:#d95926; --p3:#199e70; --p4:#c98500; --p5:#d55181; --p6:#008300; --p7:#9085e9; --p8:#e66767; --pother:#6E7E8E;
+  --good:#3FBF7A; --warn:#E0A030; --crit:#E66767;
+  --grid:rgba(230,238,245,.08); --shadow:0 1px 2px rgba(0,0,0,.3); color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#071420; --surface:#0E1E2E; --surface-2:#13273A; --ink:#E6EEF5; --ink-2:#AFC0D0; --muted:#8397AA; --line:#21384D;
+  --accent:#4CC0D2; --accent-soft:#123545; --on-accent:#04161F; --bar:#3987e5;
+  --p1:#3987e5; --p2:#d95926; --p3:#199e70; --p4:#c98500; --p5:#d55181; --p6:#008300; --p7:#9085e9; --p8:#e66767; --pother:#6E7E8E;
+  --good:#3FBF7A; --warn:#E0A030; --crit:#E66767;
+  --grid:rgba(230,238,245,.08); --shadow:0 1px 2px rgba(0,0,0,.3); color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:14px;line-height:1.5;margin:0}
+.wrap{max-width:1320px;margin:0 auto;padding-inline:clamp(16px,3vw,32px)}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0}
+button,select,input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+a{color:var(--accent)}
+
+/* Band */
+.band{background:linear-gradient(118deg,var(--navy) 0%,var(--navy) 40%,var(--navy-2) 100%);color:#fff;position:relative;overflow:hidden}
+.band::before{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.14) 1px,transparent 1.2px);background-size:18px 18px;mask-image:linear-gradient(90deg,transparent 35%,#000 100%);-webkit-mask-image:linear-gradient(90deg,transparent 35%,#000 100%);pointer-events:none}
+.band .wrap{position:relative;z-index:1;padding-block:20px 26px;display:grid;gap:18px}
+.band-top{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;justify-content:space-between}
+.brand{display:flex;align-items:center;gap:14px}
+.brand img{height:40px;width:auto;display:block}
+.brand .unit{border-left:1px solid rgba(255,255,255,.25);padding-left:14px;font-size:12.5px;line-height:1.3;color:rgba(255,255,255,.8)}
+.top-acts{display:flex;align-items:center;gap:8px}
+.iconbtn{width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.06);color:#fff;display:grid;place-items:center;cursor:pointer}
+.iconbtn svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.iconbtn .moon{display:none}
+:root[data-theme="dark"] .iconbtn .moon{display:block}:root[data-theme="dark"] .iconbtn .sun{display:none}
+.eyebrow{font:600 12px/1 var(--f-body);letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+.title-block{display:grid;gap:8px}
+.title-block h1{font-size:clamp(26px,3.6vw,40px);font-weight:700;letter-spacing:-.01em;line-height:1.1}
+.title-block p{margin:0;color:rgba(255,255,255,.85);max-width:72ch}
+.src{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;color:rgba(255,255,255,.85);background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);border-radius:999px;padding:5px 12px;width:max-content;max-width:100%}
+.src i{width:8px;height:8px;border-radius:50%;background:#9AA9B7;flex:none}
+.src.live i{background:#4CC38A}
+.src b{color:#fff;font-weight:600}
+
+/* Filter rail */
+.rail{position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--surface) 93%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.rail .wrap{display:flex;flex-wrap:wrap;align-items:end;gap:10px 12px;padding-block:10px}
+.fld{display:grid;gap:3px;min-width:0}
+.fld label{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.fld select{appearance:none;background:var(--surface-2) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%2366798C'/%3E%3C/svg%3E") no-repeat right 10px center;border:1px solid var(--line);border-radius:8px;padding:7px 28px 7px 10px;min-width:118px;max-width:220px;color:var(--ink);cursor:pointer}
+.fld select.on{border-color:var(--accent);background-color:var(--accent-soft)}
+.rail .spacer{flex:1}
+.btn{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;padding:7px 12px;cursor:pointer;font-weight:500;white-space:nowrap;text-decoration:none}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn svg{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.chips{display:flex;flex-wrap:wrap;gap:6px;width:100%}
+.chips:empty{display:none}
+.chip{display:inline-flex;align-items:center;gap:6px;background:var(--accent-soft);color:var(--ink);border-radius:999px;padding:3px 7px 3px 10px;font-size:12.5px;border:0;cursor:pointer}
+.chip span{opacity:.6;font-size:15px;line-height:1}
+.banner{border-radius:var(--r);padding:11px 14px;border:1px solid var(--warn);background:color-mix(in srgb,var(--warn) 10%,var(--surface));font-size:13px}
+
+/* Sections */
+main .wrap{display:grid;gap:22px;padding-block:22px 40px}
+.sec-h{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 16px;margin-bottom:12px}
+.sec-h h2{font-size:18px;font-weight:600}
+.sec-h p{margin:0;color:var(--muted);font-size:13px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px;box-shadow:var(--shadow);min-width:0}
+.card > :not(.fx-glow), .kpi > :not(.fx-glow), .nx > :not(.fx-glow){position:relative;z-index:1}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,460px),1fr));gap:22px}
+.cap{font-size:12px;color:var(--muted);margin:10px 0 0}
+
+/* KPIs */
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+@media (max-width:900px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;display:grid;gap:4px;align-content:start;box-shadow:var(--shadow)}
+.kpi .lbl{font-size:12px;color:var(--muted);font-weight:500}
+.kpi .val{font:600 clamp(22px,2.6vw,30px)/1.1 var(--f-display);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.kpi .val.na{color:var(--muted)}
+.kpi .sub{font-size:12px;color:var(--ink-2)}
+.kpi.hero{background:linear-gradient(140deg,var(--navy),var(--navy-2));border-color:transparent;color:#fff}
+.kpi.hero .lbl,.kpi.hero .sub{color:rgba(255,255,255,.8)}
+.meter{height:6px;border-radius:3px;background:var(--surface-2);overflow:hidden;margin-top:4px}
+.meter i{display:block;height:100%;background:var(--accent);border-radius:3px;transition:width .6s}
+
+/* Next up */
+.nxgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,236px),1fr));gap:12px}
+.nx{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px 14px 18px;display:grid;gap:8px;align-content:start;position:relative;overflow:hidden;box-shadow:var(--shadow)}
+.nx::before{content:"";position:absolute;inset-block:0;left:0;width:5px;background:var(--c)}
+.nx .pg{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:600;color:var(--ink-2)}
+.nx .pg i{width:9px;height:9px;border-radius:2px;background:var(--c)}
+.nx h3{font-size:14.5px;font-weight:600;line-height:1.3}
+.nx .when{font-size:12.5px;color:var(--muted)}
+.cd{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.cd div{background:var(--surface-2);border-radius:8px;padding:6px 0;text-align:center}
+.cd b{display:block;font:600 19px/1.1 var(--f-display);font-variant-numeric:tabular-nums}
+.cd span{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.cd.tbc div{opacity:.75}
+.nx .acts{display:flex;gap:8px;flex-wrap:wrap}
+.nx .acts .btn{padding:5px 10px;font-size:12.5px}
+.nx.live{border-color:var(--good)}
+.tag{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;border-radius:999px;padding:2px 8px;background:var(--surface-2);color:var(--ink-2);white-space:nowrap}
+.tag.good{background:color-mix(in srgb,var(--good) 14%,transparent);color:var(--good)}
+.tag.warn{background:color-mix(in srgb,var(--warn) 15%,transparent);color:var(--warn)}
+.tag.crit{background:color-mix(in srgb,var(--crit) 14%,transparent);color:var(--crit)}
+.tag svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+
+/* Charts */
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{border:0;background:var(--surface);padding:5px 12px;cursor:pointer;font-size:12.5px;color:var(--ink-2)}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px;color:var(--ink-2);margin-bottom:10px}
+.legend button{display:inline-flex;align-items:center;gap:6px;border:0;background:none;padding:2px 0;cursor:pointer;color:var(--ink-2)}
+.legend button i{width:10px;height:10px;border-radius:2px;display:inline-block}
+.legend button.off{opacity:.4}
+.legend button.sel{color:var(--ink);font-weight:600}
+.chart{position:relative;width:100%}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.chart .ax{fill:var(--muted);font-size:11px}
+.chart .gl{stroke:var(--grid);stroke-width:1}
+.chart .base{stroke:var(--line);stroke-width:1}
+.chart .mk{cursor:pointer;transition:opacity .15s,filter .15s}
+.chart .mk:hover,.chart .mk:focus{filter:brightness(1.12)}
+.chart .mk:focus{outline:none;stroke:var(--ink);stroke-width:1.5}
+.chart .dim{opacity:.28}
+.chart .hit{fill:transparent;cursor:pointer}
+.chart .today{stroke:var(--gold);stroke-width:1.5;stroke-dasharray:3 3}
+.chart .todaylbl{fill:var(--warn);font-size:10.5px;font-weight:600}
+.chart .vl{fill:var(--ink);font-size:11.5px;font-weight:600;font-variant-numeric:tabular-nums}
+.chart .cl{fill:var(--ink-2);font-size:12px}
+.hbar{display:grid;gap:9px}
+.hrow{display:grid;grid-template-columns:minmax(110px,190px) 1fr auto;align-items:center;gap:10px;border:0;background:none;padding:3px 4px;margin:0 -4px;border-radius:7px;text-align:left;cursor:pointer;color:var(--ink)}
+.hrow:hover{background:var(--surface-2)}
+.hrow.sel{background:var(--accent-soft)}
+.hrow.dim{opacity:.45}
+.hrow .nm{font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hrow .tr{height:14px;background:var(--surface-2);border-radius:0 4px 4px 0;overflow:hidden;display:flex}
+.hrow .tr i{display:block;height:100%;border-radius:0 4px 4px 0;transition:width .5s cubic-bezier(.22,.8,.26,1)}
+.hrow b{font-size:13px;font-variant-numeric:tabular-nums;min-width:58px;text-align:right}
+.hrow b small{color:var(--muted);font-weight:500;margin-left:4px}
+.tip{position:fixed;z-index:60;pointer-events:none;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:10px;box-shadow:0 8px 28px rgba(0,0,0,.18);padding:9px 11px;font-size:12.5px;min-width:150px;max-width:280px;opacity:0;transition:opacity .12s}
+.tip.on{opacity:1}
+.tip .t{font-weight:600;margin-bottom:5px;color:var(--ink-2)}
+.tip .r{display:grid;grid-template-columns:14px 1fr auto;gap:7px;align-items:center;line-height:1.7}
+.tip .r i{height:3px;border-radius:2px}
+.tip .r b{font-variant-numeric:tabular-nums}
+.tip .r.tot{border-top:1px solid var(--line);margin-top:3px;padding-top:3px}
+
+/* Attention + tables */
+.att{display:grid;gap:8px}
+.att-row{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;border:1px solid var(--line);border-radius:9px;padding:8px 10px}
+.att-row .t{font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.att-row .d{font-size:12px;color:var(--muted)}
+.tbl-wrap{overflow-x:auto;margin-inline:-4px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);text-align:left;padding:8px;border-bottom:1px solid var(--line);white-space:nowrap}
+th[data-k]{cursor:pointer;user-select:none}
+th[data-k]:hover{color:var(--ink)}
+th .ar{opacity:.5;margin-left:3px}
+td{padding:8px;border-bottom:1px solid var(--line);vertical-align:middle}
+th.n,td.n{text-align:right;font-variant-numeric:tabular-nums}
+tbody tr:hover{background:var(--surface-2)}
+tfoot td{font-weight:600;border-bottom:0;border-top:1.5px solid var(--ink-2)}
+td .nm{display:block;max-width:420px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}
+td .sub{display:block;font-size:11.5px;color:var(--muted);max-width:420px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pcode{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.pcode i{width:9px;height:9px;border-radius:2px;flex:none}
+.tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.tools input[type=search]{background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:6px 10px;width:220px;max-width:100%;color:var(--ink)}
+.empty{color:var(--muted);text-align:center;padding:26px 0}
+.muted{color:var(--muted)}
+footer{color:var(--muted);font-size:12px;padding-block:0 30px}
+footer .wrap{display:flex;flex-wrap:wrap;gap:8px 20px;justify-content:space-between}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media (max-width:640px){.hrow{grid-template-columns:minmax(90px,120px) 1fr auto}.cd b{font-size:16px}}
+@media print{
+  @page{size:A4 landscape;margin:10mm}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .rail .fld,.rail .btn,.top-acts,.tools,.fx-top,.fx-progress{display:none!important}
+  .rail{position:static}
+  .kpi,.card,.nx{break-inside:avoid;box-shadow:none}
+}
+</style>
+<script>window.FX_EXTRA={reveal:'.kpi, .card, .nx', spot:'.kpi, .nx', ripple:'.seg button, .hrow, .chip', count:'.kpi .val', hero:'.band'};</script>
+<link rel="stylesheet" href="../assets/classera-fx-v1.css">
+</head>
+<body>
+<header class="band">
+  <div class="wrap">
+    <div class="band-top">
+      <div class="brand"><img alt="Classera" src="data:image/png;base64,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"><div class="unit">Partner Success<br>Training Unit</div></div>
+      <div class="top-acts">
+        <a class="iconbtn" href="../" title="All AY26-27 plans" aria-label="All AY26-27 plans"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7M5 10v10h14V10"/></svg></a>
+        <button class="iconbtn" id="themeBtn" type="button" aria-label="Switch light or dark theme"><svg class="sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><svg class="moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
+      </div>
+    </div>
+    <div class="title-block">
+      <div class="eyebrow">AY26-27 Classera Programs</div>
+      <h1>Events Dashboard</h1>
+      <p id="period">Every program event across the academic year: what is coming next, how the plan is progressing, and how events perform.</p>
+      <div class="src" id="src"><i></i><span>Loading events tracker...</span></div>
+    </div>
+  </div>
+</header>
+
+<div class="rail">
+  <div class="wrap">
+    <div class="fld"><label for="f-period">Period</label><select id="f-period">
+      <option value="all">Whole year</option><option value="upcoming">Upcoming</option><option value="next30">Next 30 days</option><option value="next90">Next 90 days</option>
+      <option value="past">Past</option><option value="s1">Semester 1</option><option value="s2">Semester 2</option><option value="custom">Custom months</option></select></div>
+    <div class="fld" id="fld-from" hidden><label for="f-from">From</label><select id="f-from"></select></div>
+    <div class="fld" id="fld-to" hidden><label for="f-to">To</label><select id="f-to"></select></div>
+    <div class="fld"><label for="f-program">Program</label><select id="f-program"></select></div>
+    <div class="fld"><label for="f-track">Track</label><select id="f-track"></select></div>
+    <div class="fld"><label for="f-status">Event status</label><select id="f-status"></select></div>
+    <div class="fld"><label for="f-announce">Announcement</label><select id="f-announce"></select></div>
+    <div class="fld"><label for="f-mode">Delivery</label><select id="f-mode"></select></div>
+    <div class="fld"><label for="f-partner">Partner / host</label><select id="f-partner"></select></div>
+    <button class="btn" id="reset" type="button">Reset</button>
+    <div class="spacer"></div>
+    <button class="btn" id="print" type="button"><svg viewBox="0 0 24 24"><path d="M6 9V3h12v6M6 18H4a1 1 0 0 1-1-1v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6a1 1 0 0 1-1 1h-2"/><rect x="6" y="14" width="12" height="7"/></svg>Print / PDF</button>
+    <div class="chips" id="chips"></div>
+  </div>
+</div>
+
+<main>
+  <div class="wrap">
+    <div class="banner" id="banner" hidden></div>
+
+    <section aria-labelledby="h-kpi">
+      <h2 id="h-kpi" class="sr">Headline figures</h2>
+      <div class="kpis" id="kpis"></div>
+    </section>
+
+    <section aria-labelledby="h-next">
+      <div class="sec-h"><h2 id="h-next">Next up by program</h2><p>Live countdown to each program's next event (KSA time)</p></div>
+      <div class="nxgrid" id="next"></div>
+    </section>
+
+    <section class="card" aria-labelledby="h-trend">
+      <div class="sec-h"><h2 id="h-trend">Events over time</h2>
+        <div class="seg" role="group" aria-label="Time grain">
+          <button type="button" data-g="year" aria-pressed="false">Year</button><button type="button" data-g="quarter" aria-pressed="false">Quarter</button><button type="button" data-g="month" aria-pressed="true">Month</button><button type="button" data-g="week" aria-pressed="false">Week</button>
+        </div></div>
+      <div class="legend" id="trend-legend"></div>
+      <div class="chart" id="trend"></div>
+      <p class="cap" id="trend-cap"></p>
+    </section>
+
+    <div class="grid2">
+      <section class="card" aria-labelledby="h-prog">
+        <div class="sec-h"><h2 id="h-prog">Events by program</h2><p>Select a bar to filter</p></div>
+        <div class="hbar" id="by-program"></div>
+      </section>
+      <section class="card" aria-labelledby="h-status">
+        <div class="sec-h"><h2 id="h-status">Events by event status</h2><p>Planned to delivered</p></div>
+        <div class="hbar" id="by-status"></div>
+      </section>
+    </div>
+
+    <div class="grid2">
+      <section class="card" aria-labelledby="h-ann">
+        <div class="sec-h"><h2 id="h-ann">Events by announcement status</h2><p id="ann-note"></p></div>
+        <div class="hbar" id="by-announce"></div>
+      </section>
+      <section class="card" aria-labelledby="h-part">
+        <div class="sec-h"><h2 id="h-part">Partners and hosts</h2><p id="part-note"></p></div>
+        <div class="hbar" id="by-partner"></div>
+      </section>
+    </div>
+
+    <div class="grid2">
+      <section class="card" aria-labelledby="h-out">
+        <div class="sec-h"><h2 id="h-out">Outcomes by program</h2><p>Registrations, attendance and satisfaction</p></div>
+        <div class="tbl-wrap"><table id="t-out"></table></div>
+        <p class="cap" id="out-cap"></p>
+      </section>
+      <section class="card" aria-labelledby="h-att">
+        <div class="sec-h"><h2 id="h-att">Needs attention</h2><p>Recalculated live from today's date</p></div>
+        <div class="att" id="attention"></div>
+      </section>
+    </div>
+
+    <section class="card" aria-labelledby="h-list">
+      <div class="sec-h"><h2 id="h-list">All events</h2>
+        <div class="tools"><input type="search" id="q" placeholder="Search events, tracks, partners" aria-label="Search events"><span class="muted" id="count"></span></div></div>
+      <div class="tbl-wrap"><table id="t-events"></table></div>
+    </section>
+  </div>
+</main>
+<footer><div class="wrap"><span>Training Unit - Partner Success | Classera</span><span id="foot-src"></span></div></footer>
+<div class="tip" id="tip" role="status" aria-live="polite"></div>
+
+<script id="snapshot" type="application/json">{"taken":"2026-10-01","rows":[{"id":"PD-LW1","program":"Professional Development","track":"Launch Webinar","title":"Launch Webinar 1: Creativity & Accreditation Plan","titleAr":"الويبينار التعريفي الأول: الإبداع وخطة الاعتماد","host":"PS Training Unit","start":"2026-09-28","end":"2026-09-28","dstat":"Confirmed","time":"5:00 PM","aud":"Teachers + School Leaders","lang":"","loc":"Online - Classera Innovation Platform","mode":"Online","price":"","link":"https://sh.classera.com/EPD","status":"Delivered","announce":"Published","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"PD-LW2","program":"Professional Development","track":"Launch Webinar","title":"Launch Webinar 2: Enrichment Programs Plan","titleAr":"الويبينار التعريفي الثاني: خطة البرامج الإثرائية","host":"PS Training Unit","start":"2026-09-29","end":"2026-09-29","dstat":"Confirmed","time":"10:00 AM","aud":"Teachers + School Leaders","lang":"","loc":"Online - Classera Innovation Platform","mode":"Online","price":"","link":"https://sh.classera.com/Enrich","status":"Delivered","announce":"Published","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"PD-S01","program":"Professional Development","track":"Classera LMS","title":"Academic Year Kickoff & Classera LMS Updates — New Features & Release Highlights","titleAr":"انطلاقة العام الأكاديمي وتحديثات نظام كلاسيرا — المزايا الجديدة وأبرز الإصدارات","host":"Classera","start":"2026-09-30","end":"2026-09-30","dstat":"Confirmed","time":"5:00 PM","aud":"All LMS Users","lang":"","loc":"Online - Classera Innovation Platform","mode":"Online","price":"","link":"https://sh.classera.com/v17unlocked","status":"Delivered","announce":"Published","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"PD-S02","program":"Professional Development","track":"Intel SFI","title":"Intel Skills for Innovation (SFI) Webinar 1 — AI Professional Development","titleAr":"Intel Skills for Innovation — التطوير المهني في الذكاء الاصطناعي (1)","host":"Intel","start":"2026-10-14","end":"2026-10-14","dstat":"Confirmed","time":"5:00 PM","aud":"Teachers","lang":"English","loc":"Online - Classera Innovation Platform","mode":"Online","price":"","link":"","status":"Planned","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"PD-S03","program":"Professional Development","track":"EdTech Partner","title":"From Explanation to Experiment: Transforming Science Teaching with Virtual Labs","titleAr":"من الشرح إلى التجربة: تحويل تدريس العلوم بالمعامل الافتراضية","host":"Vlaby","start":"2026-10-28","end":"2026-10-28","dstat":"Confirmed","time":"5:00 PM","aud":"Teachers & Supervisors","lang":"Arabic","loc":"Online - Classera Innovation Platform","mode":"Online","price":"","link":"","status":"Planned","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"PD-S04","program":"Professional Development","track":"EdTech Partner","title":"Empower Every Learner","titleAr":"تمكين كل متعلم","host":"University Startup","start":"2026-11-11","end":"2026-11-11","dstat":"Confirmed","time":"5:00 PM","aud":"Teachers & Supervisors","lang":"English","loc":"Online - Classera Innovation Platform","mode":"Online","price":"","link":"","status":"Planned","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"PD-S05","program":"Professional Development","track":"Intel SFI","title":"Intel Skills for Innovation (SFI) Webinar 2 — AI Professional Development","titleAr":"Intel Skills for Innovation — التطوير المهني في الذكاء الاصطناعي (2)","host":"Intel","start":"2026-12-09","end":"2026-12-09","dstat":"Confirmed","time":"5:00 PM","aud":"Teachers","lang":"English","loc":"Online - Classera Innovation Platform","mode":"Online","price":"","link":"","status":"Planned","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"PD-S06","program":"Professional Development","track":"EdTech Partner","title":"How do AI-powered solutions measure adaptive-learning outcomes?","titleAr":"كيف تقيس الحلول المدعومة بالذكاء الاصطناعي مخرجات التعلم التكيفي؟","host":"AILA","start":"2026-12-23","end":"2026-12-23","dstat":"Confirmed","time":"5:00 PM","aud":"Teachers & Supervisors","lang":"Arabic","loc":"Online - Classera Innovation Platform","mode":"Online","price":"","link":"","status":"Planned","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"PD-S07","program":"Professional Development","track":"Intel SFI","title":"Intel Skills for Innovation (SFI) Webinar 3 — AI Professional Development","titleAr":"Intel Skills for Innovation — التطوير المهني في الذكاء الاصطناعي (3)","host":"Intel","start":"2027-03-17","end":"2027-03-17","dstat":"Confirmed","time":"5:00 PM","aud":"Teachers","lang":"English","loc":"Online - Classera Innovation Platform","mode":"Online","price":"","link":"","status":"Planned","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"PD-S08","program":"Professional Development","track":"Classera LMS","title":"Classera LMS Updates","titleAr":"تحديثات نظام كلاسيرا","host":"Classera Product Team","start":"2027-03-31","end":"2027-03-31","dstat":"Confirmed","time":"5:00 PM","aud":"All LMS Users","lang":"Arabic","loc":"Online - Classera Innovation Platform","mode":"Online","price":"","link":"","status":"Planned","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"PD-S09","program":"Professional Development","track":"EdTech Partner","title":"Technology in Education Webinar Series — Session 4","titleAr":"سلسلة تقنيات التعليم — الجلسة الرابعة","host":"","start":"2027-04-07","end":"2027-04-07","dstat":"Confirmed","time":"5:00 PM","aud":"Teachers & Supervisors","lang":"","loc":"Online - Classera Innovation Platform","mode":"Online","price":"","link":"","status":"Planned","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"PD-S10","program":"Professional Development","track":"EdTech Partner","title":"Technology in Education Webinar Series — Session 5","titleAr":"سلسلة تقنيات التعليم — الجلسة الخامسة","host":"","start":"2027-04-21","end":"2027-04-21","dstat":"Confirmed","time":"5:00 PM","aud":"Teachers & Supervisors","lang":"","loc":"Online - Classera Innovation Platform","mode":"Online","price":"","link":"","status":"Planned","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"PD-S11","program":"Professional Development","track":"EdTech Partner","title":"Technology in Education Webinar Series — Session 6","titleAr":"سلسلة تقنيات التعليم — الجلسة السادسة","host":"","start":"2027-05-05","end":"2027-05-05","dstat":"Confirmed","time":"5:00 PM","aud":"Teachers & Supervisors","lang":"","loc":"Online - Classera Innovation Platform","mode":"Online","price":"","link":"","status":"Planned","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"ACC-01","program":"Accreditation","track":"Exam Window","title":"Accreditation Exam Window: September 2026 (Period 1)","titleAr":"فترة اختبارات الاعتماد: سبتمبر 2026 (الفترة 1)","host":"Classera & Intel","start":"2026-09-21","end":"2026-09-27","dstat":"Confirmed","time":"","aud":"Educators (Teachers, School Leaders, System Managers)","lang":"","loc":"Online - Accreditation Platform","mode":"Online","price":"","link":"https://accreditation.classera.com/","status":"Registration Open","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"ACC-02","program":"Accreditation","track":"Exam Window","title":"Accreditation Exam Window: October 2026 (Period 1)","titleAr":"فترة اختبارات الاعتماد: أكتوبر 2026 (الفترة 1)","host":"Classera & Intel","start":"2026-10-05","end":"2026-10-11","dstat":"Confirmed","time":"","aud":"Educators (Teachers, School Leaders, System Managers)","lang":"","loc":"Online - Accreditation Platform","mode":"Online","price":"","link":"https://accreditation.classera.com/","status":"Registration Open","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"ACC-03","program":"Accreditation","track":"Exam Window","title":"Accreditation Exam Window: October 2026 (Period 2)","titleAr":"فترة اختبارات الاعتماد: أكتوبر 2026 (الفترة 2)","host":"Classera & Intel","start":"2026-10-19","end":"2026-10-25","dstat":"Confirmed","time":"","aud":"Educators (Teachers, School Leaders, System Managers)","lang":"","loc":"Online - Accreditation Platform","mode":"Online","price":"","link":"https://accreditation.classera.com/","status":"Registration Open","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"ACC-04","program":"Accreditation","track":"Exam Window","title":"Accreditation Exam Window: November 2026 (Period 1)","titleAr":"فترة اختبارات الاعتماد: نوفمبر 2026 (الفترة 1)","host":"Classera & Intel","start":"2026-11-09","end":"2026-11-15","dstat":"Confirmed","time":"","aud":"Educators (Teachers, School Leaders, System Managers)","lang":"","loc":"Online - Accreditation Platform","mode":"Online","price":"","link":"https://accreditation.classera.com/","status":"Registration Open","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"ACC-05","program":"Accreditation","track":"Exam Window","title":"Accreditation Exam Window: November 2026 (Period 2)","titleAr":"فترة اختبارات الاعتماد: نوفمبر 2026 (الفترة 2)","host":"Classera & Intel","start":"2026-11-23","end":"2026-11-29","dstat":"Confirmed","time":"","aud":"Educators (Teachers, School Leaders, System Managers)","lang":"","loc":"Online - Accreditation Platform","mode":"Online","price":"","link":"https://accreditation.classera.com/","status":"Registration Open","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"ACC-06","program":"Accreditation","track":"Exam Window","title":"Accreditation Exam Window: December 2026 (Period 1)","titleAr":"فترة اختبارات الاعتماد: ديسمبر 2026 (الفترة 1)","host":"Classera & Intel","start":"2026-12-07","end":"2026-12-13","dstat":"Confirmed","time":"","aud":"Educators (Teachers, School Leaders, System Managers)","lang":"","loc":"Online - Accreditation Platform","mode":"Online","price":"","link":"https://accreditation.classera.com/","status":"Registration Open","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"ACC-07","program":"Accreditation","track":"Exam Window","title":"Accreditation Exam Window: December 2026 (Period 2)","titleAr":"فترة اختبارات الاعتماد: ديسمبر 2026 (الفترة 2)","host":"Classera & Intel","start":"2026-12-21","end":"2026-12-27","dstat":"Confirmed","time":"","aud":"Educators (Teachers, School Leaders, System Managers)","lang":"","loc":"Online - Accreditation Platform","mode":"Online","price":"","link":"https://accreditation.classera.com/","status":"Registration Open","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"ACC-08","program":"Accreditation","track":"Exam Window","title":"Accreditation Exam Window: January 2027 (Period 1)","titleAr":"فترة اختبارات الاعتماد: يناير 2027 (الفترة 1)","host":"Classera & Intel","start":"2027-01-04","end":"2027-01-10","dstat":"Confirmed","time":"","aud":"Educators (Teachers, School Leaders, System Managers)","lang":"","loc":"Online - Accreditation Platform","mode":"Online","price":"","link":"https://accreditation.classera.com/","status":"Registration Open","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"ACC-09","program":"Accreditation","track":"Exam Window","title":"Accreditation Exam Window: January 2027 (Period 2)","titleAr":"فترة اختبارات الاعتماد: يناير 2027 (الفترة 2)","host":"Classera & Intel","start":"2027-01-18","end":"2027-01-24","dstat":"Confirmed","time":"","aud":"Educators (Teachers, School Leaders, System Managers)","lang":"","loc":"Online - Accreditation Platform","mode":"Online","price":"","link":"https://accreditation.classera.com/","status":"Registration Open","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"ACC-10","program":"Accreditation","track":"Exam Window","title":"Accreditation Exam Window: February 2027 (Period 1)","titleAr":"فترة اختبارات الاعتماد: فبراير 2027 (الفترة 1)","host":"Classera & Intel","start":"2027-02-08","end":"2027-02-14","dstat":"Confirmed","time":"","aud":"Educators (Teachers, School Leaders, System Managers)","lang":"","loc":"Online - Accreditation Platform","mode":"Online","price":"","link":"https://accreditation.classera.com/","status":"Registration Open","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"ACC-11","program":"Accreditation","track":"Exam Window","title":"Accreditation Exam Window: February 2027 (Period 2)","titleAr":"فترة اختبارات الاعتماد: فبراير 2027 (الفترة 2)","host":"Classera & Intel","start":"2027-02-22","end":"2027-02-28","dstat":"Confirmed","time":"","aud":"Educators (Teachers, School Leaders, System Managers)","lang":"","loc":"Online - Accreditation Platform","mode":"Online","price":"","link":"https://accreditation.classera.com/","status":"Registration Open","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"ACC-12","program":"Accreditation","track":"Exam Window","title":"Accreditation Exam Window: March 2027 (Period 1)","titleAr":"فترة اختبارات الاعتماد: مارس 2027 (الفترة 1)","host":"Classera & Intel","start":"2027-03-08","end":"2027-03-14","dstat":"Confirmed","time":"","aud":"Educators (Teachers, School Leaders, System Managers)","lang":"","loc":"Online - Accreditation Platform","mode":"Online","price":"","link":"https://accreditation.classera.com/","status":"Registration Open","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"ACC-13","program":"Accreditation","track":"Exam Window","title":"Accreditation Exam Window: March 2027 (Period 2)","titleAr":"فترة اختبارات الاعتماد: مارس 2027 (الفترة 2)","host":"Classera & Intel","start":"2027-03-22","end":"2027-03-28","dstat":"Confirmed","time":"","aud":"Educators (Teachers, School Leaders, System Managers)","lang":"","loc":"Online - Accreditation Platform","mode":"Online","price":"","link":"https://accreditation.classera.com/","status":"Registration Open","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"ACC-14","program":"Accreditation","track":"Exam Window","title":"Accreditation Exam Window: April 2027 (Period 1)","titleAr":"فترة اختبارات الاعتماد: أبريل 2027 (الفترة 1)","host":"Classera & Intel","start":"2027-04-05","end":"2027-04-11","dstat":"Confirmed","time":"","aud":"Educators (Teachers, School Leaders, System Managers)","lang":"","loc":"Online - Accreditation Platform","mode":"Online","price":"","link":"https://accreditation.classera.com/","status":"Registration Open","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"ACC-15","program":"Accreditation","track":"Exam Window","title":"Accreditation Exam Window: April 2027 (Period 2)","titleAr":"فترة اختبارات الاعتماد: أبريل 2027 (الفترة 2)","host":"Classera & Intel","start":"2027-04-19","end":"2027-04-25","dstat":"Confirmed","time":"","aud":"Educators (Teachers, School Leaders, System Managers)","lang":"","loc":"Online - Accreditation Platform","mode":"Online","price":"","link":"https://accreditation.classera.com/","status":"Registration Open","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"ACC-16","program":"Accreditation","track":"Exam Window","title":"Accreditation Exam Window: May 2027 (Period 1)","titleAr":"فترة اختبارات الاعتماد: مايو 2027 (الفترة 1)","host":"Classera & Intel","start":"2027-05-03","end":"2027-05-09","dstat":"Confirmed","time":"","aud":"Educators (Teachers, School Leaders, System Managers)","lang":"","loc":"Online - Accreditation Platform","mode":"Online","price":"","link":"https://accreditation.classera.com/","status":"Registration Open","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"ACC-17","program":"Accreditation","track":"Exam Window","title":"Accreditation Exam Window: May 2027 (Period 2)","titleAr":"فترة اختبارات الاعتماد: مايو 2027 (الفترة 2)","host":"Classera & Intel","start":"2027-05-24","end":"2027-05-30","dstat":"Confirmed","time":"","aud":"Educators (Teachers, School Leaders, System Managers)","lang":"","loc":"Online - Accreditation Platform","mode":"Online","price":"","link":"https://accreditation.classera.com/","status":"Registration Open","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"ACC-18","program":"Accreditation","track":"Exam Window","title":"Accreditation Exam Window: June 2027 (Period 1)","titleAr":"فترة اختبارات الاعتماد: يونيو 2027 (الفترة 1)","host":"Classera & Intel","start":"2027-06-07","end":"2027-06-13","dstat":"Confirmed","time":"","aud":"Educators (Teachers, School Leaders, System Managers)","lang":"","loc":"Online - Accreditation Platform","mode":"Online","price":"","link":"https://accreditation.classera.com/","status":"Registration Open","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"ACC-19","program":"Accreditation","track":"Exam Window","title":"Accreditation Exam Window: June 2027 (Period 2)","titleAr":"فترة اختبارات الاعتماد: يونيو 2027 (الفترة 2)","host":"Classera & Intel","start":"2027-06-21","end":"2027-06-27","dstat":"Confirmed","time":"","aud":"Educators (Teachers, School Leaders, System Managers)","lang":"","loc":"Online - Accreditation Platform","mode":"Online","price":"","link":"https://accreditation.classera.com/","status":"Registration Open","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"ENR-01","program":"Enrichment Academy","track":"National & Awareness","title":"Saudi National Day Activities","titleAr":"فاعليات اليوم الوطني","host":"Enrichment Academy","start":"2026-09-21","end":"2026-09-21","dstat":"Confirmed","time":"","aud":"All grades","lang":"","loc":"Saudi Arabia","mode":"Online","price":"Free","link":"https://sh.classera.com/NationalDay","status":"Registration Open","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"ENR-02","program":"Enrichment Academy","track":"National & Awareness","title":"World Teachers' Day","titleAr":"يوم المعلم","host":"Enrichment Academy","start":"2026-10-05","end":"2026-10-05","dstat":"Confirmed","time":"","aud":"Teachers","lang":"","loc":"Saudi Arabia, Egypt, Jordan, Other countries","mode":"Online","price":"Free","link":"https://iacademy.classera.com/lectures-list/?course_title=يوم%20المعلم%2026-27&course_type=1&c=eyJjb3Vyc2VfaWQiOiIxMjc0MzYifQ","status":"Registration Open","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"ENR-03","program":"Enrichment Academy","track":"National & Awareness","title":"October 6 Victory Celebration","titleAr":"فعاليات نصر 6 أكتوبر","host":"Enrichment Academy","start":"2026-10-06","end":"2026-10-06","dstat":"Confirmed","time":"","aud":"All grades","lang":"","loc":"Egypt","mode":"Online","price":"Free","link":"https://iacademy.classera.com/lectures-list/?course_title=فاعليات%20%20نصر%20اكتوبر%2026-27&course_type=1&c=eyJjb3Vyc2VfaWQiOiIxMjQwNDMifQ","status":"Registration Open","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"ENR-04","program":"Enrichment Academy","track":"Skill Courses","title":"Mobile App Programming","titleAr":"مهارات برمجة تطبيقات الجوال","host":"Enrichment Academy","start":"2026-10-12","end":"2026-10-12","dstat":"Confirmed","time":"","aud":"Middle & Secondary","lang":"","loc":"Saudi Arabia, Egypt, Jordan, Other countries","mode":"Online","price":"Paid (Secondary)","link":"https://iacademy.classera.com/lectures-list/?course_title=مهارات%20برمجة%20تطبيقات%20الجوال%2026-27&course_type=1&c=eyJjb3Vyc2VfaWQiOiIxMjc4MzIifQ","status":"Registration Open","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"ENR-05","program":"Enrichment Academy","track":"Skill Courses","title":"Digital Art Fundamentals","titleAr":"اساسيات الرسم الرقمي - Basics Of Digital Art","host":"Enrichment Academy","start":"2026-10-19","end":"2026-10-19","dstat":"Confirmed","time":"","aud":"All grades","lang":"","loc":"Saudi Arabia, Egypt, Jordan, Other countries","mode":"Online","price":"Free","link":"","status":"Planned","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"ENR-06","program":"Enrichment Academy","track":"National & Awareness","title":"World Savings Day","titleAr":"يوم الادخار العالمي","host":"Enrichment Academy","start":"2026-10-26","end":"2026-10-26","dstat":"Confirmed","time":"","aud":"All grades","lang":"","loc":"Saudi Arabia, Egypt, Jordan, Other countries","mode":"Online","price":"Free","link":"https://iacademy.classera.com/lectures-list/?course_title=27-26%20يوم%20الادخار%20العالمي&course_type=1&c=eyJjb3Vyc2VfaWQiOiIxMjc4MzMifQ","status":"Registration Open","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"ENR-07","program":"Enrichment Academy","track":"Skill Courses","title":"Programming Fundamentals","titleAr":"اساسيات البرمجة","host":"Enrichment Academy","start":"2026-11-02","end":"2026-11-02","dstat":"Confirmed","time":"","aud":"Elementary & Middle","lang":"","loc":"Saudi Arabia, Egypt, Jordan, Other countries","mode":"Online","price":"Free","link":"https://iacademy.classera.com/lectures-list/?course_title=اساسيات%20البرمجة%2026-27&course_type=1&c=eyJjb3Vyc2VfaWQiOiIxMjc4MzQifQ","status":"Registration Open","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"ENR-08","program":"Enrichment Academy","track":"Skill Courses","title":"Roblox Programming","titleAr":"دورة مهارات برمجة الروبلوكس","host":"Enrichment Academy","start":"2026-11-09","end":"2026-11-09","dstat":"Confirmed","time":"","aud":"Middle","lang":"","loc":"Saudi Arabia, Egypt, Jordan, Other countries","mode":"Online","price":"Free","link":"https://iacademy.classera.com/lectures-list/?course_title=26-27دورة%20مهارات%20برمجة%20الروبلوكس&course_type=1&c=eyJjb3Vyc2VfaWQiOiIxMjc4MzUifQ","status":"Registration Open","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"ENR-09","program":"Enrichment Academy","track":"Skill Courses","title":"Arduino Skills","titleAr":"مهارات الأردوينو","host":"Enrichment Academy","start":"2026-11-16","end":"2026-11-16","dstat":"Confirmed","time":"","aud":"Middle & Secondary","lang":"","loc":"Saudi Arabia, Egypt, Jordan, Other countries","mode":"Online","price":"Paid (Secondary)","link":"","status":"Planned","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"ENR-10","program":"Enrichment Academy","track":"Skill Courses","title":"Internet of Things","titleAr":"مهارات انترنيت الاشياء","host":"Enrichment Academy","start":"2026-11-23","end":"2026-11-23","dstat":"Confirmed","time":"","aud":"Middle & Secondary","lang":"","loc":"Saudi Arabia, Egypt, Jordan, Other countries","mode":"Online","price":"Paid (Secondary)","link":"https://iacademy.classera.com/lectures-list/?course_title=26-27%20مهارات%20انترنيت%20الاشياء&course_type=1&c=eyJjb3Vyc2VfaWQiOiIxMjc4MzYifQ","status":"Registration Open","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"ENR-11","program":"Enrichment Academy","track":"National & Awareness","title":"Riyali Financial Literacy Program","titleAr":"البرنامج ريالي للوعي المالي","host":"Enrichment Academy","start":"2026-11-30","end":"2026-11-30","dstat":"Confirmed","time":"","aud":"All grades","lang":"","loc":"Saudi Arabia, Egypt, Jordan, Other countries","mode":"Online","price":"Sponsored","link":"https://iacademy.classera.com/lectures-list/?course_title=26-27%20البرنامج%20ريالي%20للوعي%20المالي&course_type=1&c=eyJjb3Vyc2VfaWQiOiIxMjc4MzcifQ","status":"Registration Open","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"ENR-12","program":"Enrichment Academy","track":"Skill Courses","title":"Python Programming","titleAr":"البرمجة بلغة بايثون","host":"Enrichment Academy","start":"2026-12-07","end":"2026-12-07","dstat":"Confirmed","time":"","aud":"Secondary","lang":"","loc":"Saudi Arabia, Egypt, Jordan, Other countries","mode":"Online","price":"Paid (Secondary)","link":"https://iacademy.classera.com/lectures-list/?course_title=البرمجة%20بلغة%20بايثون%20%2026-27&course_type=1&c=eyJjb3Vyc2VfaWQiOiIxMjc4MzgifQ","status":"Registration Open","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"ENR-13","program":"Enrichment Academy","track":"Skill Courses","title":"Cybersecurity Skills","titleAr":"مهارات برمجية - الأمان الالكتروني","host":"Enrichment Academy","start":"2026-12-14","end":"2026-12-14","dstat":"Confirmed","time":"","aud":"Middle & Secondary","lang":"","loc":"Saudi Arabia, Egypt, Jordan, Other countries","mode":"Online","price":"Paid (Secondary)","link":"https://iacademy.classera.com/lectures-list/?course_title=مهارات%20برمجية%20-%20الأمان%20الالكتروني%2026-27&course_type=1&c=eyJjb3Vyc2VfaWQiOiIxMjc4MzkifQ","status":"Registration Open","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"ENR-14","program":"Enrichment Academy","track":"Skill Courses","title":"Entrepreneurship","titleAr":"ريادة الأعمال","host":"Enrichment Academy","start":"2026-12-21","end":"2026-12-21","dstat":"Confirmed","time":"","aud":"Secondary","lang":"","loc":"Saudi Arabia, Egypt, Jordan, Other countries","mode":"Online","price":"Paid (Secondary)","link":"","status":"Planned","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"ENR-15","program":"Enrichment Academy","track":"Skill Courses","title":"AI Skills","titleAr":"مهارات الذكاء الاصطناعي","host":"Enrichment Academy","start":"2027-02-01","end":"2027-02-01","dstat":"Confirmed","time":"","aud":"Middle & Secondary","lang":"","loc":"Saudi Arabia, Egypt, Jordan, Other countries","mode":"Online","price":"Paid (Secondary)","link":"","status":"Planned","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"ENR-16","program":"Enrichment Academy","track":"Competitions","title":"Challenge Competition — Question 1","titleAr":"مسابقة التحدي — السؤال الأول","host":"Enrichment Academy","start":"2027-02-08","end":"2027-02-08","dstat":"Confirmed","time":"","aud":"All grades","lang":"","loc":"Saudi Arabia, Egypt, Jordan, Other countries","mode":"Online","price":"Sponsored","link":"","status":"Planned","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"ENR-17","program":"Enrichment Academy","track":"National & Awareness","title":"Saudi Founding Day Activities","titleAr":"فعاليات يوم التأسيس","host":"Enrichment Academy","start":"2027-02-15","end":"2027-02-15","dstat":"Confirmed","time":"","aud":"All grades","lang":"","loc":"Saudi Arabia","mode":"Online","price":"Free","link":"","status":"Planned","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"ENR-18","program":"Enrichment Academy","track":"Competitions","title":"Challenge Competition — Question 2","titleAr":"مسابقة التحدي — السؤال الثاني","host":"Enrichment Academy","start":"2027-02-15","end":"2027-02-15","dstat":"Confirmed","time":"","aud":"All grades","lang":"","loc":"Saudi Arabia, Egypt, Jordan, Other countries","mode":"Online","price":"Sponsored","link":"","status":"Planned","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"ENR-19","program":"Enrichment Academy","track":"Competitions","title":"Classera Hackathon — Launch","titleAr":"انطلاق هاكثون كلاسيرا","host":"Enrichment Academy","start":"2027-02-15","end":"2027-02-15","dstat":"Confirmed","time":"","aud":"All grades","lang":"","loc":"Saudi Arabia, Egypt, Jordan, Other countries","mode":"Online","price":"Sponsored","link":"","status":"Planned","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"ENR-20","program":"Enrichment Academy","track":"Competitions","title":"Challenge Competition — Question 3","titleAr":"مسابقة التحدي — السؤال الثالث","host":"Enrichment Academy","start":"2027-02-22","end":"2027-02-22","dstat":"Confirmed","time":"","aud":"All grades","lang":"","loc":"Saudi Arabia, Egypt, Jordan, Other countries","mode":"Online","price":"Sponsored","link":"","status":"Planned","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"ENR-21","program":"Enrichment Academy","track":"Competitions","title":"Challenge Competition — Question 4","titleAr":"مسابقة التحدي — السؤال الرابع","host":"Enrichment Academy","start":"2027-03-01","end":"2027-03-01","dstat":"Confirmed","time":"","aud":"All grades","lang":"","loc":"Saudi Arabia, Egypt, Jordan, Other countries","mode":"Online","price":"Sponsored","link":"","status":"Planned","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"ENR-22","program":"Enrichment Academy","track":"Competitions","title":"Challenge Competition — Question 5","titleAr":"مسابقة التحدي — السؤال الخامس","host":"Enrichment Academy","start":"2027-03-08","end":"2027-03-08","dstat":"Confirmed","time":"","aud":"All grades","lang":"","loc":"Saudi Arabia, Egypt, Jordan, Other countries","mode":"Online","price":"Sponsored","link":"","status":"Planned","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"ENR-23","program":"Enrichment Academy","track":"Skill Courses","title":"Robot Programming — Beginner","titleAr":"برمجة الروبوت - المستوى المبتدئ","host":"Enrichment Academy","start":"2027-03-22","end":"2027-03-22","dstat":"Confirmed","time":"","aud":"Middle","lang":"","loc":"Saudi Arabia, Egypt, Jordan, Other countries","mode":"Online","price":"Free","link":"","status":"Planned","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"ENR-24","program":"Enrichment Academy","track":"Skill Courses","title":"Robot Programming — Advanced","titleAr":"مهارات برمجة الروبوت - المستوى المتقدم","host":"Enrichment Academy","start":"2027-03-29","end":"2027-03-29","dstat":"Confirmed","time":"","aud":"Secondary","lang":"","loc":"Saudi Arabia, Egypt, Jordan, Other countries","mode":"Online","price":"Paid (Secondary)","link":"","status":"Planned","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"ENR-25","program":"Enrichment Academy","track":"Skill Courses","title":"Global Robotics Competition Prep","titleAr":"التهيئة لمسابقات الروبوت العالمية","host":"Enrichment Academy","start":"2027-04-05","end":"2027-04-05","dstat":"Confirmed","time":"","aud":"Secondary","lang":"","loc":"Saudi Arabia, Egypt, Jordan, Other countries","mode":"Online","price":"Paid (Secondary)","link":"","status":"Planned","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"ENR-26","program":"Enrichment Academy","track":"Skill Courses","title":"C++ Programming","titleAr":"مهارات برمجية - البرمجة بلغة C+","host":"Enrichment Academy","start":"2027-04-12","end":"2027-04-12","dstat":"Confirmed","time":"","aud":"Secondary","lang":"","loc":"Saudi Arabia, Egypt, Jordan, Other countries","mode":"Online","price":"Paid (Secondary)","link":"","status":"Planned","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"ENR-27","program":"Enrichment Academy","track":"Skill Courses","title":"Scratch Programming","titleAr":"البرمجة بلغة سكراتش - Scratch","host":"Enrichment Academy","start":"2027-04-19","end":"2027-04-19","dstat":"Confirmed","time":"","aud":"Elementary","lang":"","loc":"Saudi Arabia, Egypt, Jordan, Other countries","mode":"Online","price":"Free","link":"","status":"Planned","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"ENR-28","program":"Enrichment Academy","track":"Competitions","title":"National Challenge — Launch","titleAr":"التحدي الوطني — الانطلاق","host":"Enrichment Academy","start":"2027-04-19","end":"2027-04-19","dstat":"Confirmed","time":"","aud":"All grades","lang":"","loc":"Saudi Arabia, Egypt, Jordan, Other countries","mode":"Online","price":"Sponsored","link":"","status":"Planned","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"ENR-29","program":"Enrichment Academy","track":"Skill Courses","title":"Web Design","titleAr":"تصميم مواقع الانترنت","host":"Enrichment Academy","start":"2027-04-26","end":"2027-04-26","dstat":"Confirmed","time":"","aud":"Secondary","lang":"","loc":"Saudi Arabia, Egypt, Jordan, Other countries","mode":"Online","price":"Paid (Secondary)","link":"","status":"Planned","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"ENR-30","program":"Enrichment Academy","track":"Competitions","title":"Classera Hackathon — Final Stage","titleAr":"المرحلة النهائية لهاكثون كلاسيرا","host":"Enrichment Academy","start":"2027-05-10","end":"2027-05-10","dstat":"Confirmed","time":"","aud":"All grades","lang":"","loc":"Saudi Arabia, Egypt, Jordan, Other countries","mode":"Online","price":"Sponsored","link":"","status":"Planned","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"ENR-31","program":"Enrichment Academy","track":"National & Awareness","title":"Jordan National Day","titleAr":"اليوم الوطني الأردني","host":"Enrichment Academy","start":"2027-05-24","end":"2027-05-24","dstat":"Confirmed","time":"","aud":"All grades","lang":"","loc":"Jordan","mode":"Online","price":"Free","link":"","status":"Planned","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"ENR-32","program":"Enrichment Academy","track":"Competitions","title":"National Challenge — Results","titleAr":"التحدي الوطني — إعلان النتائج","host":"Enrichment Academy","start":"2027-06-14","end":"2027-06-14","dstat":"Confirmed","time":"","aud":"All grades","lang":"","loc":"Saudi Arabia, Egypt, Jordan, Other countries","mode":"Online","price":"Sponsored","link":"","status":"Planned","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"PRD-01","program":"Product Events","track":"Services Introduction","title":"Services introduction session","titleAr":"لقاء تعريفي بالخدمات","host":"EduMalls X + C-Inspire","start":"2026-10-26","end":"2026-10-26","dstat":"Confirmed","time":"","aud":"Teaching staff","lang":"","loc":"","mode":"Online","price":"","link":"","status":"Planned","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"PRD-02","program":"Product Events","track":"Offers Campaign","title":"Saudi Founding Day offers","titleAr":"عروض يوم التأسيس السعودي","host":"EduMalls X + C-Inspire","start":"2027-02-01","end":"2027-02-01","dstat":"Confirmed","time":"","aud":"Teaching staff","lang":"","loc":"","mode":"Online","price":"","link":"","status":"Planned","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"PRD-03","program":"Product Events","track":"Product Launch","title":"Launch of the education resource management system","titleAr":"إطلاق نظام إدارة الموارد للمؤسسات التعليمية","host":"C-Smarx","start":"2027-02-01","end":"2027-02-28","dstat":"Day TBC","time":"","aud":"Administration & finance","lang":"","loc":"","mode":"Online","price":"","link":"","status":"Planned","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"PRD-04","program":"Product Events","track":"Offers Campaign","title":"End-of-year offers","titleAr":"عروض نهاية العام","host":"EduMalls X + C-Inspire","start":"2027-04-20","end":"2027-04-20","dstat":"Confirmed","time":"","aud":"Teaching staff","lang":"","loc":"","mode":"Online","price":"","link":"","status":"Planned","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"INP-01","program":"In-Person Events","track":"Classera Forum","title":"Classera Education Forum — Kuwait","titleAr":"ملتقى كلاسيرا للتعليم — الكويت","host":"Hosted by Classera","start":"2026-12-01","end":"2026-12-31","dstat":"Day TBC","time":"","aud":"","lang":"","loc":"Kuwait","mode":"In-person","price":"","link":"","status":"Planned","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"INP-02","program":"In-Person Events","track":"Classera Forum","title":"Classera Education & Training Forum — existing clients","titleAr":"ملتقى كلاسيرا للتعليم والتدريب — للعملاء الحاليين","host":"Hosted by Classera","start":"2026-12-01","end":"2026-12-31","dstat":"Day TBC","time":"","aud":"","lang":"","loc":"Saudi Arabia","mode":"In-person","price":"","link":"","status":"Planned","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"INP-03","program":"In-Person Events","track":"International Conference & Expo","title":"Bett UK","titleAr":"مؤتمر ومعرض بيت البريطاني Bett UK","host":"Classera is taking part","start":"2027-01-01","end":"2027-01-31","dstat":"Day TBC","time":"","aud":"","lang":"","loc":"London, United Kingdom","mode":"In-person","price":"","link":"","status":"Planned","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"INP-04","program":"In-Person Events","track":"Seasonal Activities","title":"Classera Ramadan activities","titleAr":"فعاليات كلاسيرا الرمضانية","host":"Hosted by Classera","start":"2027-02-01","end":"2027-02-28","dstat":"Day TBC","time":"","aud":"","lang":"","loc":"Across the region","mode":"In-person","price":"","link":"","status":"Planned","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"INP-05","program":"In-Person Events","track":"InnoXera","title":"InnoXera — Oman","titleAr":"إنوكسيرا InnoXera — عُمان","host":"Classera is taking part","start":"2027-03-01","end":"2027-03-31","dstat":"Day TBC","time":"","aud":"","lang":"","loc":"Oman","mode":"In-person","price":"","link":"","status":"Planned","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"INP-06","program":"In-Person Events","track":"InnoXera","title":"InnoXera — Bahrain","titleAr":"إنوكسيرا InnoXera — البحرين","host":"Classera is taking part","start":"2027-03-01","end":"2027-03-31","dstat":"Day TBC","time":"","aud":"","lang":"","loc":"Bahrain","mode":"In-person","price":"","link":"","status":"Planned","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"INP-07","program":"In-Person Events","track":"Classera Forum","title":"Classera Education Forum — Egypt","titleAr":"ملتقى كلاسيرا للتعليم — مصر","host":"Hosted by Classera","start":"2027-04-01","end":"2027-04-30","dstat":"Day TBC","time":"","aud":"","lang":"","loc":"Egypt","mode":"In-person","price":"","link":"","status":"Planned","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"INP-08","program":"In-Person Events","track":"Classera Forum","title":"Classera Education Forum — new clients","titleAr":"ملتقى كلاسيرا للتعليم — للعملاء الجدد","host":"Hosted by Classera","start":"2027-04-01","end":"2027-04-30","dstat":"Day TBC","time":"","aud":"","lang":"","loc":"Saudi Arabia","mode":"In-person","price":"","link":"","status":"Planned","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"INP-09","program":"In-Person Events","track":"InnoXera","title":"InnoXera — Saudi Arabia","titleAr":"إنوكسيرا InnoXera — السعودية","host":"Classera is taking part","start":"2027-04-01","end":"2027-04-30","dstat":"Day TBC","time":"","aud":"","lang":"","loc":"Saudi Arabia","mode":"In-person","price":"","link":"","status":"Planned","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"INP-10","program":"In-Person Events","track":"International Conference & Expo","title":"Classera at HCI + EDGEx","titleAr":"مشاركة كلاسيرا في HCI + EDGEx","host":"Classera is taking part","start":"2027-04-12","end":"2027-04-13","dstat":"Confirmed","time":"","aud":"","lang":"","loc":"","mode":"In-person","price":"","link":"","status":"Planned","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"INP-11","program":"In-Person Events","track":"International Conference & Expo","title":"Education World Forum (EWF) — London","titleAr":"مؤتمر منتدى التعليم العالمي EWF — لندن","host":"Classera is taking part","start":"2027-05-01","end":"2027-05-31","dstat":"Day TBC","time":"","aud":"","lang":"","loc":"London, United Kingdom","mode":"In-person","price":"","link":"","status":"Planned","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""},{"id":"INP-12","program":"In-Person Events","track":"InnoXera","title":"InnoXera — Qatar","titleAr":"إنوكسيرا InnoXera — قطر","host":"Classera is taking part","start":"2027-05-01","end":"2027-05-31","dstat":"Day TBC","time":"","aud":"","lang":"","loc":"Qatar","mode":"In-person","price":"","link":"","status":"Planned","announce":"Not started","owner":"","reg":"","att":"","sat":"","next":"","due":""}]}</script>
+<script>
+/* =====================================================================
+   SETTINGS - the only part you may want to edit
+   ===================================================================== */
+var TRACKER_FILE = '../events-tracker.xlsx';   // the same file that drives the plan pages
+var SHEET = 'Events';
+/* Hosts that are Classera itself or its own units/brands. They are not counted as partners. */
+var INTERNAL_HOSTS = ['Classera','Classera is taking part','Hosted by Classera','PS Training Unit','Classera Product Team',
+  'Enrichment Academy','C-Inspire','C-Smarx','C-SmarX','EduMalls','EduMalls X','Edumalls','Classera Innovation Platform'];
+/* Program colors follow this order (fixed, so a program keeps its color when filtering) */
+var PROGRAM_ORDER = ['Professional Development','Accreditation','Enrichment Academy','Product Events','In-Person Events'];
+var STATUS_ORDER = ['Planned','Confirmed','Registration Open','Delivered','Postponed','Cancelled'];
+var ANNOUNCE_ORDER = ['Not started','Drafted','In review','Approved','Published'];
+/* ===================================================================== */
+
+(function(){
+'use strict';
+var $ = function(id){ return document.getElementById(id) };
+var DAY = 864e5, MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+var EV = [], SOURCE = '', READ_AT = null, F = {}, GRAIN = 'month', SORT = {k:'date', dir:1}, HIDDEN = {};
+var INTERNAL = INTERNAL_HOSTS.map(function(s){ return s.toLowerCase() });
+
+/* ---------- helpers ---------- */
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c] }) }
+function clean(s){ return String(s==null?'':s).replace(/\s+/g,' ').trim() }
+function norm(s){ return String(s==null?'':s).toLowerCase().replace(/[^a-z0-9]/g,'') }
+function num(v){ if(v===''||v==null) return null; var n = typeof v==='number' ? v : parseFloat(String(v).replace(/[%,\s]/g,'')); return isFinite(n) ? n : null }
+function fmt(n){ return Number(n).toLocaleString('en-US') }
+function pct(a,b){ return b ? a/b*100 : 0 }
+function fp(v,d){ return v==null ? '—' : v.toFixed(d==null?1:d)+'%' }
+/* dates are handled as UTC midnight timestamps */
+function toDay(v){
+  if(v===''||v==null) return null;
+  if(typeof v==='number') return (Math.floor(v+1e-6)-25569)*DAY;
+  if(v instanceof Date) return Date.UTC(v.getFullYear(),v.getMonth(),v.getDate());
+  var m = String(v).trim().match(/^(\d{4})-(\d{1,2})-(\d{1,2})/); if(m) return Date.UTC(+m[1],m[2]-1,+m[3]);
+  m = String(v).trim().match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/); if(m) return Date.UTC(+m[3],m[2]-1,+m[1]);
+  return null;
+}
+function todayUTC(){ var d=new Date(); return Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()) }
+function dstr(t,withYear){ var d=new Date(t); return d.getUTCDate()+' '+MONTHS[d.getUTCMonth()]+(withYear===false?'':' '+d.getUTCFullYear()) }
+function mkey(t){ var d=new Date(t); return d.getUTCFullYear()*100+d.getUTCMonth()+1 }
+function mlabel(k){ return MONTHS[k%100-1]+' '+Math.floor(k/100) }
+function weekStart(t){ var d=new Date(t), wd=(d.getUTCDay()+6)%7; return t-wd*DAY }
+function periodOf(t,g){
+  var d=new Date(t), y=d.getUTCFullYear(), m=d.getUTCMonth();
+  if(g==='year') return {k:y, l:String(y), s:Date.UTC(y,0,1)};
+  if(g==='quarter'){ var q=Math.floor(m/3); return {k:y*10+q, l:'Q'+(q+1)+' '+y, s:Date.UTC(y,q*3,1)} }
+  if(g==='month') return {k:y*100+m, l:MONTHS[m]+' '+String(y).slice(2), s:Date.UTC(y,m,1)};
+  var w=weekStart(t); return {k:w, l:dstr(w,false), s:w};
+}
+function nextPeriod(p,g){
+  var d=new Date(p.s), y=d.getUTCFullYear(), m=d.getUTCMonth();
+  if(g==='year') return periodOf(Date.UTC(y+1,0,1),g);
+  if(g==='quarter') return periodOf(Date.UTC(y,m+3,1),g);
+  if(g==='month') return periodOf(Date.UTC(y,m+1,1),g);
+  return periodOf(p.s+7*DAY,g);
+}
+function progColor(p){ var i=PROGRAM_ORDER.indexOf(p); return i>-1 && i<8 ? 'var(--p'+(i+1)+')' : 'var(--pother)' }
+function orderBy(list, order){ return list.slice().sort(function(a,b){ var ia=order.indexOf(a), ib=order.indexOf(b); if(ia<0) ia=99; if(ib<0) ib=99; return ia-ib || String(a).localeCompare(String(b)) }) }
+function partnersOf(host){
+  if(!host) return [];
+  return host.split(/\s*(?:&|\+|,|\/|;|\band\b)\s*/i).map(clean).filter(function(p){ return p && INTERNAL.indexOf(p.toLowerCase())<0 && !/^classera\b/i.test(p) });
+}
+/* KSA is UTC+3 all year */
+function startMoment(e){
+  if(e.start==null) return null;
+  var h=0, mi=0, m=String(e.time||'').match(/(\d{1,2})(?::(\d{2}))?\s*(am|pm)?/i);
+  if(m){ h=+m[1]; mi=+(m[2]||0); if(m[3]){ var pm=/pm/i.test(m[3]); if(pm && h<12) h+=12; if(!pm && h===12) h=0 } }
+  return e.start + (h*60+mi)*60000 - 3*3600000;
+}
+
+/* ---------- load ---------- */
+var COLS = { id:'Event ID', program:'Program', track:'Track', title:'Event Title (EN)', titleAr:'Event Title (AR)', host:'Partner / Host',
+  start:'Start Date', end:'End Date', dstat:'Date Status', time:'Time (KSA)', aud:'Audience', lang:'Language', loc:'Country / Location',
+  mode:'Delivery Mode', price:'Pricing', link:'Registration Link', status:'Event Status', announce:'Announcement Status', owner:'Owner',
+  reg:'Registrations', att:'Attendees', sat:'Satisfaction %', next:'Next Action', due:'Due Date' };
+function build(rows){
+  var t0 = todayUTC();
+  return rows.map(function(r){
+    var o = {};
+    Object.keys(COLS).forEach(function(k){ o[k] = r[k]!==undefined ? r[k] : '' });
+    ['id','program','track','title','titleAr','host','dstat','time','aud','lang','loc','mode','price','link','status','announce','owner','next'].forEach(function(k){ o[k]=clean(o[k]) });
+    o.start = toDay(o.start); o.end = toDay(o.end); if(o.end==null) o.end = o.start;
+    o.reg = num(o.reg); o.att = num(o.att); o.sat = num(o.sat); if(o.sat!=null && o.sat<=1) o.sat *= 100;
+    o.program = o.program || 'Unassigned'; o.track = o.track || '—'; o.status = o.status || 'Planned'; o.announce = o.announce || 'Not started';
+    o.mode = o.mode || '—'; o.tbc = /tbc/i.test(o.dstat);
+    o.partners = partnersOf(o.host);
+    o.cancelled = /cancel|postpon/i.test(o.status);
+    if(o.start==null){ o.timing='No date'; o.days=null }
+    else if(o.end < t0){ o.timing='Past'; o.days=null }
+    else if(o.start <= t0){ o.timing='In progress'; o.days=0 }
+    else { o.days = Math.round((o.start-t0)/DAY); o.timing = o.days<=14 ? 'Next 14 days' : o.days<=45 ? 'Next 45 days' : 'Later' }
+    o.upcoming = (o.timing!=='Past' && o.timing!=='No date') && !o.cancelled;
+    o.hasLink = !!o.link;
+    o.flag = '';
+    if(o.timing==='Past' && !/deliver|cancel|postpon/i.test(o.status)) o.flag='Update status';
+    else if(!o.hasLink && (o.timing==='In progress' || o.timing==='Next 14 days') && !o.cancelled) o.flag='Add link';
+    else if(o.timing==='Next 14 days' && !/publish/i.test(o.announce) && !o.cancelled) o.flag='Announce';
+    else if(o.timing==='Next 45 days' && !o.hasLink && !o.cancelled) o.flag='Add link soon';
+    o.q = [o.id,o.program,o.track,o.title,o.titleAr,o.host,o.loc,o.aud].join(' ').toLowerCase();
+    return o;
+  }).filter(function(o){ return o.id || o.title });
+}
+function rowsFromSheet(ws){
+  var aoa = XLSX.utils.sheet_to_json(ws,{header:1,defval:'',raw:true});
+  var hi = aoa.findIndex(function(r){ return r.some(function(c){ return norm(c)==='eventid' }) });
+  if(hi<0) throw new Error('No "Event ID" header');
+  var head = aoa[hi].map(norm), map = {};
+  Object.keys(COLS).forEach(function(k){ var i=head.indexOf(norm(COLS[k])); if(i>-1) map[k]=i });
+  if(map.program==null || map.start==null) throw new Error('Missing Program or Start Date column');
+  return aoa.slice(hi+1).map(function(r){ var o={}; Object.keys(map).forEach(function(k){ o[k]=r[map[k]] }); return o });
+}
+function loadLib(){
+  if(window.XLSX) return Promise.resolve();
+  return new Promise(function(res,rej){ var s=document.createElement('script'); s.src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'; s.onload=res; s.onerror=rej; document.head.appendChild(s) });
+}
+function load(){
+  return fetch(TRACKER_FILE,{cache:'no-store'}).then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.arrayBuffer() })
+    .then(function(buf){ return loadLib().then(function(){ return buf }) })
+    .then(function(buf){
+      var wb = XLSX.read(new Uint8Array(buf),{type:'array'});
+      var ws = wb.Sheets[SHEET] || wb.Sheets[wb.SheetNames.find(function(n){ return /event/i.test(n) && !/summary/i.test(n) })];
+      if(!ws) throw new Error('No Events sheet');
+      EV = build(rowsFromSheet(ws)); SOURCE='live'; READ_AT = new Date();
+      if(!EV.length) throw new Error('No events found');
+    })
+    .catch(function(err){
+      var snap = JSON.parse($('snapshot').textContent);
+      EV = build(snap.rows); SOURCE='snapshot'; READ_AT = new Date(snap.taken);
+      $('banner').hidden=false;
+      $('banner').textContent = 'The live tracker could not be read ('+(err && err.message || 'unknown error')+'), so this view shows the built-in copy from '+dstr(toDay(snap.taken))+'. It switches back to live data automatically once events-tracker.xlsx is available.';
+    });
+}
+
+/* ---------- filters ---------- */
+var FILTERS = [['program','f-program','Program'],['track','f-track','Track'],['status','f-status','Event status'],['announce','f-announce','Announcement'],['mode','f-mode','Delivery'],['partner','f-partner','Partner']];
+function uniq(arr){ return arr.filter(function(v,i,a){ return v && a.indexOf(v)===i }) }
+function fillSelect(id, all, opts, cur){
+  var s=$(id); s.innerHTML=''; var o=document.createElement('option'); o.value=''; o.textContent=all; s.appendChild(o);
+  opts.forEach(function(v){ var x=document.createElement('option'); x.value=v; x.textContent=v; s.appendChild(x) });
+  s.value = opts.indexOf(cur)>-1 ? cur : ''; s.classList.toggle('on', !!s.value);
+}
+function setupFilters(){
+  fillSelect('f-program','All programs', orderBy(uniq(EV.map(function(e){return e.program})),PROGRAM_ORDER), F.program);
+  var tr = EV.filter(function(e){ return !F.program || e.program===F.program }).map(function(e){return e.track});
+  fillSelect('f-track','All tracks', uniq(tr).sort(), F.track); if(F.track && tr.indexOf(F.track)<0) F.track='';
+  fillSelect('f-status','All statuses', orderBy(uniq(EV.map(function(e){return e.status})),STATUS_ORDER), F.status);
+  fillSelect('f-announce','All', orderBy(uniq(EV.map(function(e){return e.announce})),ANNOUNCE_ORDER), F.announce);
+  fillSelect('f-mode','All', uniq(EV.map(function(e){return e.mode})).sort(), F.mode);
+  var ps=[]; EV.forEach(function(e){ ps = ps.concat(e.partners) });
+  fillSelect('f-partner','All', uniq(ps).sort(), F.partner);
+  var ms = uniq(EV.filter(function(e){return e.start!=null}).map(function(e){ return mkey(e.start) })).sort(function(a,b){return a-b});
+  ['f-from','f-to'].forEach(function(id,i){
+    var s=$(id), cur = i? F.to : F.from; s.innerHTML='';
+    ms.forEach(function(k){ var o=document.createElement('option'); o.value=k; o.textContent=mlabel(k); s.appendChild(o) });
+    s.value = cur || (i? ms[ms.length-1] : ms[0]);
+  });
+  $('f-period').value = F.period || 'all'; $('f-period').classList.toggle('on', !!F.period && F.period!=='all');
+  $('fld-from').hidden = $('fld-to').hidden = F.period!=='custom';
+}
+function inPeriod(e){
+  var p = F.period || 'all', t0 = todayUTC();
+  if(p==='all') return true;
+  if(e.start==null) return false;
+  if(p==='upcoming') return e.end >= t0;
+  if(p==='past') return e.end < t0;
+  if(p==='next30') return e.end >= t0 && e.start <= t0+30*DAY;
+  if(p==='next90') return e.end >= t0 && e.start <= t0+90*DAY;
+  var y = new Date(e.start), k = mkey(e.start);
+  if(p==='s1') return e.start < Date.UTC(2027,1,1);
+  if(p==='s2') return e.start >= Date.UTC(2027,1,1);
+  if(p==='custom'){ var a=+$('f-from').value, b=+$('f-to').value; if(a>b){ var c=a; a=b; b=c } return k>=a && k<=b }
+  return true;
+}
+function rows(skip){
+  return EV.filter(function(e){
+    if(!inPeriod(e)) return false;
+    for(var i=0;i<FILTERS.length;i++){ var k=FILTERS[i][0]; if(k===skip || !F[k]) continue;
+      if(k==='partner'){ if(e.partners.indexOf(F.partner)<0) return false }
+      else if(e[k]!==F[k]) return false; }
+    return true;
+  });
+}
+function chips(){
+  var c=$('chips'); c.innerHTML='';
+  var add=function(label,clear){ var b=document.createElement('button'); b.type='button'; b.className='chip'; b.textContent=label+' ';
+    var x=document.createElement('span'); x.textContent='×'; x.setAttribute('aria-hidden','true'); b.appendChild(x); b.setAttribute('aria-label','Remove filter '+label);
+    b.onclick=function(){ clear(); render() }; c.appendChild(b) };
+  if(F.period && F.period!=='all') add('Period: '+$('f-period').selectedOptions[0].textContent+(F.period==='custom'? ' ('+mlabel(+$('f-from').value)+' to '+mlabel(+$('f-to').value)+')':''), function(){ F.period='all' });
+  FILTERS.forEach(function(f){ if(F[f[0]]) add(f[2]+': '+F[f[0]], function(){ F[f[0]]='' }) });
+}
+function toggle(k,v){ F[k] = F[k]===v ? '' : v; if(k==='program') F.track=''; render() }
+
+/* ---------- tooltip ---------- */
+var tip=$('tip');
+function showTip(ev, title, lines){
+  tip.innerHTML=''; var t=document.createElement('div'); t.className='t'; t.textContent=title; tip.appendChild(t);
+  lines.forEach(function(l){ var r=document.createElement('div'); r.className='r'+(l.tot?' tot':'');
+    var i=document.createElement('i'); i.style.background=l.c||'transparent'; var n=document.createElement('span'); n.textContent=l.n;
+    var b=document.createElement('b'); b.textContent=l.v; r.appendChild(i); r.appendChild(n); r.appendChild(b); tip.appendChild(r) });
+  tip.classList.add('on'); moveTip(ev);
+}
+function moveTip(ev){
+  var x, y;
+  if(ev && ev.clientX!=null && ev.type!=='focus'){ x=ev.clientX; y=ev.clientY }
+  else { var r=ev.target.getBoundingClientRect(); x=r.left+r.width/2; y=r.top }
+  var w=tip.offsetWidth, h=tip.offsetHeight;
+  tip.style.left = Math.max(8, Math.min(innerWidth-w-8, x+14))+'px';
+  tip.style.top = Math.max(8, (y-h-12 < 8 ? y+18 : y-h-12))+'px';
+}
+function hideTip(){ tip.classList.remove('on') }
+
+/* ---------- KPIs ---------- */
+function kpis(L){
+  var t0=todayUTC(), up=L.filter(function(e){return e.upcoming}), del=L.filter(function(e){return /deliver/i.test(e.status)});
+  var n14=up.filter(function(e){ return e.days!=null && e.days<=14 }).length;
+  var ext=[], hostsInt=0; L.forEach(function(e){ ext=ext.concat(e.partners); if(e.host && !e.partners.length) hostsInt++ }); ext=uniq(ext);
+  var withReg=L.filter(function(e){ return e.reg!=null }), withAtt=L.filter(function(e){ return e.att!=null }), withSat=L.filter(function(e){ return e.sat!=null });
+  var reg=withReg.reduce(function(a,e){return a+e.reg},0), att=withAtt.reduce(function(a,e){return a+e.att},0);
+  var both=L.filter(function(e){ return e.reg>0 && e.att!=null }), rate = both.length ? pct(both.reduce(function(a,e){return a+e.att},0), both.reduce(function(a,e){return a+e.reg},0)) : null;
+  var sat = withSat.length ? withSat.reduce(function(a,e){return a+e.sat},0)/withSat.length : null;
+  var tbc=L.filter(function(e){return e.tbc}).length;
+  var cov=function(n){ return n ? 'Reported for '+n+' of '+L.length+' events' : 'Not reported yet'+(del.length? ' · '+del.length+' delivered to report' : '') };
+  var K=[
+    ['hero','Total events', fmt(L.length), (L.length-tbc)+' dated · '+tbc+' date TBC'],
+    ['','Upcoming', fmt(up.length), n14+' in the next 14 days'],
+    ['','Delivered', fmt(del.length), L.length ? fp(pct(del.length,L.length))+' of events in view' : '—'],
+    ['','Partners', fmt(ext.length), ext.length ? ext.slice(0,3).join(', ')+(ext.length>3?' +'+(ext.length-3):'') : 'No external partner in view'],
+    ['','Registrations', withReg.length? fmt(reg) : '—', cov(withReg.length)],
+    ['','Attendees', withAtt.length? fmt(att) : '—', cov(withAtt.length)],
+    ['meter','Attendance rate', rate==null? '—' : fp(rate), rate==null ? 'Needs registrations and attendees' : 'Attendees ÷ registrations', rate],
+    ['meter','Satisfaction', sat==null? '—' : fp(sat), sat==null ? 'Not reported yet' : 'Average of '+withSat.length+' events', sat]
+  ];
+  var box=$('kpis'); box.innerHTML='';
+  K.forEach(function(k){
+    var d=document.createElement('div'); d.className='kpi'+(k[0]==='hero'?' hero':'');
+    d.innerHTML='<div class="lbl"></div><div class="val'+(k[2]==='—'?' na':'')+'"></div>'+(k[0]==='meter'&&k[4]!=null?'<div class="meter" aria-hidden="true"><i style="width:'+Math.min(100,k[4])+'%"></i></div>':'')+'<div class="sub"></div>';
+    d.querySelector('.lbl').textContent=k[1]; d.querySelector('.val').textContent=k[2]; d.querySelector('.sub').textContent=k[3];
+    box.appendChild(d);
+  });
+}
+
+/* ---------- next up (countdowns) ---------- */
+var timers=[];
+function nextUp(L){
+  timers=[]; var box=$('next'); box.innerHTML='';
+  var progs = orderBy(uniq(L.map(function(e){return e.program})),PROGRAM_ORDER), now=Date.now();
+  var any=false;
+  progs.forEach(function(p){
+    var cand = L.filter(function(e){ return e.program===p && !e.cancelled && e.start!=null && (e.end+DAY-3*3600000) > now });
+    cand.sort(function(a,b){ return a.start-b.start || (a.tbc-b.tbc) });
+    var e = cand[0]; if(!e) return; any=true;
+    var c=document.createElement('article'); c.className='nx'; c.style.setProperty('--c',progColor(p));
+    var when = e.tbc ? MONTHS[new Date(e.start).getUTCMonth()]+' '+new Date(e.start).getUTCFullYear()+' · day to be confirmed'
+      : dstr(e.start)+(e.end && e.end!==e.start ? ' to '+dstr(e.end) : '')+(e.time? ' · '+e.time+' KSA' : '');
+    c.innerHTML='<div class="pg"><i></i><span></span></div><h3></h3><div class="when"></div>'
+      +'<div class="cd'+(e.tbc?' tbc':'')+'"><div><b data-u="d">0</b><span>days</span></div><div><b data-u="h">0</b><span>hrs</span></div><div><b data-u="m">0</b><span>min</span></div><div><b data-u="s">0</b><span>sec</span></div></div>'
+      +'<div class="acts"></div>';
+    c.querySelector('.pg span').textContent=p+(cand.length>1? ' · '+cand.length+' upcoming' : '');
+    c.querySelector('h3').textContent=e.title; c.querySelector('.when').textContent=when+(e.track&&e.track!=='—'? ' · '+e.track : '');
+    var acts=c.querySelector('.acts');
+    if(e.link){ var a=document.createElement('a'); a.className='btn primary'; a.href=e.link; a.target='_blank'; a.rel='noopener'; a.textContent='Register'; acts.appendChild(a) }
+    else { var s=document.createElement('span'); s.className='tag warn'; s.textContent='Link not published yet'; acts.appendChild(s) }
+    var fb=document.createElement('button'); fb.type='button'; fb.className='btn'; fb.textContent=F.program===p?'Show all programs':'Focus on this program';
+    fb.onclick=function(){ toggle('program',p) }; acts.appendChild(fb);
+    box.appendChild(c);
+    timers.push({el:c, at: e.tbc ? e.start-3*3600000 : startMoment(e), end: e.end+DAY-3*3600000});
+  });
+  if(!any){ box.innerHTML='<div class="empty card" style="grid-column:1/-1">No upcoming events in this view.</div>' }
+  tick();
+}
+function tick(){
+  var now=Date.now();
+  timers.forEach(function(t){
+    var ms=t.at-now, live = ms<=0 && now<t.end;
+    t.el.classList.toggle('live', live);
+    if(ms<0) ms=0;
+    var d=Math.floor(ms/DAY), h=Math.floor(ms%DAY/36e5), m=Math.floor(ms%36e5/6e4), s=Math.floor(ms%6e4/1e3);
+    var set=function(u,v){ var b=t.el.querySelector('[data-u="'+u+'"]'); var txt=u==='d'? String(v) : String(v).padStart(2,'0'); if(b.textContent!==txt) b.textContent=txt };
+    set('d',d); set('h',h); set('m',m); set('s',s);
+    if(live && !t.el.querySelector('.tag.good')){ var g=document.createElement('span'); g.className='tag good'; g.innerHTML='<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/></svg>'; g.appendChild(document.createTextNode('Happening now')); t.el.querySelector('.pg').appendChild(g) }
+  });
+}
+setInterval(tick,1000);
+
+/* ---------- trend (stacked bars by program) ---------- */
+function trend(L){
+  var box=$('trend'), lg=$('trend-legend');
+  var dated=L.filter(function(e){return e.start!=null});
+  var progs=orderBy(uniq(dated.map(function(e){return e.program})),PROGRAM_ORDER);
+  lg.innerHTML='';
+  progs.forEach(function(p){ var b=document.createElement('button'); b.type='button'; b.className=(HIDDEN[p]?'off':'')+(F.program===p?' sel':'');
+    b.setAttribute('aria-pressed',HIDDEN[p]?'false':'true'); b.title='Show or hide in this chart';
+    var i=document.createElement('i'); i.style.background=progColor(p); b.appendChild(i); b.appendChild(document.createTextNode(p));
+    b.onclick=function(){ HIDDEN[p]=!HIDDEN[p]; trend(rows()) }; lg.appendChild(b) });
+  if(!dated.length){ box.innerHTML='<div class="empty">No dated events in this view.</div>'; $('trend-cap').textContent=''; return }
+  var vis=progs.filter(function(p){return !HIDDEN[p]});
+  var min=Math.min.apply(null,dated.map(function(e){return e.start})), max=Math.max.apply(null,dated.map(function(e){return e.start}));
+  var P=[], p=periodOf(min,GRAIN), last=periodOf(max,GRAIN).k, guard=0;
+  while(guard++<400){ P.push(p); if(p.k===last) break; p=nextPeriod(p,GRAIN) }
+  var cnt={}; P.forEach(function(q){ cnt[q.k]={} });
+  dated.forEach(function(e){ var q=periodOf(e.start,GRAIN); if(cnt[q.k]) cnt[q.k][e.program]=(cnt[q.k][e.program]||0)+1 });
+  var tot=P.map(function(q){ return vis.reduce(function(a,pp){ return a+(cnt[q.k][pp]||0) },0) });
+  var ymax=Math.max(1,Math.max.apply(null,tot)), step=ymax<=5?1:ymax<=10?2:ymax<=25?5:ymax<=50?10:20, top=Math.ceil(ymax/step)*step;
+  var W=Math.max(320,box.clientWidth||900), H=GRAIN==='week'?300:280, ml=34, mr=10, mt=18, mb=34, pw=W-ml-mr, ph=H-mt-mb;
+  var bw=pw/P.length, gap=Math.min(14,Math.max(2,bw*.28)), barW=Math.max(2,bw-gap);
+  var y=function(v){ return mt+ph-v/top*ph };
+  var s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Events per '+GRAIN+' stacked by program">';
+  for(var g=0; g<=top; g+=step){ s+='<line class="gl" x1="'+ml+'" x2="'+(W-mr)+'" y1="'+y(g)+'" y2="'+y(g)+'"/><text class="ax" x="'+(ml-8)+'" y="'+(y(g)+4)+'" text-anchor="end">'+g+'</text>' }
+  var every=Math.ceil(P.length/Math.max(4,Math.floor(pw/64)));
+  P.forEach(function(q,i){
+    var x=ml+i*bw+gap/2, acc=0;
+    vis.forEach(function(pp){ var v=cnt[q.k][pp]||0; if(!v) return;
+      var y1=y(acc+v), y0=y(acc), h=Math.max(0,y0-y1-(acc>0?2:0)); acc+=v;
+      var topSeg = acc===tot[i];
+      s+= topSeg && h>4 ? '<path class="seg-f" fill="'+progColor(pp)+'" d="M'+x+' '+(y1+h)+'V'+(y1+4)+'q0-4 4-4h'+(barW-8)+'q4 0 4 4V'+(y1+h)+'z"/>'
+                        : '<rect class="seg-f" fill="'+progColor(pp)+'" x="'+x+'" y="'+y1+'" width="'+barW+'" height="'+h+'"/>';
+    });
+    if(tot[i] && (P.length<=16 || tot[i]===Math.max.apply(null,tot))) s+='<text class="vl" x="'+(x+barW/2)+'" y="'+(y(tot[i])-5)+'" text-anchor="middle">'+tot[i]+'</text>';
+    if(i%every===0) s+='<text class="ax" x="'+(x+barW/2)+'" y="'+(H-mb+16)+'" text-anchor="middle">'+esc(q.l)+'</text>';
+    s+='<rect class="hit" data-i="'+i+'" tabindex="0" x="'+(ml+i*bw)+'" y="'+mt+'" width="'+bw+'" height="'+ph+'"><title>'+esc(q.l)+': '+tot[i]+' events</title></rect>';
+  });
+  s+='<line class="base" x1="'+ml+'" x2="'+(W-mr)+'" y1="'+y(0)+'" y2="'+y(0)+'"/>';
+  var t0=todayUTC(), tp=periodOf(t0,GRAIN), ti=P.findIndex(function(q){return q.k===tp.k});
+  if(ti>-1){ var nq=nextPeriod(tp,GRAIN), frac=(t0-tp.s)/(nq.s-tp.s), tx=ml+ti*bw+frac*bw; s+='<line class="today" x1="'+tx+'" x2="'+tx+'" y1="'+(mt-6)+'" y2="'+y(0)+'"/><text class="todaylbl" x="'+(tx+4)+'" y="'+(mt-6)+'">Today</text>' }
+  s+='</svg>'; box.innerHTML=s;
+  box.querySelectorAll('.hit').forEach(function(r){
+    var i=+r.dataset.i, q=P[i];
+    var show=function(ev){ var lines=vis.filter(function(pp){return cnt[q.k][pp]}).map(function(pp){ return {c:progColor(pp), n:pp, v:String(cnt[q.k][pp])} });
+      lines.push({n:'Total', v:String(tot[i]), tot:true}); showTip(ev, GRAIN==='week'? 'Week of '+q.l : q.l, lines) };
+    r.addEventListener('pointermove',show); r.addEventListener('focus',show); r.addEventListener('pointerleave',hideTip); r.addEventListener('blur',hideTip);
+  });
+  var tbc=dated.filter(function(e){return e.tbc}).length;
+  $('trend-cap').textContent = (tbc? tbc+' event'+(tbc>1?'s':'')+' with the day still to be confirmed '+(tbc>1?'are':'is')+' placed at the start of the month. ' : '')+'Select a program in the legend to hide or show it.';
+}
+
+/* ---------- horizontal bar lists ---------- */
+function hbars(id, items, key, colorFn, total, note){
+  var box=$(id); box.innerHTML='';
+  if(!items.length){ box.innerHTML='<div class="empty">Nothing in this view.</div>'; return }
+  var max=Math.max.apply(null,items.map(function(i){return i.v}));
+  items.forEach(function(it){
+    var b=document.createElement('button'); b.type='button'; b.className='hrow'+(F[key]===it.k?' sel':'')+(F[key]&&F[key]!==it.k?' dim':'');
+    b.setAttribute('aria-pressed',F[key]===it.k?'true':'false');
+    b.innerHTML='<span class="nm"></span><span class="tr"><i></i></span><b></b>';
+    b.querySelector('.nm').textContent=it.k; b.querySelector('.nm').title=it.k;
+    var bar=b.querySelector('.tr i'); bar.style.width='0%'; bar.style.background=colorFn(it.k);
+    requestAnimationFrame(function(){ bar.style.width=(it.v/max*100)+'%' });
+    var val=b.querySelector('b'); val.textContent=fmt(it.v); var sm=document.createElement('small'); sm.textContent=fp(pct(it.v,total),0); val.appendChild(sm);
+    var show=function(ev){ var lines=[{c:colorFn(it.k), n:'Events', v:fmt(it.v)},{n:'Share', v:fp(pct(it.v,total))}].concat(it.extra||[]); showTip(ev,it.k,lines) };
+    b.addEventListener('pointermove',show); b.addEventListener('focus',show); b.addEventListener('pointerleave',hideTip); b.addEventListener('blur',hideTip);
+    b.onclick=function(){ hideTip(); toggle(key,it.k) };
+    box.appendChild(b);
+  });
+}
+function countBy(L, fn, order){
+  var m={}; L.forEach(function(e){ [].concat(fn(e)).forEach(function(k){ if(k) m[k]=(m[k]||0)+1 }) });
+  var keys = order ? orderBy(Object.keys(m),order) : Object.keys(m).sort(function(a,b){ return m[b]-m[a] || a.localeCompare(b) });
+  return keys.map(function(k){ return {k:k, v:m[k]} });
+}
+function breakdowns(){
+  var Lp=rows('program'), Ls=rows('status'), La=rows('announce'), Lh=rows('partner');
+  hbars('by-program', countBy(Lp,function(e){return e.program},PROGRAM_ORDER).map(function(it){
+    var up=Lp.filter(function(e){return e.program===it.k && e.upcoming}).length; it.extra=[{n:'Upcoming', v:String(up)}]; return it }), 'program', progColor, Lp.length);
+  hbars('by-status', countBy(Ls,function(e){return e.status},STATUS_ORDER), 'status', function(k){ return /cancel/i.test(k)?'var(--crit)':/postpon/i.test(k)?'var(--warn)':'var(--bar)' }, Ls.length);
+  hbars('by-announce', countBy(La,function(e){return e.announce},ANNOUNCE_ORDER), 'announce', function(){ return 'var(--bar)' }, La.length);
+  var soon=La.filter(function(e){ return e.days!=null && e.days<=14 && !e.cancelled }), soonPub=soon.filter(function(e){ return /publish/i.test(e.announce) }).length;
+  $('ann-note').textContent = soon.length ? soonPub+' of '+soon.length+' events in the next 14 days announced' : 'Nothing due in the next 14 days';
+  var hosts=countBy(Lh,function(e){ return e.partners.length ? e.partners : (e.host ? 'Classera (own events)' : 'Host not set') });
+  var ext=hosts.filter(function(h){ return h.k!=='Classera (own events)' && h.k!=='Host not set' }).length;
+  hbars('by-partner', hosts.slice(0,10), 'partner', function(k){ return /^Classera \(own|^Host not/.test(k)?'var(--pother)':'var(--p7)' }, Lh.length);
+  $('by-partner').querySelectorAll('.hrow').forEach(function(b){ if(/^Classera \(own|^Host not/.test(b.querySelector('.nm').textContent)){ b.onclick=null; b.style.cursor='default' } });
+  $('part-note').textContent = ext+' external partner'+(ext===1?'':'s')+' in view';
+}
+
+/* ---------- outcomes table ---------- */
+function outcomes(L){
+  var progs=orderBy(uniq(L.map(function(e){return e.program})),PROGRAM_ORDER);
+  var agg=function(list){ var del=list.filter(function(e){return /deliver/i.test(e.status)}).length,
+      r=list.filter(function(e){return e.reg!=null}), a=list.filter(function(e){return e.att!=null}), s=list.filter(function(e){return e.sat!=null}),
+      both=list.filter(function(e){return e.reg>0 && e.att!=null});
+    return {n:list.length, del:del, reg:r.length? r.reduce(function(x,e){return x+e.reg},0):null, att:a.length? a.reduce(function(x,e){return x+e.att},0):null,
+      rate: both.length? pct(both.reduce(function(x,e){return x+e.att},0), both.reduce(function(x,e){return x+e.reg},0)) : null,
+      sat: s.length? s.reduce(function(x,e){return x+e.sat},0)/s.length : null} };
+  var cell=function(v,f){ return v==null ? '<td class="n muted">—</td>' : '<td class="n">'+f(v)+'</td>' };
+  var row=function(name,g,col){ return '<td>'+(col?'<span class="pcode"><i style="background:'+col+'"></i>'+esc(name)+'</span>':esc(name))+'</td><td class="n">'+g.n+'</td><td class="n">'+g.del+'</td>'
+    +cell(g.reg,fmt)+cell(g.att,fmt)+cell(g.rate,function(v){return fp(v)})+cell(g.sat,function(v){return fp(v)}) };
+  var h='<thead><tr><th>Program</th><th class="n">Events</th><th class="n">Delivered</th><th class="n">Registrations</th><th class="n">Attendees</th><th class="n">Attendance</th><th class="n">Satisfaction</th></tr></thead><tbody>';
+  progs.forEach(function(p){ h+='<tr>'+row(p,agg(L.filter(function(e){return e.program===p})),progColor(p))+'</tr>' });
+  h+='</tbody><tfoot><tr>'+row('Total',agg(L))+'</tr></tfoot>';
+  $('t-out').innerHTML = progs.length ? h : '<tbody><tr><td class="empty">Nothing in this view.</td></tr></tbody>';
+  var rep=L.filter(function(e){return e.reg!=null || e.att!=null || e.sat!=null}).length;
+  $('out-cap').textContent = rep ? 'Figures from '+rep+' events with results entered in the tracker.' : 'Enter Registrations, Attendees and Satisfaction % in the tracker after each event; this table fills in automatically.';
+}
+
+/* ---------- attention ---------- */
+function attention(L){
+  var box=$('attention'), list=L.filter(function(e){return e.flag}).sort(function(a,b){ var o={'Update status':0,'Add link':1,'Announce':2,'Add link soon':3}; return o[a.flag]-o[b.flag] || (a.start||0)-(b.start||0) });
+  box.innerHTML='';
+  if(!list.length){ box.innerHTML='<div class="empty">All clear: nothing needs action in this view.</div>'; return }
+  list.slice(0,8).forEach(function(e){
+    var r=document.createElement('div'); r.className='att-row';
+    var cls = e.flag==='Update status' ? 'crit' : e.flag==='Add link soon' ? '' : 'warn';
+    r.innerHTML='<span class="tag '+cls+'"></span><div style="min-width:0"><div class="t"></div><div class="d"></div></div><span class="pcode"><i></i></span>';
+    r.querySelector('.tag').textContent=e.flag; r.querySelector('.t').textContent=e.title;
+    r.querySelector('.d').textContent=(e.start!=null? dstr(e.start) : 'No date')+(e.days!=null? ' · in '+e.days+' day'+(e.days===1?'':'s') : e.timing==='Past'?' · past':'')+' · '+e.program;
+    r.querySelector('.pcode i').style.background=progColor(e.program);
+    box.appendChild(r);
+  });
+  if(list.length>8){ var m=document.createElement('div'); m.className='cap'; m.textContent='+'+(list.length-8)+' more. Filter or search the event list below to see them.'; box.appendChild(m) }
+}
+
+/* ---------- events table ---------- */
+function table(L){
+  var q=$('q').value.trim().toLowerCase(), list=L.filter(function(e){ return !q || e.q.indexOf(q)>-1 });
+  var key={date:function(e){return e.start==null?9e15:e.start}, title:function(e){return e.title}, program:function(e){return PROGRAM_ORDER.indexOf(e.program)+e.program},
+    status:function(e){return STATUS_ORDER.indexOf(e.status)}, announce:function(e){return ANNOUNCE_ORDER.indexOf(e.announce)}, days:function(e){return e.days==null?9e9:e.days}}[SORT.k];
+  list.sort(function(a,b){ var x=key(a), y=key(b); return (x>y?1:x<y?-1:0)*SORT.dir || (a.start||0)-(b.start||0) });
+  var th=function(k,l,n){ return '<th'+(n?' class="n"':'')+(k?' data-k="'+k+'" aria-sort="'+(SORT.k===k?(SORT.dir>0?'ascending':'descending'):'none')+'"':'')+'>'+l+(k&&SORT.k===k?'<span class="ar">'+(SORT.dir>0?'▲':'▼')+'</span>':'')+'</th>' };
+  var h='<thead><tr>'+th('date','Date')+th('title','Event')+th('program','Program')+th('','Partner / host')+th('','Delivery')+th('status','Status')+th('announce','Announced')+th('days','Countdown',1)+th('','Link')+'</tr></thead><tbody>';
+  list.forEach(function(e){
+    var cd = e.timing==='Past' ? '<span class="tag">Past</span>' : e.timing==='In progress' ? '<span class="tag good">Now</span>' : e.days==null ? '—' :
+      '<span class="tag'+(e.days<=14?' warn':'')+'">'+(e.tbc?'~':'')+e.days+' d</span>';
+    var dt = e.start==null ? '—' : e.tbc ? MONTHS[new Date(e.start).getUTCMonth()]+' '+new Date(e.start).getUTCFullYear()+' <span class="muted">(day TBC)</span>' : dstr(e.start)+(e.end&&e.end!==e.start?' <span class="muted">to '+dstr(e.end,false)+'</span>':'');
+    h+='<tr><td style="white-space:nowrap">'+dt+'</td><td><span class="nm" title="'+esc(e.title)+'">'+esc(e.title)+'</span><span class="sub">'+esc(e.id)+' · '+esc(e.track)+'</span></td>'
+      +'<td><span class="pcode"><i style="background:'+progColor(e.program)+'"></i>'+esc(e.program)+'</span></td><td>'+esc(e.host||'—')+'</td><td>'+esc(e.mode)+'</td>'
+      +'<td>'+esc(e.status)+'</td><td>'+(/publish/i.test(e.announce)?'<span class="tag good">'+esc(e.announce)+'</span>':esc(e.announce))+'</td><td class="n">'+cd+'</td>'
+      +'<td>'+(e.link?'<a href="'+esc(e.link)+'" target="_blank" rel="noopener">Open</a>':'<span class="muted">—</span>')+'</td></tr>';
+  });
+  h+='</tbody>';
+  $('t-events').innerHTML = list.length ? h : '<tbody><tr><td class="empty">No events match.</td></tr></tbody>';
+  $('count').textContent = list.length+' of '+EV.length+' events';
+  $('t-events').querySelectorAll('th[data-k]').forEach(function(t){ t.tabIndex=0; var go=function(){ var k=t.dataset.k; SORT = SORT.k===k ? {k:k,dir:-SORT.dir} : {k:k,dir:1}; table(rows()) };
+    t.onclick=go; t.onkeydown=function(ev){ if(ev.key==='Enter'||ev.key===' '){ ev.preventDefault(); go() } } });
+}
+
+/* ---------- render ---------- */
+function header(){
+  var ds=EV.filter(function(e){return e.start!=null}).map(function(e){return e.start});
+  if(ds.length) $('period').textContent = EV.length+' events from '+dstr(Math.min.apply(null,ds))+' to '+dstr(Math.max.apply(null,ds))+'. What is coming next, how the plan is progressing, and how events perform.';
+  var s=$('src'); s.className='src'+(SOURCE==='live'?' live':''); s.innerHTML='<i></i><span></span>';
+  var t = READ_AT ? READ_AT.toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}) : '';
+  s.querySelector('span').innerHTML = SOURCE==='live' ? 'Live from <b>events-tracker.xlsx</b> · read '+esc(t) : 'Built-in copy from '+esc(dstr(toDay(READ_AT.toISOString())));
+  $('foot-src').textContent = SOURCE==='live' ? 'Data: events-tracker.xlsx (updates when the file is re-uploaded)' : 'Data: built-in copy';
+}
+function render(){
+  setupFilters(); chips();
+  var L=rows();
+  kpis(L); nextUp(L); trend(L); breakdowns(); outcomes(L); attention(L); table(L);
+}
+
+/* ---------- wire up ---------- */
+FILTERS.forEach(function(f){ $(f[1]).addEventListener('change',function(e){ F[f[0]]=e.target.value; if(f[0]==='program') F.track=''; render() }) });
+$('f-period').addEventListener('change',function(e){ F.period=e.target.value; if(F.period==='custom'){ F.from=$('f-from').value; F.to=$('f-to').value } render() });
+['f-from','f-to'].forEach(function(id,i){ $(id).addEventListener('change',function(e){ if(i) F.to=e.target.value; else F.from=e.target.value; render() }) });
+$('reset').onclick=function(){ F={}; HIDDEN={}; $('q').value=''; render() };
+$('q').addEventListener('input',function(){ table(rows()) });
+$('print').onclick=function(){ window.print() };
+document.querySelectorAll('.seg button').forEach(function(b){ b.onclick=function(){ GRAIN=b.dataset.g;
+  document.querySelectorAll('.seg button').forEach(function(x){ x.setAttribute('aria-pressed',String(x===b)) }); trend(rows()) } });
+var rz; addEventListener('resize',function(){ clearTimeout(rz); rz=setTimeout(function(){ if(EV.length) trend(rows()) },150) });
+addEventListener('scroll',hideTip,{passive:true});
+$('themeBtn').onclick=function(){ var r=document.documentElement, dark = r.getAttribute('data-theme') ? r.getAttribute('data-theme')==='dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+  r.setAttribute('data-theme', dark?'light':'dark'); try{ localStorage.setItem('ev_theme', dark?'light':'dark') }catch(e){} };
+try{ var th=localStorage.getItem('ev_theme'); if(th) document.documentElement.setAttribute('data-theme',th) }catch(e){}
+load().then(function(){ header(); render() });
+})();
+</script>
+<script src="../assets/classera-fx-v1.js" defer></script>
+</body>
+</html>
