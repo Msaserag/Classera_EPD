@@ -247,6 +247,7 @@ html[data-lang="ar"] [lang="en"]{display:none !important}
 </style>
 <!-- Interactive effects layer: remove these two lines to turn all effects off -->
 <link rel="stylesheet" href="../assets/classera-fx-v1.css">
+<script src="../assets/classera-tracker-v1.js"></script>
 </head>
 <body>
 <script>
@@ -1786,7 +1787,10 @@ html[data-lang="ar"] [lang="en"]{display:none !important}
   try{
     if(window.parent && window.parent !== window && window.parent.CLASSERA_LINKS){ apply(window.parent.CLASSERA_LINKS); }
   }catch(e){}
-  load(0);
+  window.CLASSERA_LINKS_APPLY = apply;
+  window.CLASSERA_LINKS_FALLBACK = function(){ load(0); };
+  /* links come from events-tracker.xlsx; links.json is only the fallback */
+  if(!window.CLASSERA_TRACKER_PAGE) load(0);
 })();
 </script>
 <script src="../assets/classera-fx-v1.js" defer></script>

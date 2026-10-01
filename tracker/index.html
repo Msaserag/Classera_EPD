@@ -1,0 +1,547 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>AY26-27 Events Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Arabic:wght@400;500&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+/* Layout: control bar, KPI strip, month chart beside the follow-up queue, program readiness, then the full event register. */
+:root{
+  --bg:#F3F6FA; --surface:#FFFFFF; --ink:#0B2545; --muted:#5B6B82; --faint:#8A97AA; --line:#DCE3EC; --soft:#EAF0F6;
+  --accent:#0089B8; --accent-ink:#FFFFFF; --hover:#E6F4FA;
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100; --s5:#e87ba4;
+  --good:#0F8A4B; --good-bg:#DDF5E8; --warn:#A15C00; --warn-bg:#FFF0D6; --crit:#B42318; --crit-bg:#FDE4E1; --info:#1F5FB8; --info-bg:#E2EDFC; --idle:#5B6B82; --idle-bg:#ECEFF4;
+  --display:"Tajawal","IBM Plex Sans",system-ui,sans-serif; --body:"IBM Plex Sans","IBM Plex Sans Arabic",system-ui,sans-serif;
+  --arabic:"IBM Plex Sans Arabic","Tajawal",system-ui,sans-serif; --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#08121F; --surface:#0F1C2E; --ink:#E8EEF6; --muted:#9AA9BE; --faint:#6E7F96; --line:#22324A; --soft:#14243A;
+  --accent:#3CB6E3; --accent-ink:#06121F; --hover:#122C42;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181;
+  --good:#4CC98A; --good-bg:#103326; --warn:#F2B455; --warn-bg:#352611; --crit:#F47C70; --crit-bg:#3A1714; --info:#7DB0F5; --info-bg:#132A4A; --idle:#9AA9BE; --idle-bg:#1A293E;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#08121F; --surface:#0F1C2E; --ink:#E8EEF6; --muted:#9AA9BE; --faint:#6E7F96; --line:#22324A; --soft:#14243A;
+  --accent:#3CB6E3; --accent-ink:#06121F; --hover:#122C42;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181;
+  --good:#4CC98A; --good-bg:#103326; --warn:#F2B455; --warn-bg:#352611; --crit:#F47C70; --crit-bg:#3A1714; --info:#7DB0F5; --info-bg:#132A4A; --idle:#9AA9BE; --idle-bg:#1A293E;
+  color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font:14px/1.5 var(--body);padding-inline:16px;padding-block:20px 48px}
+.wrap{max-width:1280px;margin:0 auto;display:grid;gap:18px}
+h1,h2,h3{font-family:var(--display);margin:0;text-wrap:balance;color:var(--ink)}
+h1{font-size:clamp(24px,3.2vw,32px);font-weight:800;letter-spacing:-.01em;line-height:1.1}
+h2{font-size:17px;font-weight:700}
+.eyebrow{font:600 11px/1 var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+.muted{color:var(--muted)}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+button,select,input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* header */
+.top{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end;justify-content:space-between}
+.top .title{display:grid;gap:8px;min-width:0}
+.source{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;background:var(--surface);border:1px solid var(--line);font-size:12px;color:var(--muted);max-width:100%}
+.chip b{color:var(--ink);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--faint);flex:none}
+.dot.live{background:var(--good)}
+.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--surface);padding:9px 14px;border-radius:8px;cursor:pointer;font-weight:600;font-size:13px}
+.btn:hover{background:var(--hover)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:transparent}
+.btn.primary:hover{filter:brightness(1.07)}
+.btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.drop-active{outline:3px dashed var(--accent);outline-offset:-6px}
+
+/* filters */
+.filters{display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:10px 12px}
+.filters .lbl{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.pchips{display:flex;flex-wrap:wrap;gap:6px}
+.pchip{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;border:1px solid var(--line);background:transparent;cursor:pointer;font-size:12.5px;font-weight:500}
+.pchip i{width:10px;height:10px;border-radius:3px;flex:none}
+.pchip[aria-pressed="false"]{opacity:.45}
+.pchip[aria-pressed="false"] i{background:var(--line)!important}
+.filters select,.filters input{border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:6px 10px;font-size:13px}
+.filters input{min-width:0;flex:1 1 180px}
+.sep{width:1px;align-self:stretch;background:var(--line)}
+.clear{border:0;background:none;color:var(--accent);font-weight:600;cursor:pointer;font-size:13px;padding:4px}
+
+/* KPIs */
+.kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.kpi{background:var(--surface);padding:14px 16px;display:grid;gap:4px;align-content:start;text-align:left;border:0;cursor:default}
+.kpi[data-go]{cursor:pointer}
+.kpi[data-go]:hover{background:var(--hover)}
+.kpi .k{font-size:12px;color:var(--muted);font-weight:500}
+.kpi .v{font:700 30px/1.05 var(--display);font-variant-numeric:tabular-nums;color:var(--ink)}
+.kpi .s{font-size:12px;color:var(--faint)}
+.kpi .v.alert{color:var(--crit)}
+.kpi .v.ok{color:var(--good)}
+@media (max-width:980px){.kpis{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:520px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* panels */
+.grid2{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:18px}
+@media (max-width:980px){.grid2{grid-template-columns:minmax(0,1fr)}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:grid;gap:12px;min-width:0;align-content:start}
+.phead{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:8px}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:10px;height:10px;border-radius:3px;display:inline-block}
+.chart{position:relative;width:100%;overflow-x:auto}
+.chart svg{display:block;width:100%;min-width:560px;height:auto}
+.chart text{fill:var(--muted);font:11px var(--body)}
+.chart .gl{stroke:var(--line);stroke-width:1}
+.chart .bar{cursor:pointer}
+.chart .col:hover .hit{fill:var(--hover)}
+.chart .col.sel .hit{fill:var(--hover)}
+.chart .off{fill:var(--faint)}
+.tip{position:fixed;pointer-events:none;z-index:20;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:12px;box-shadow:0 6px 24px rgba(5,20,40,.18);min-width:170px;display:none}
+.tip .tt{font-weight:600;margin-bottom:4px}
+.tip .row{display:flex;justify-content:space-between;gap:12px}
+.tip .row i{width:8px;height:8px;border-radius:2px;display:inline-block;margin-right:6px}
+.note{font-size:12px;color:var(--faint)}
+
+/* queue */
+.queue{display:grid;gap:8px;max-height:360px;overflow:auto;padding-right:2px}
+.qitem{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center;padding:9px 10px;border:1px solid var(--line);border-radius:8px;cursor:pointer;background:var(--surface);text-align:left}
+.qitem:hover{background:var(--hover)}
+.qitem .t{font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.qitem .m{font-size:12px;color:var(--muted)}
+.qtabs{display:flex;flex-wrap:wrap;gap:6px}
+.qtab{border:1px solid var(--line);background:transparent;border-radius:999px;padding:4px 10px;font-size:12px;cursor:pointer}
+.qtab[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.empty-q{padding:18px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:8px}
+
+/* pills */
+.pill{display:inline-flex;align-items:center;gap:5px;padding:2px 8px;border-radius:999px;font-size:11.5px;font-weight:600;white-space:nowrap}
+.pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.p-good{color:var(--good);background:var(--good-bg)} .p-warn{color:var(--warn);background:var(--warn-bg)}
+.p-crit{color:var(--crit);background:var(--crit-bg)} .p-info{color:var(--info);background:var(--info-bg)} .p-idle{color:var(--idle);background:var(--idle-bg)}
+.prog{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);white-space:nowrap}
+.prog i{width:8px;height:8px;border-radius:2px;flex:none}
+
+/* readiness */
+.ready{display:grid;gap:14px}
+.rrow{display:grid;grid-template-columns:210px minmax(0,1fr) 110px 110px;gap:14px;align-items:center}
+.rrow .nm{display:flex;align-items:center;gap:8px;font-weight:600;min-width:0}
+.rrow .nm i{width:10px;height:10px;border-radius:3px;flex:none}
+.rrow .nm small{color:var(--faint);font-weight:400}
+.stack{display:flex;gap:2px;height:14px;border-radius:4px;overflow:hidden;background:var(--soft)}
+.stack span{display:block;height:100%}
+.meter{display:grid;gap:3px;font-size:12px;color:var(--muted)}
+.meter .bar{height:5px;border-radius:3px;background:var(--soft);overflow:hidden}
+.meter .bar i{display:block;height:100%;background:var(--accent);border-radius:3px}
+.rhead{font-size:11px;color:var(--faint);text-transform:uppercase;letter-spacing:.08em;font-weight:600}
+@media (max-width:760px){.rrow{grid-template-columns:minmax(0,1fr) 1fr 1fr}.rrow .stack{grid-column:1/-1;order:3}.rrow.rhead-row{display:none}}
+
+/* table */
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px}
+table{width:100%;border-collapse:collapse;min-width:980px;font-size:13px}
+th{position:sticky;top:0;background:var(--soft);text-align:left;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;padding:9px 10px;cursor:pointer;white-space:nowrap;user-select:none}
+th[aria-sort="ascending"]::after{content:" \2191"} th[aria-sort="descending"]::after{content:" \2193"}
+td{padding:9px 10px;border-top:1px solid var(--line);vertical-align:top}
+tbody tr.main{cursor:pointer}
+tbody tr.main:hover td{background:var(--hover)}
+td .ttl{font-weight:500}
+td:nth-child(2){min-width:300px}
+td .id{font-family:var(--mono);font-size:11.5px;color:var(--faint)}
+tr.detail td{background:var(--bg);padding:14px 16px}
+.dgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px 22px}
+.dgrid div{display:grid;gap:2px;min-width:0}
+.dgrid dt{font-size:11px;color:var(--faint);text-transform:uppercase;letter-spacing:.06em}
+.dgrid dd{margin:0;overflow-wrap:anywhere}
+.ar{font-family:var(--arabic);direction:rtl;text-align:right}
+a{color:var(--accent)}
+.count{font-size:12px;color:var(--muted)}
+
+/* empty state */
+.empty{border:2px dashed var(--line);border-radius:14px;background:var(--surface);padding:40px 24px;display:grid;gap:14px;justify-items:center;text-align:center}
+.empty p{max-width:60ch;margin:0;color:var(--muted)}
+.empty .steps{display:grid;gap:6px;text-align:left;font-size:13px;color:var(--muted)}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--surface);padding:10px 16px;border-radius:8px;font-size:13px;z-index:30;display:none;max-width:calc(100% - 32px)}
+@media (prefers-reduced-motion:no-preference){.panel,.kpis{animation:rise .35s ease-out both}@keyframes rise{from{transform:translateY(6px)}to{transform:none}}}
+body{margin:0}
+</style>
+</head>
+<body>
+<div class="wrap" id="app">
+  <header class="top">
+    <div class="title">
+      <span class="eyebrow">Classera Partner Success · Training Unit</span>
+      <h1>AY26-27 Events Tracker</h1>
+      <div class="source" id="source">
+        <span class="chip"><span class="dot" id="srcDot"></span><b id="srcName">Connecting to the shared tracker…</b></span>
+        <span class="chip" id="srcMeta" hidden></span>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <input type="file" id="file" accept=".xlsx,.xlsm,.xls" hidden>
+      <button class="btn primary" id="loadBtn" type="button"><svg viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>Preview a file</button>
+    </div>
+  </header>
+
+  <section id="emptyState" class="empty" hidden>
+    <span class="eyebrow">No tracker published yet</span>
+    <h2>Add events-tracker.xlsx to this folder</h2>
+    <p>This page reads <b>events-tracker.xlsx</b> from the site root, the same file that drives plans.classera.com. Upload the tracker there with exactly that name and refresh in about a minute. You can also drop a file here to preview it on your screen only.</p>
+    <button class="btn" type="button" data-pick>Preview a file</button>
+  </section>
+
+  <div id="dash" hidden style="display:grid;gap:18px">
+    <div class="filters" role="group" aria-label="Filters">
+      <span class="lbl">Program</span>
+      <div class="pchips" id="pchips"></div>
+      <span class="sep"></span>
+      <select id="fSem" aria-label="Semester"><option value="">Both semesters</option><option>Semester 1</option><option>Semester 2</option></select>
+      <select id="fTiming" aria-label="Timing"><option value="">Any timing</option><option value="upcoming">Upcoming only</option><option>Next 14 days</option><option>Next 45 days</option><option>In progress</option><option>Past</option></select>
+      <select id="fStatus" aria-label="Event status"><option value="">Any status</option></select>
+      <input id="fSearch" type="search" placeholder="Search title, partner, owner…" aria-label="Search">
+      <button class="clear" id="fClear" type="button">Reset</button>
+    </div>
+
+    <section class="kpis" id="kpis" aria-label="Key figures"></section>
+
+    <div class="grid2">
+      <section class="panel">
+        <div class="phead"><h2>Events by month</h2><span class="note">Click a month to filter the register</span></div>
+        <div class="legend" id="monthLegend"></div>
+        <div class="chart" id="monthChart"></div>
+        <div class="note" id="offNote"></div>
+      </section>
+      <section class="panel">
+        <div class="phead"><h2>Follow-up queue</h2><span class="count" id="qCount"></span></div>
+        <div class="qtabs" id="qtabs"></div>
+        <div class="queue" id="queue"></div>
+      </section>
+    </div>
+
+    <section class="panel">
+      <div class="phead"><h2>Program readiness</h2><div class="legend" id="statusLegend"></div></div>
+      <div class="ready" id="ready"></div>
+    </section>
+
+    <section class="panel">
+      <div class="phead"><h2>Event register</h2><span class="count" id="tCount"></span></div>
+      <div class="tablewrap"><table id="tbl"><thead><tr>
+        <th data-k="start">Date</th><th data-k="title">Event</th><th data-k="program">Program</th><th data-k="timing">Timing</th>
+        <th data-k="status">Event status</th><th data-k="link">Link</th><th data-k="ann">Announcement</th><th data-k="owner">Owner</th><th data-k="flag">Follow-up</th>
+      </tr></thead><tbody></tbody></table></div>
+    </section>
+  </div>
+</div>
+<div class="tip" id="tip"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+(function(){
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const PROGRAMS=['Professional Development','Accreditation','Enrichment Academy','Product Events','In-Person Events'];
+const PCOL={'Professional Development':'var(--s1)','Accreditation':'var(--s2)','Enrichment Academy':'var(--s3)','Product Events':'var(--s4)','In-Person Events':'var(--s5)'};
+const pcol=p=>PCOL[p]||'var(--faint)';
+const STATUSES=['Planned','Confirmed','Registration Open','Delivered','Postponed','Cancelled'];
+const SCLS={'Planned':'p-idle','Confirmed':'p-info','Registration Open':'p-info','Delivered':'p-good','Postponed':'p-warn','Cancelled':'p-crit'};
+const SCOL={'Planned':'var(--faint)','Confirmed':'var(--info)','Registration Open':'var(--accent)','Delivered':'var(--good)','Postponed':'var(--warn)','Cancelled':'var(--crit)'};
+const MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const FIELDS={id:'Event ID',program:'Program',track:'Track',title:'Event Title (EN)',titleAr:'Event Title (AR)',host:'Partner / Host',start:'Start Date',end:'End Date',dstat:'Date Status',
+  time:'Time (KSA)',aud:'Audience',lang:'Language',loc:'Country / Location',mode:'Delivery Mode',price:'Pricing',linkUrl:'Registration Link',status:'Event Status',ann:'Announcement Status',
+  owner:'Owner',reg:'Registrations',att:'Attendees',sat:'Satisfaction %',next:'Next Action',due:'Due Date',notes:'Notes'};
+const KEYS=Object.keys(FIELDS);
+const norm=s=>String(s||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+
+let DATA=null, VIEW=null, db=null, user=null, canWrite=true, monthSel=null, qFilter='all', sortK='start', sortDir=1, openRow=null;
+const state={progs:new Set(PROGRAMS),sem:'',timing:'',status:'',q:''};
+
+function toast(msg){const t=$('#toast');t.textContent=msg;t.style.display='block';clearTimeout(toast._t);toast._t=setTimeout(()=>t.style.display='none',3800)}
+
+/* ---------- dates ---------- */
+function todayISO(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function serialToISO(v){
+  if(v==null||v==='') return '';
+  if(typeof v==='number'){const d=new Date(Date.UTC(1899,11,30)+Math.round(v)*864e5);return d.toISOString().slice(0,10)}
+  if(v instanceof Date) return v.getFullYear()+'-'+String(v.getMonth()+1).padStart(2,'0')+'-'+String(v.getDate()).padStart(2,'0');
+  const s=String(v).trim(); const m=s.match(/^(\d{4})-(\d{2})-(\d{2})/); if(m) return m[0];
+  const d=new Date(s); return isNaN(d)?'':serialToISO(d);
+}
+const dayDiff=(a,b)=>Math.round((Date.parse(a)-Date.parse(b))/864e5);
+function fmtDate(e){
+  if(!e.start) return 'TBC';
+  const [y,m,d]=e.start.split('-').map(Number);
+  if(e.dstat&&e.dstat!=='Confirmed') return MONTHS[m-1]+' '+y;
+  if(e.end&&e.end!==e.start){const [y2,m2,d2]=e.end.split('-').map(Number);return m2===m?`${d}-${d2} ${MONTHS[m-1]} ${y}`:`${d} ${MONTHS[m-1]} - ${d2} ${MONTHS[m2-1]} ${y2}`}
+  return `${d} ${MONTHS[m-1]} ${y}`;
+}
+
+/* ---------- derive ---------- */
+function derive(rows){
+  const t=todayISO();
+  return rows.map(r=>{
+    const e=Object.assign({},r);
+    e.end=e.end||e.start;
+    e.status=e.status||'Planned'; e.ann=e.ann||'Not started';
+    e.link=(e.linkUrl||'').trim()?'Published':'Missing';
+    e.month=e.start?e.start.slice(0,7):'';
+    e.sem=e.start?(e.start<'2027-02-01'?'Semester 1':'Semester 2'):'';
+    if(!e.start) e.timing='';
+    else if(e.end<t) e.timing='Past';
+    else if(e.start<=t) e.timing='In progress';
+    else {const g=dayDiff(e.start,t); e.timing=g<=14?'Next 14 days':g<=45?'Next 45 days':'Later'}
+    e.days=e.start&&e.start>t?dayDiff(e.start,t):null;
+    const fin=['Delivered','Cancelled','Postponed'].includes(e.status);
+    e.flag='';
+    if(e.timing==='Past'&&!fin) e.flag='Update status';
+    else if(e.link==='Missing'&&(e.timing==='In progress'||e.timing==='Next 14 days')&&e.status!=='Cancelled') e.flag='Add link';
+    else if(e.timing==='Next 14 days'&&e.ann!=='Published'&&e.status!=='Cancelled') e.flag='Announce';
+    else if(e.dstat&&e.dstat!=='Confirmed'&&e.days!=null&&e.days<=60) e.flag='Confirm date';
+    let s=Number(e.sat); if(e.sat!==''&&e.sat!=null&&!isNaN(s)){if(s>1)s=s/100;e.satN=s}else e.satN=null;
+    e.regN=Number(e.reg)||0; e.attN=Number(e.att)||0;
+    return e;
+  });
+}
+
+/* ---------- workbook parsing ---------- */
+function parseWorkbook(buf,fileName){
+  const wb=XLSX.read(buf,{type:'array'});
+  const sh=wb.Sheets['Events']||wb.Sheets[wb.SheetNames.find(n=>/event/i.test(n))||wb.SheetNames[0]];
+  const aoa=XLSX.utils.sheet_to_json(sh,{header:1,raw:true,defval:null,blankrows:false});
+  let hi=aoa.findIndex(r=>r&&r.some(c=>norm(c)==='eventid'));
+  if(hi<0) throw new Error('No "Event ID" column was found. Load the AY26-27 Plans Events Tracker workbook and keep its header names.');
+  const head=aoa[hi].map(norm), idx={};
+  KEYS.forEach(k=>{idx[k]=head.indexOf(norm(FIELDS[k]))});
+  ['id','program','start'].forEach(k=>{if(idx[k]<0) throw new Error(`The Events sheet is missing the "${FIELDS[k]}" column.`)});
+  const rows=[];
+  for(const r of aoa.slice(hi+1)){
+    if(!r) continue; const id=r[idx.id]; if(id==null||String(id).trim()==='') continue;
+    const o={};
+    KEYS.forEach(k=>{let v=idx[k]>=0?r[idx[k]]:null;
+      if(k==='start'||k==='end'||k==='due') v=serialToISO(v);
+      else if(k==='reg'||k==='att'||k==='sat') v=(v===null||v==='')?'':Number(v);
+      else v=v==null?'':String(v).trim();
+      o[k]=v});
+    rows.push(o);
+  }
+  if(!rows.length) throw new Error('The Events sheet has no event rows.');
+  let off=[]; const os=wb.Sheets['Off-Periods'];
+  if(os){XLSX.utils.sheet_to_json(os,{header:1,raw:true,defval:null}).slice(1).forEach(r=>{
+    if(r&&r[0]!=null&&r[2]) {const a=serialToISO(r[0]),b=serialToISO(r[1]); if(a&&b) off.push([a,b,String(r[2]),String(r[4]||'')])}})}
+  return {fileName,loadedAt:new Date().toISOString(),cols:KEYS,rows:rows.map(o=>KEYS.map(k=>o[k])),off};
+}
+function unpack(doc){
+  const cols=doc.cols||KEYS;
+  return {meta:doc,rows:derive(doc.rows.map(a=>{const o={};cols.forEach((k,i)=>o[k]=a[i]==null?'':a[i]);return o})),off:doc.off||[]};
+}
+
+/* ---------- filtering ---------- */
+function filtered(skipMonth){
+  const q=state.q.toLowerCase();
+  return DATA.rows.filter(e=>state.progs.has(e.program)||!PROGRAMS.includes(e.program)&&state.progs.size===PROGRAMS.length)
+    .filter(e=>!state.sem||e.sem===state.sem)
+    .filter(e=>!state.timing||(state.timing==='upcoming'?e.timing!=='Past':e.timing===state.timing))
+    .filter(e=>!state.status||e.status===state.status)
+    .filter(e=>!q||[e.id,e.title,e.titleAr,e.host,e.owner,e.track,e.loc,e.notes].join(' ').toLowerCase().includes(q))
+    .filter(e=>skipMonth||!monthSel||e.month===monthSel);
+}
+
+/* ---------- render ---------- */
+function renderAll(){
+  if(!DATA){$('#dash').hidden=true;$('#emptyState').hidden=false;return}
+  $('#emptyState').hidden=true;$('#dash').hidden=false;
+  renderKpis();renderMonth();renderQueue();renderReady();renderTable();
+}
+function renderFilters(){
+  $('#pchips').innerHTML=PROGRAMS.map(p=>`<button type="button" class="pchip" data-p="${esc(p)}" aria-pressed="${state.progs.has(p)}"><i style="background:${pcol(p)}"></i>${esc(p)}</button>`).join('');
+  $$('#pchips .pchip').forEach(b=>b.onclick=()=>{const p=b.dataset.p;
+    if(state.progs.size===PROGRAMS.length){state.progs=new Set([p])} else if(state.progs.has(p)){state.progs.delete(p);if(!state.progs.size)state.progs=new Set(PROGRAMS)} else state.progs.add(p);
+    renderFilters();renderAll()});
+}
+function pct(a,b){return b?Math.round(a/b*100)+'%':'-'}
+function renderKpis(){
+  const rows=filtered(), up=rows.filter(e=>e.timing!=='Past');
+  const n14=rows.filter(e=>e.timing==='Next 14 days'||e.timing==='In progress');
+  const miss=up.filter(e=>e.link==='Missing');
+  const flags=rows.filter(e=>e.flag);
+  const deliv=rows.filter(e=>e.status==='Delivered');
+  const reg=rows.reduce((a,e)=>a+e.regN,0), att=rows.reduce((a,e)=>a+e.attN,0);
+  const sats=rows.filter(e=>e.satN!=null);
+  const avgSat=sats.length?Math.round(sats.reduce((a,e)=>a+e.satN,0)/sats.length*100)+'%':'-';
+  const k=[
+    {k:'Events in view',v:rows.length,s:`${up.length} still ahead`},
+    {k:'Next 14 days',v:n14.length,s:n14[0]?`Next: ${n14.sort((a,b)=>a.start.localeCompare(b.start))[0].id}`:'Nothing scheduled',go:'n14'},
+    {k:'Follow-ups open',v:flags.length,s:'Status, links, announcements',cls:flags.length?'alert':'ok',go:'flags'},
+    {k:'Links missing',v:miss.length,s:`${pct(up.length-miss.length,up.length)} of upcoming published`,cls:miss.length?'':'ok',go:'links'},
+    {k:'Delivered',v:deliv.length,s:`${pct(deliv.length,rows.filter(e=>e.timing==='Past').length)} of past events`},
+    {k:'Attendance',v:reg?pct(att,reg):'-',s:reg?`${att.toLocaleString()} of ${reg.toLocaleString()} registered · CSAT ${avgSat}`:'Add registrations after delivery'},
+  ];
+  $('#kpis').innerHTML=k.map(x=>`<${x.go?'button type="button"':'div'} class="kpi" ${x.go?`data-go="${x.go}"`:''}><span class="k">${esc(x.k)}</span><span class="v ${x.cls||''}">${esc(x.v)}</span><span class="s">${esc(x.s)}</span></${x.go?'button':'div'}>`).join('');
+  $$('#kpis [data-go]').forEach(b=>b.onclick=()=>{const g=b.dataset.go;
+    if(g==='n14'){state.timing='Next 14 days';$('#fTiming').value='Next 14 days';renderAll();$('#tbl').scrollIntoView({behavior:'smooth'})}
+    else{qFilter=g==='links'?'Add link':'all';renderQueue();$('#queue').scrollIntoView({behavior:'smooth',block:'center'})}});
+}
+function monthsSpan(){
+  const ms=[...new Set(DATA.rows.map(e=>e.month).filter(Boolean))].sort(); if(!ms.length) return [];
+  const out=[];let [y,m]=ms[0].split('-').map(Number);const [ey,em]=ms[ms.length-1].split('-').map(Number);
+  while(y<ey||(y===ey&&m<=em)){out.push(y+'-'+String(m).padStart(2,'0'));m++;if(m>12){m=1;y++}}
+  return out;
+}
+function renderMonth(){
+  const rows=filtered(true), months=monthsSpan(), progs=PROGRAMS.filter(p=>state.progs.has(p));
+  $('#monthLegend').innerHTML=progs.map(p=>`<span><i style="background:${pcol(p)}"></i>${esc(p)}</span>`).join('');
+  const data=months.map(m=>{const o={m,tot:0};progs.forEach(p=>{o[p]=rows.filter(e=>e.month===m&&e.program===p).length;o.tot+=o[p]});return o});
+  const max=Math.max(4,...data.map(d=>d.tot)); const step=max<=10?2:max<=20?5:10; const top=Math.ceil(max/step)*step;
+  const W=720,H=260,L=34,R=8,T=12,B=46, cw=(W-L-R)/Math.max(1,months.length), bw=Math.min(38,cw*.56);
+  const y=v=>T+(H-T-B)*(1-v/top);
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Events per month by program">`;
+  for(let v=0;v<=top;v+=step){s+=`<line class="gl" x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}"/><text x="${L-8}" y="${y(v)+4}" text-anchor="end">${v}</text>`}
+  const offs=DATA.off||[];
+  data.forEach((d,i)=>{
+    const cx=L+cw*i+cw/2, x=cx-bw/2; let acc=0;
+    s+=`<g class="col${monthSel===d.m?' sel':''}" data-m="${d.m}"><rect class="hit" x="${L+cw*i+1}" y="${T}" width="${cw-2}" height="${H-T-B+2}" fill="transparent" rx="6"/>`;
+    const segs=progs.filter(p=>d[p]);
+    segs.forEach((p,j)=>{const h=(H-T-B)*d[p]/top, yy=y(acc+d[p]); const last=j===segs.length-1;
+      const hh=Math.max(0,h-(j>0?2:0));
+      s+=last?`<path class="bar" fill="${pcol(p)}" d="M${x},${yy+hh} V${yy+4} Q${x},${yy} ${x+4},${yy} H${x+bw-4} Q${x+bw},${yy} ${x+bw},${yy+4} V${yy+hh} Z"/>`
+             :`<rect class="bar" fill="${pcol(p)}" x="${x}" y="${yy}" width="${bw}" height="${hh}"/>`;
+      acc+=d[p]});
+    if(d.tot) s+=`<text x="${cx}" y="${y(d.tot)-6}" text-anchor="middle" style="fill:var(--ink);font-weight:600">${d.tot}</text>`;
+    const [yy,mm]=d.m.split('-').map(Number);
+    s+=`<text x="${cx}" y="${H-B+18}" text-anchor="middle" style="fill:var(--ink)">${MONTHS[mm-1]}</text><text x="${cx}" y="${H-B+31}" text-anchor="middle">${yy}</text>`;
+    const mo=offs.filter(o=>o[0].slice(0,7)<=d.m&&o[1].slice(0,7)>=d.m);
+    if(mo.length) s+=`<rect class="off" x="${cx-bw/2}" y="${H-B+38}" width="${bw}" height="3" rx="1.5"/>`;
+    s+='</g>';
+  });
+  s+='</svg>';
+  $('#monthChart').innerHTML=s;
+  $('#offNote').innerHTML=offs.length?'Grey marks under a month = KSA or Egypt school off-period inside that month (from the Off-Periods sheet). Hover a month for details.':'';
+  const tip=$('#tip');
+  $$('#monthChart .col').forEach(g=>{
+    const d=data.find(x=>x.m===g.dataset.m), mo=offs.filter(o=>o[0].slice(0,7)<=d.m&&o[1].slice(0,7)>=d.m);
+    const [yy,mm]=d.m.split('-').map(Number);
+    g.onmousemove=ev=>{tip.innerHTML=`<div class="tt">${MONTHS[mm-1]} ${yy} · ${d.tot} events</div>`+progs.filter(p=>d[p]).map(p=>`<div class="row"><span><i style="background:${pcol(p)}"></i>${esc(p)}</span><b class="num">${d[p]}</b></div>`).join('')
+      +(mo.length?`<div class="note" style="margin-top:6px">Off: ${mo.map(o=>esc(o[2])).join(', ')}</div>`:'');
+      tip.style.display='block';const r=tip.getBoundingClientRect();let lx=ev.clientX+14;if(lx+r.width>innerWidth-8)lx=ev.clientX-r.width-14;tip.style.left=lx+'px';tip.style.top=Math.max(8,ev.clientY-r.height-10)+'px'};
+    g.onmouseleave=()=>tip.style.display='none';
+    g.onclick=()=>{monthSel=monthSel===d.m?null:d.m;tip.style.display='none';renderAll();if(monthSel)toast(`Showing ${MONTHS[mm-1]} ${yy}. Click the month again to clear.`)};
+  });
+}
+const FLAGS=[['Update status','p-crit','Date passed, status not final'],['Add link','p-warn','Starts within 14 days, no registration link'],['Announce','p-warn','Starts within 14 days, not announced'],['Confirm date','p-info','Day not confirmed, within 60 days']];
+function renderQueue(){
+  const rows=filtered().filter(e=>e.flag);
+  const counts=Object.fromEntries(FLAGS.map(f=>[f[0],rows.filter(e=>e.flag===f[0]).length]));
+  $('#qtabs').innerHTML=[['all','All',rows.length],...FLAGS.map(f=>[f[0],f[0],counts[f[0]]])].filter(t=>t[0]==='all'||t[2]).map(t=>`<button type="button" class="qtab" data-q="${esc(t[0])}" aria-pressed="${qFilter===t[0]}">${esc(t[1])} <span class="num">${t[2]}</span></button>`).join('');
+  $$('#qtabs .qtab').forEach(b=>b.onclick=()=>{qFilter=b.dataset.q;renderQueue()});
+  const list=rows.filter(e=>qFilter==='all'||e.flag===qFilter).sort((a,b)=>(a.start||'').localeCompare(b.start||''));
+  $('#qCount').textContent=rows.length?`${rows.length} need attention`:'';
+  $('#queue').innerHTML=list.length?list.map(e=>{const f=FLAGS.find(x=>x[0]===e.flag);
+    return `<button type="button" class="qitem" data-id="${esc(e.id)}"><span class="pill ${f[1]}">${esc(e.flag)}</span><span style="min-width:0"><div class="t">${esc(e.title)}</div><div class="m"><span class="prog"><i style="background:${pcol(e.program)}"></i>${esc(e.id)}</span> · ${esc(fmtDate(e))}${e.owner?' · '+esc(e.owner):''}</div></span><span class="m num">${e.days!=null?'in '+e.days+'d':esc(e.timing)}</span></button>`}).join('')
+    :`<div class="empty-q">Nothing to follow up in this view.</div>`;
+  $$('#queue .qitem').forEach(b=>b.onclick=()=>jumpTo(b.dataset.id));
+}
+function renderReady(){
+  const rows=filtered();
+  $('#statusLegend').innerHTML=STATUSES.map(s=>`<span><i style="background:${SCOL[s]}"></i>${s}</span>`).join('');
+  const progs=PROGRAMS.filter(p=>state.progs.has(p));
+  $('#ready').innerHTML=`<div class="rrow rhead-row"><span class="rhead">Program</span><span class="rhead">Event status mix</span><span class="rhead">Links (upcoming)</span><span class="rhead">Announced (upcoming)</span></div>`+
+  progs.map(p=>{const r=rows.filter(e=>e.program===p); if(!r.length) return '';
+    const up=r.filter(e=>e.timing!=='Past');
+    const lk=up.filter(e=>e.link==='Published').length, an=up.filter(e=>e.ann==='Published').length;
+    const segs=STATUSES.map(s=>[s,r.filter(e=>e.status===s).length]).filter(x=>x[1]);
+    return `<div class="rrow"><span class="nm"><i style="background:${pcol(p)}"></i><span>${esc(p)} <small class="num">${r.length}</small></span></span>
+      <div class="stack" role="img" aria-label="${esc(p)} status mix: ${segs.map(s=>s[1]+' '+s[0]).join(', ')}">${segs.map(s=>`<span title="${s[0]}: ${s[1]}" style="flex:${s[1]};background:${SCOL[s[0]]}"></span>`).join('')}</div>
+      <div class="meter"><span class="num">${lk} of ${up.length}</span><div class="bar"><i style="width:${up.length?lk/up.length*100:0}%"></i></div></div>
+      <div class="meter"><span class="num">${an} of ${up.length}</span><div class="bar"><i style="width:${up.length?an/up.length*100:0}%"></i></div></div></div>`}).join('');
+}
+const TCLS=t=>t==='Past'?'p-idle':t==='In progress'?'p-info':t==='Next 14 days'?'p-warn':'p-idle';
+function renderTable(){
+  const rows=filtered().slice().sort((a,b)=>{const va=a[sortK]||'',vb=b[sortK]||'';return (va>vb?1:va<vb?-1:0)*sortDir||(a.id>b.id?1:-1)});
+  $$('#tbl th').forEach(th=>th.setAttribute('aria-sort',th.dataset.k===sortK?(sortDir>0?'ascending':'descending'):'none'));
+  $('#tCount').textContent=`${rows.length} of ${DATA.rows.length} events`+(monthSel?` · ${MONTHS[+monthSel.slice(5)-1]} ${monthSel.slice(0,4)} only`:'');
+  $('#tbl tbody').innerHTML=rows.map(e=>{
+    const main=`<tr class="main" data-id="${esc(e.id)}" tabindex="0" aria-expanded="${openRow===e.id}">
+      <td class="num" style="white-space:nowrap">${esc(fmtDate(e))}${e.time?`<div class="id">${esc(e.time)} KSA</div>`:''}</td>
+      <td><div class="ttl">${esc(e.title)}</div><div class="id">${esc(e.id)}${e.host&&e.host!=='TBC'?' · '+esc(e.host):''}</div></td>
+      <td><span class="prog"><i style="background:${pcol(e.program)}"></i>${esc(e.program)}</span><div class="id">${esc(e.track)}</div></td>
+      <td>${e.timing?`<span class="pill ${TCLS(e.timing)}">${esc(e.timing)}</span>`:''}</td>
+      <td><span class="pill ${SCLS[e.status]||'p-idle'}">${esc(e.status)}</span></td>
+      <td>${e.link==='Published'?`<a href="${esc(e.linkUrl)}" target="_blank" rel="noopener">Open</a>`:'<span class="pill p-crit">Missing</span>'}</td>
+      <td><span class="pill ${e.ann==='Published'?'p-good':e.ann==='Not started'?'p-idle':'p-info'}">${esc(e.ann)}</span></td>
+      <td>${esc(e.owner)||'<span class="muted">Unassigned</span>'}</td>
+      <td>${e.flag?`<span class="pill ${(FLAGS.find(f=>f[0]===e.flag)||[])[1]}">${esc(e.flag)}</span>`:''}</td></tr>`;
+    if(openRow!==e.id) return main;
+    const D=(k,v,cls)=>v!==''&&v!=null?`<div><dt>${k}</dt><dd class="${cls||''}">${v}</dd></div>`:'';
+    return main+`<tr class="detail"><td colspan="9"><dl class="dgrid" style="margin:0">
+      ${D('Arabic title',esc(e.titleAr),'ar')}${D('Audience',esc(e.aud))}${D('Language',esc(e.lang))}${D('Country / location',esc(e.loc))}
+      ${D('Delivery',esc(e.mode))}${D('Pricing',esc(e.price))}${D('Date status',esc(e.dstat))}${D('Semester',esc(e.sem))}
+      ${D('Registrations',e.regN?e.regN.toLocaleString():'')}${D('Attendees',e.attN?e.attN.toLocaleString():'')}${D('Attendance rate',e.regN?pct(e.attN,e.regN):'')}${D('Satisfaction',e.satN!=null?Math.round(e.satN*100)+'%':'')}
+      ${D('Next action',esc(e.next))}${D('Due',e.due?esc(fmtDate({start:e.due,dstat:'Confirmed'})):'')}${D('Notes',esc(e.notes))}
+      ${D('Registration link',e.linkUrl?`<a href="${esc(e.linkUrl)}" target="_blank" rel="noopener">${esc(e.linkUrl)}</a>`:'')}</dl></td></tr>`;
+  }).join('')||`<tr><td colspan="9" class="muted" style="padding:24px;text-align:center">No events match these filters.</td></tr>`;
+  $$('#tbl tr.main').forEach(tr=>{const f=()=>{openRow=openRow===tr.dataset.id?null:tr.dataset.id;renderTable()};tr.onclick=ev=>{if(ev.target.closest('a'))return;f()};tr.onkeydown=ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();f()}}});
+}
+function jumpTo(id){openRow=id;monthSel=null;renderAll();const tr=document.querySelector(`#tbl tr.main[data-id="${CSS.escape(id)}"]`);if(tr){tr.scrollIntoView({behavior:'smooth',block:'center'});tr.focus({preventScroll:true})}}
+
+/* ---------- source chip ---------- */
+async function renderSource(){
+  if(!DATA){$('#srcDot').className='dot';$('#srcName').textContent='events-tracker.xlsx was not found in the site root';$('#srcMeta').hidden=true;return}
+  const m=DATA.meta;$('#srcDot').className='dot'+(DATA.shared?' live':'');
+  $('#srcName').textContent=m.fileName||'Tracker';
+  const when=m.loadedAt?new Date(m.loadedAt).toLocaleString('en-GB',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
+  let who='';
+  if(m.loadedBy&&user){try{const ps=await user.profiles([m.loadedBy]);who=(ps[m.loadedBy]&&ps[m.loadedBy].name)||''}catch(e){}}
+  const meta=$('#srcMeta');meta.hidden=false;
+  meta.textContent=(DATA.shared?'Live from GitHub · ':'Preview on this screen only · ')+`${DATA.rows.length} events · `+(DATA.shared?'published ':'loaded ')+when;
+}
+
+/* ---------- loading ---------- */
+async function handleFile(f){
+  if(!f) return;
+  if(!/\.xls[xm]?$/i.test(f.name)){toast('Choose the tracker workbook (.xlsx).');return}
+  if(typeof XLSX==='undefined'){toast('The spreadsheet reader did not load. Check your connection and reload the page.');return}
+  let doc;
+  try{doc=parseWorkbook(new Uint8Array(await f.arrayBuffer()),f.name)}catch(e){toast(e.message||'This file could not be read.');return}
+  DATA=unpack(doc);DATA.shared=false;monthSel=null;openRow=null;renderAll();renderSource();
+  toast(`Previewing ${doc.rows.length} events on this screen. To publish, upload the file to GitHub as events-tracker.xlsx.`);
+}
+$('#loadBtn').onclick=()=>$('#file').click();
+document.querySelector('[data-pick]').onclick=()=>$('#file').click();
+$('#file').onchange=e=>{handleFile(e.target.files[0]);e.target.value=''};
+let dragN=0;
+addEventListener('dragenter',e=>{e.preventDefault();dragN++;document.body.classList.add('drop-active')});
+addEventListener('dragleave',()=>{if(--dragN<=0){dragN=0;document.body.classList.remove('drop-active')}});
+addEventListener('dragover',e=>e.preventDefault());
+addEventListener('drop',e=>{e.preventDefault();dragN=0;document.body.classList.remove('drop-active');handleFile(e.dataTransfer.files[0])});
+
+/* ---------- filter wiring ---------- */
+$('#fStatus').innerHTML='<option value="">Any status</option>'+STATUSES.map(s=>`<option>${s}</option>`).join('');
+$('#fSem').onchange=e=>{state.sem=e.target.value;renderAll()};
+$('#fTiming').onchange=e=>{state.timing=e.target.value;renderAll()};
+$('#fStatus').onchange=e=>{state.status=e.target.value;renderAll()};
+let st;$('#fSearch').oninput=e=>{clearTimeout(st);st=setTimeout(()=>{state.q=e.target.value.trim();renderAll()},150)};
+$('#fClear').onclick=()=>{state.progs=new Set(PROGRAMS);state.sem=state.timing=state.status=state.q='';monthSel=null;qFilter='all';
+  ['#fSem','#fTiming','#fStatus','#fSearch'].forEach(s=>$(s).value='');renderFilters();renderAll()};
+$$('#tbl th').forEach(th=>th.onclick=()=>{const k=th.dataset.k;if(sortK===k)sortDir*=-1;else{sortK=k;sortDir=1}renderTable()});
+renderFilters();
+
+/* ---------- boot: read events-tracker.xlsx published next to this page ---------- */
+const TRACKER_FILE='../events-tracker.xlsx';
+(async()=>{
+  try{
+    if(typeof XLSX==='undefined') throw new Error('reader');
+    const r=await fetch(TRACKER_FILE+'?v='+Date.now(),{cache:'no-store'});
+    if(!r.ok) throw new Error('missing');
+    const doc=parseWorkbook(new Uint8Array(await r.arrayBuffer()),'events-tracker.xlsx');
+    const lm=r.headers.get('last-modified'); if(lm) doc.loadedAt=new Date(lm).toISOString();
+    DATA=unpack(doc);DATA.shared=true;
+  }catch(e){DATA=null}
+  renderAll();renderSource();
+})();
+})();
+</script>
+</body>
+</html>
