@@ -237,6 +237,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:8px 20px;justify-content:space-betw
     <div class="fld" id="fld-to" hidden><label for="f-to">To</label><select id="f-to"></select></div>
     <div class="fld"><label for="f-program">Program</label><select id="f-program"></select></div>
     <div class="fld"><label for="f-track">Track</label><select id="f-track"></select></div>
+    <div class="fld"><label for="f-event">Event</label><select id="f-event" style="max-width:260px"></select></div>
     <div class="fld"><label for="f-status">Event status</label><select id="f-status"></select></div>
     <div class="fld"><label for="f-announce">Announcement</label><select id="f-announce"></select></div>
     <div class="fld"><label for="f-mode">Delivery</label><select id="f-mode"></select></div>
@@ -453,7 +454,7 @@ function load(){
 }
 
 /* ---------- filters ---------- */
-var FILTERS = [['program','f-program','Program'],['track','f-track','Track'],['status','f-status','Event status'],['announce','f-announce','Announcement'],['mode','f-mode','Delivery'],['partner','f-partner','Partner']];
+var FILTERS = [['program','f-program','Program'],['track','f-track','Track'],['event','f-event','Event'],['status','f-status','Event status'],['announce','f-announce','Announcement'],['mode','f-mode','Delivery'],['partner','f-partner','Partner']];
 function uniq(arr){ return arr.filter(function(v,i,a){ return v && a.indexOf(v)===i }) }
 function fillSelect(id, all, opts, cur){
   var s=$(id); s.innerHTML=''; var o=document.createElement('option'); o.value=''; o.textContent=all; s.appendChild(o);
@@ -464,6 +465,9 @@ function setupFilters(){
   fillSelect('f-program','All programs', orderBy(uniq(EV.map(function(e){return e.program})),PROGRAM_ORDER), F.program);
   var tr = EV.filter(function(e){ return !F.program || e.program===F.program }).map(function(e){return e.track});
   fillSelect('f-track','All tracks', uniq(tr).sort(), F.track); if(F.track && tr.indexOf(F.track)<0) F.track='';
+  var evs = EV.filter(function(e){ return (!F.program || e.program===F.program) && (!F.track || e.track===F.track) }).slice()
+    .sort(function(a,b){ return (a.start==null?9e15:a.start)-(b.start==null?9e15:b.start) }).map(function(e){return e.title});
+  evs = uniq(evs); fillSelect('f-event','All events', evs, F.event); if(F.event && evs.indexOf(F.event)<0) F.event='';
   fillSelect('f-status','All statuses', orderBy(uniq(EV.map(function(e){return e.status})),STATUS_ORDER), F.status);
   fillSelect('f-announce','All', orderBy(uniq(EV.map(function(e){return e.announce})),ANNOUNCE_ORDER), F.announce);
   fillSelect('f-mode','All', uniq(EV.map(function(e){return e.mode})).sort(), F.mode);
@@ -497,6 +501,7 @@ function rows(skip){
     if(!inPeriod(e)) return false;
     for(var i=0;i<FILTERS.length;i++){ var k=FILTERS[i][0]; if(k===skip || !F[k]) continue;
       if(k==='partner'){ if(e.partners.indexOf(F.partner)<0) return false }
+      else if(k==='event'){ if(e.title!==F.event) return false }
       else if(e[k]!==F[k]) return false; }
     return true;
   });
@@ -770,7 +775,7 @@ function render(){
 }
 
 /* ---------- wire up ---------- */
-FILTERS.forEach(function(f){ $(f[1]).addEventListener('change',function(e){ F[f[0]]=e.target.value; if(f[0]==='program') F.track=''; render() }) });
+FILTERS.forEach(function(f){ $(f[1]).addEventListener('change',function(e){ F[f[0]]=e.target.value; if(f[0]==='program'){ F.track=''; F.event='' } if(f[0]==='track') F.event=''; render() }) });
 $('f-period').addEventListener('change',function(e){ F.period=e.target.value; if(F.period==='custom'){ F.from=$('f-from').value; F.to=$('f-to').value } render() });
 ['f-from','f-to'].forEach(function(id,i){ $(id).addEventListener('change',function(e){ if(i) F.to=e.target.value; else F.from=e.target.value; render() }) });
 $('reset').onclick=function(){ F={}; HIDDEN={}; $('q').value=''; render() };
