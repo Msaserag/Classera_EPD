@@ -497,7 +497,7 @@ async function renderSource(){
   let who='';
   if(m.loadedBy&&user){try{const ps=await user.profiles([m.loadedBy]);who=(ps[m.loadedBy]&&ps[m.loadedBy].name)||''}catch(e){}}
   const meta=$('#srcMeta');meta.hidden=false;
-  meta.textContent=(DATA.shared?'Live from GitHub · ':'Preview on this screen only · ')+`${DATA.rows.length} events · `+(DATA.shared?'published ':'loaded ')+when;
+  meta.textContent=(DATA.shared?(window.CLASSERA_SOURCE==='google'?'Live from Google Sheets · ':'Live from GitHub · '):'Preview on this screen only · ')+`${DATA.rows.length} events · `+(DATA.shared?(window.CLASSERA_SOURCE==='google'?'read ':'published '):'loaded ')+when;
 }
 
 /* ---------- loading ---------- */
