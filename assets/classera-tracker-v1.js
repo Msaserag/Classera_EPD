@@ -4,7 +4,7 @@
    titles, dates, time, audience, language, partner, pricing, countries,
    status and registration links. If the workbook is missing or cannot
    be read, the page keeps its built-in content and links.json is used.
-   You never edit this file. You edit and upload events-tracker.xlsx.
+   You never edit this file. You edit the Google Sheet (or upload events-tracker.xlsx).
    ============================================================ */
 (function () {
   'use strict';
@@ -29,6 +29,14 @@
       s.onload = function () { window.XLSX ? res(window.XLSX) : rej(new Error('lib')); };
       s.onerror = function () { rej(new Error('lib')); };
       document.head.appendChild(s);
+    });
+  }
+  /* classera-source-v1.js reads the published Google Sheet and falls back to events-tracker.xlsx */
+  function loadSource() {
+    if (window.CLASSERA_TRACKER_BUFFER) return Promise.resolve();
+    return new Promise(function (res) {
+      var s = document.createElement('script'); s.src = ROOT + 'assets/classera-source-v1.js'; s.async = true;
+      s.onload = res; s.onerror = res; document.head.appendChild(s);
     });
   }
   function serial(v) {
@@ -69,10 +77,11 @@
   function load() {
     try { if (window.parent !== window && window.parent.CLASSERA_TRACKER) return window.parent.CLASSERA_TRACKER; } catch (e) {}
     if (!window.CLASSERA_TRACKER) {
-      window.CLASSERA_TRACKER = Promise.all([
-        loadLib(),
-        fetch(FILE + '?v=' + Date.now(), { cache: 'no-store' }).then(function (r) { if (!r.ok) throw new Error('missing'); return r.arrayBuffer(); })
-      ]).then(function (a) { return parse(a[0], new Uint8Array(a[1])); });
+      window.CLASSERA_TRACKER = Promise.all([loadLib(), loadSource()]).then(function (a) {
+        var get = window.CLASSERA_TRACKER_BUFFER ? window.CLASSERA_TRACKER_BUFFER(FILE, a[0])
+          : fetch(FILE + '?v=' + Date.now(), { cache: 'no-store' }).then(function (r) { if (!r.ok) throw new Error('missing'); return r.arrayBuffer(); });
+        return get.then(function (buf) { return parse(a[0], new Uint8Array(buf)); });
+      });
     }
     return window.CLASSERA_TRACKER;
   }

@@ -461,9 +461,14 @@ function loadLib(){
   if(window.XLSX) return Promise.resolve();
   return new Promise(function(res,rej){ var s=document.createElement('script'); s.src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'; s.onload=res; s.onerror=rej; document.head.appendChild(s) });
 }
+function loadSource(){
+  if(window.CLASSERA_TRACKER_BUFFER) return Promise.resolve();
+  return new Promise(function(res){ var s=document.createElement('script'); s.src='../assets/classera-source-v1.js'; s.onload=res; s.onerror=res; document.head.appendChild(s) });
+}
 function load(){
-  return fetch(TRACKER_FILE,{cache:'no-store'}).then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.arrayBuffer() })
-    .then(function(buf){ return loadLib().then(function(){ return buf }) })
+  return loadLib().then(function(){ return loadSource() })
+    .then(function(){ return window.CLASSERA_TRACKER_BUFFER ? window.CLASSERA_TRACKER_BUFFER(TRACKER_FILE, XLSX)
+        : fetch(TRACKER_FILE,{cache:'no-store'}).then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.arrayBuffer() }) })
     .then(function(buf){
       var wb = XLSX.read(new Uint8Array(buf),{type:'array'});
       var ws = wb.Sheets[SHEET] || wb.Sheets[wb.SheetNames.find(function(n){ return /event/i.test(n) && !/summary/i.test(n) })];
@@ -815,8 +820,8 @@ function header(){
   if(ds.length) $('period').textContent = EV.length+' events from '+dstr(Math.min.apply(null,ds))+' to '+dstr(Math.max.apply(null,ds))+'. What is coming next, how the plan is progressing, and how events perform.';
   var s=$('src'); s.className='src'+(SOURCE==='live'?' live':''); s.innerHTML='<i></i><span></span>';
   var t = READ_AT ? READ_AT.toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}) : '';
-  s.querySelector('span').innerHTML = SOURCE==='live' ? 'Live from <b>events-tracker.xlsx</b> · read '+esc(t) : 'Built-in copy from '+esc(dstr(toDay(READ_AT.toISOString())));
-  $('foot-src').textContent = SOURCE==='live' ? 'Data: events-tracker.xlsx (updates when the file is re-uploaded)' : 'Data: built-in copy';
+  s.querySelector('span').innerHTML = SOURCE==='live' ? 'Live from <b>'+(window.CLASSERA_SOURCE==='google'?'the Google Sheet':'events-tracker.xlsx')+'</b> · read '+esc(t) : 'Built-in copy from '+esc(dstr(toDay(READ_AT.toISOString())));
+  $('foot-src').textContent = SOURCE==='live' ? (window.CLASSERA_SOURCE==='google' ? 'Data: Google Sheet (updates within a few minutes of an edit)' : 'Data: events-tracker.xlsx (updates when the file is re-uploaded)') : 'Data: built-in copy';
 }
 function render(){
   setupFilters(); chips();

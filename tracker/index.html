@@ -535,10 +535,13 @@ const TRACKER_FILE='../events-tracker.xlsx';
 (async()=>{
   try{
     if(typeof XLSX==='undefined') throw new Error('reader');
-    const r=await fetch(TRACKER_FILE+'?v='+Date.now(),{cache:'no-store'});
-    if(!r.ok) throw new Error('missing');
-    const doc=parseWorkbook(new Uint8Array(await r.arrayBuffer()),'events-tracker.xlsx');
-    const lm=r.headers.get('last-modified'); if(lm) doc.loadedAt=new Date(lm).toISOString();
+    await new Promise(res=>{const s=document.createElement('script');s.src='../assets/classera-source-v1.js';s.onload=res;s.onerror=res;document.head.appendChild(s)});
+    let buf,lm=null;
+    if(window.CLASSERA_TRACKER_BUFFER) buf=await window.CLASSERA_TRACKER_BUFFER(TRACKER_FILE,XLSX);
+    else{const r=await fetch(TRACKER_FILE+'?v='+Date.now(),{cache:'no-store'});if(!r.ok) throw new Error('missing');lm=r.headers.get('last-modified');buf=await r.arrayBuffer()}
+    const isG=window.CLASSERA_SOURCE==='google';
+    const doc=parseWorkbook(new Uint8Array(buf),isG?'Google Sheet (live)':'events-tracker.xlsx');
+    if(isG) doc.loadedAt=new Date().toISOString(); else if(lm) doc.loadedAt=new Date(lm).toISOString();
     DATA=unpack(doc);DATA.shared=true;
   }catch(e){DATA=null}
   renderAll();renderSource();
