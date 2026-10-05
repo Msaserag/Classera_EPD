@@ -2,10 +2,10 @@
    CLASSERA TRACKER SOURCE v1
    Gives every page the tracker workbook as one in-memory .xlsx buffer.
    Order of preference:
-     1. The published Google Sheet (CSV) for the Events sheet, so edits in
-        Google Sheets show up on the site without any upload.
+     1. The published Google Sheet (CSV) for the Events and Off-Periods tabs,
+        so edits in Google Sheets show up on the site without any upload.
      2. events-tracker.xlsx in the site root, if Google cannot be reached
-        or the sheet looks wrong (also supplies the Off-Periods sheet).
+        or the sheet looks wrong (it also covers Off-Periods if that tab fails).
    To switch back to the file only, set GSHEET_CSV to ''.
    You never edit anything else in this file.
    ============================================================ */
@@ -13,7 +13,8 @@
   'use strict';
   var GSHEET_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQbDZqxrYiB8lgxwlJE6pkOCY71IiWIqhrJZXR3sz8r4rEj4CtFaNP2Iy04blZx7G55OaYn5pqnB5GT/pub?output=csv';
   var MON = { jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5, jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11 };
-  var DATE_COLS = { startdate: 1, enddate: 1, duedate: 1 };
+  var DATE_COLS = { startdate: 1, enddate: 1, duedate: 1, from: 1, to: 1 };
+  var OFF_GID = '2040744501';   // the Off-Periods tab of the same published sheet
   var norm = function (s) { return String(s == null ? '' : s).toLowerCase().replace(/[^a-z0-9]/g, ''); };
 
   window.CLASSERA_SOURCE = 'file';
@@ -74,6 +75,22 @@
     return wb;
   }
 
+  /* Off-Periods tab: header row, then From / To / EN / AR / Country (a source note may follow) */
+  function offFromGoogle(X, text, wb) {
+    var rows = csvRows(text);
+    if (!rows.length || norm(rows[0][0]) !== 'from' || norm(rows[0][1]) !== 'to') throw new Error('Off-Periods header not found');
+    var head = rows[0].map(norm), aoa = [rows[0].map(function (h) { return h.trim(); })], n = 0;
+    rows.slice(1).forEach(function (r) {
+      if (!r.some(function (c) { return String(c).trim() !== ''; })) return;
+      var row = r.map(function (c, j) { return typed(head[j], c); });
+      if (typeof row[0] === 'number' && typeof row[1] === 'number') n++;
+      aoa.push(row);
+    });
+    if (n < 3) throw new Error('Off-Periods returned too few rows');
+    if (wb.SheetNames.indexOf('Off-Periods') < 0) wb.SheetNames.push('Off-Periods');
+    wb.Sheets['Off-Periods'] = X.utils.aoa_to_sheet(aoa);
+  }
+
   /* xlsxUrl: the repo copy. X: the SheetJS library. Resolves to an ArrayBuffer-like xlsx. */
   window.CLASSERA_TRACKER_BUFFER = function (xlsxUrl, X) {
     var repo = fetch(xlsxUrl + '?v=' + Date.now(), { cache: 'no-store' })
@@ -81,9 +98,13 @@
     if (!GSHEET_CSV) return repo;
     var google = fetch(GSHEET_CSV + '&_=' + Date.now(), { cache: 'no-store' })
       .then(function (r) { if (!r.ok) throw new Error('Google HTTP ' + r.status); return r.text(); });
-    return Promise.all([google, repo.catch(function () { return null; })]).then(function (a) {
+    var off = fetch(GSHEET_CSV + '&gid=' + OFF_GID + '&single=true&_=' + Date.now(), { cache: 'no-store' })
+      .then(function (r) { if (!r.ok) throw new Error('Google HTTP ' + r.status); return r.text(); })
+      .catch(function () { return null; });
+    return Promise.all([google, repo.catch(function () { return null; }), off]).then(function (a) {
       var base = a[1] ? X.read(new Uint8Array(a[1]), { type: 'array' }) : null;
       var wb = fromGoogle(X, a[0], base);
+      if (a[2]) { try { offFromGoogle(X, a[2], wb); window.CLASSERA_OFF_SOURCE = 'google'; } catch (e) { if (window.console) console.warn('[tracker] Off-Periods from the repo file:', e && e.message); } }
       window.CLASSERA_SOURCE = 'google';
       return X.write(wb, { type: 'array', bookType: 'xlsx' });
     }).catch(function (e) {
