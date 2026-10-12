@@ -336,11 +336,14 @@ footer a{color:var(--cyan-deep);text-decoration:none;font-weight:600}
 
 <script>
 /* ============================================================
-   Content comes from onboarding-tracker.xlsx sitting next to
-   this file. If that file is missing or unreadable, the
-   built-in copy below is used and nothing breaks.
-   Do not edit content here. Edit the Excel file.
+   Content comes from the Google Sheet "Classera Onboarding Hub -
+   Tracker" (tabs Products and Tracks). If the sheet cannot be read,
+   the page falls back to onboarding-tracker.xlsx sitting next to
+   this file, and then to the built-in copy below, so nothing breaks.
+   Do not edit content here. Edit the Google Sheet.
    ============================================================ */
+var SHEET_ID = '1zrB5BAlwFmOT8zq4plKr_3aQiXG2QwjiNEGkSMPNqEU';
+var SHEET_URL = function(tab){ return 'https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/gviz/tq?tqx=out:csv&headers=1&sheet='+encodeURIComponent(tab)+'&_='+Date.now(); };
 var TRACKER_FILE = 'onboarding-tracker.xlsx';
 var SHEETJS = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
 var UTM = { source:'onboarding', medium:'hub' };
@@ -406,7 +409,7 @@ function num(v){ var n=+v; return isFinite(n)&&n>0 ? n : 0 }
 function cnt(n,ar1,ar2,arN,en1,enN){
   return bi(n===1?ar1:(n===2?ar2:n+' '+arN), n+' '+(n===1?en1:enN)) }
 
-/* ---------------------------------------------- Excel loading */
+/* ---------------------------------------------- Content loading */
 function loadScript(src){
   return new Promise(function(res,rej){
     var s=document.createElement('script'); s.src=src; s.onload=res; s.onerror=rej;
@@ -431,6 +434,48 @@ function mapRows(rows, map){
     return o;
   }).filter(function(o){ return o.key });
 }
+/* Minimal CSV parser (quotes, commas and line breaks inside cells, BOM) */
+function parseCSV(text){
+  text=String(text||'').replace(/^\uFEFF/,'');
+  var rows=[], row=[], cur='', q=false, i, c;
+  for(i=0;i<text.length;i++){
+    c=text[i];
+    if(q){
+      if(c==='"'){ if(text[i+1]==='"'){ cur+='"'; i++; } else q=false; }
+      else cur+=c;
+    } else if(c==='"') q=true;
+    else if(c===','){ row.push(cur); cur=''; }
+    else if(c==='\n'||c==='\r'){ if(c==='\r'&&text[i+1]==='\n') i++; row.push(cur); rows.push(row); row=[]; cur=''; }
+    else cur+=c;
+  }
+  if(cur!==''||row.length){ row.push(cur); rows.push(row); }
+  return rows;
+}
+function csvToObjects(text){
+  var rows=parseCSV(text); if(rows.length<2) return [];
+  var head=rows[0];
+  return rows.slice(1).filter(function(r){ return r.some(function(x){ return String(x).trim()!=='' }) })
+    .map(function(r){ var o={}; head.forEach(function(h,i){ o[h]= r[i]==null ? '' : r[i]; }); return o; });
+}
+function fetchTimeout(url, ms){
+  var ctl = window.AbortController ? new AbortController() : null;
+  var t = ctl ? setTimeout(function(){ ctl.abort() }, ms) : null;
+  return fetch(url, {cache:'no-store', signal: ctl ? ctl.signal : undefined})
+    .then(function(r){ if(t) clearTimeout(t); if(!r.ok) throw 0; return r; });
+}
+/* 1st choice: the Google Sheet */
+function loadSheet(){
+  return Promise.all([
+    fetchTimeout(SHEET_URL('Products'), 8000).then(function(r){ return r.text() }),
+    fetchTimeout(SHEET_URL('Tracks'),   8000).then(function(r){ return r.text() })
+  ]).then(function(txt){
+    var p = mapRows(csvToObjects(txt[0]), PMAP);
+    var t = mapRows(csvToObjects(txt[1]), TMAP);
+    if(!p.length || !t.length) throw 0;
+    DATA = {products:p, tracks:t}; SOURCE = 'sheet';
+  });
+}
+/* 2nd choice: onboarding-tracker.xlsx next to this page */
 function loadExcel(){
   return fetch(TRACKER_FILE, {cache:'no-store'})
     .then(function(r){ if(!r.ok) throw 0; return r.arrayBuffer(); })
@@ -442,8 +487,13 @@ function loadExcel(){
       var t = mapRows(XLSX.utils.sheet_to_json(wb.Sheets['Tracks'],   {defval:''}), TMAP);
       if(!p.length || !t.length) throw 0;
       DATA = {products:p, tracks:t}; SOURCE = 'excel';
-    })
-    .catch(function(){ DATA = FALLBACK; SOURCE = 'builtin'; });
+    });
+}
+/* Sheet, then Excel file, then built-in copy */
+function loadContent(){
+  return loadSheet().catch(function(){
+    return loadExcel().catch(function(){ DATA = FALLBACK; SOURCE = 'builtin'; });
+  });
 }
 
 /* ---------------------------------------------- derived data */
@@ -490,9 +540,11 @@ function renderHero(){
   $('#fRoles').innerHTML    = bi(roles+' دور وظيفي', roles+' roles');
   $('#fTracks').innerHTML   = bi(tr+' مسار تعليمي', tr+' learning tracks');
   var s=$('#srcTag');
-  s.className = 'src' + (SOURCE==='excel'?' live':'');
-  s.innerHTML = '<i></i>' + (SOURCE==='excel'
-    ? bi('المحتوى محدّث من ملف إكسل','Content live from Excel')
+  s.className = 'src' + (SOURCE==='builtin'?'':' live');
+  s.innerHTML = '<i></i>' + (SOURCE==='sheet'
+    ? bi('المحتوى محدّث من Google Sheets','Content live from Google Sheets')
+    : SOURCE==='excel'
+    ? bi('المحتوى محدّث من ملف إكسل','Content live from Excel (backup)')
     : bi('المحتوى المدمج','Built-in content'));
 }
 function renderProducts(){
@@ -667,7 +719,7 @@ $('#themeBtn').addEventListener('click', function(){
     var t=localStorage.getItem('cl_theme'); if(t) document.documentElement.setAttribute('data-theme',t);
   }catch(e){}
   renderHero(); renderProducts(); setStep(1);
-  loadExcel().then(function(){
+  loadContent().then(function(){
     renderHero(); renderProducts();
     if(state.product){ renderRoles(); if(state.role) renderTracks(); }
   });

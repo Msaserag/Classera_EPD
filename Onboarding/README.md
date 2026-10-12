@@ -1,24 +1,32 @@
 # Classera Onboarding Hub: how to update the site
 
-**You edit one file: `onboarding-tracker.xlsx`.** Every product, role, track, description and link
-on the page comes from it. The page design and the fixed text stay in the HTML and never need touching.
+**You edit one Google Sheet: [Classera Onboarding Hub - Tracker](https://docs.google.com/spreadsheets/d/1zrB5BAlwFmOT8zq4plKr_3aQiXG2QwjiNEGkSMPNqEU/edit).**
+Every product, role, track, description and link on the page comes from its `Products` and `Tracks` tabs.
+The page design and the fixed text stay in the HTML and never need touching.
 
 ---
 
-## Update the site in four steps
+## Update the site (no upload needed)
 
-1. Edit the tracker in Excel (keep your own versions in OneDrive: v2, v3...).
-2. On GitHub, open the repository root and click **Add file > Upload files**.
-3. Drop in the latest tracker **renamed to `onboarding-tracker.xlsx`**. It replaces the old one.
-4. Click **Commit changes**. The site refreshes within about a minute.
+1. Open the Google Sheet and edit the `Products` or `Tracks` tab. Google saves automatically.
+2. Reload the Onboarding page. Changes show within a few minutes.
 
 You can tell which source the page is using: the footer shows a green dot and
-**Content live from Excel** when the file was read, and a grey dot and **Built-in content** when it
-fell back.
+**Content live from Google Sheets** when the sheet was read, **Content live from Excel (backup)** when it
+fell back to `onboarding-tracker.xlsx`, and a grey dot and **Built-in content** when both failed.
+
+The sheet must stay shared as **Anyone with the link: Viewer**. If you turn that off, the page
+silently falls back to the Excel backup.
+
+### Order of sources
+
+1. Google Sheet (tabs `Products` and `Tracks`, read as CSV through the sheet link)
+2. `onboarding-tracker.xlsx` next to `index.html` (backup, only changes when you upload it)
+3. Built-in copy inside `index.html`
 
 ---
 
-## What the Excel file controls
+## What the sheet controls
 
 ### Products sheet, one row per card in step 1
 
@@ -52,7 +60,7 @@ fell back.
 | **Plan Link** | Optional **View the plan** button, for example `https://plans.classera.com/#acc` on the accreditation tracks. Leave empty and the button is hidden |
 | Status | `Live`, `Coming soon` (button disabled) or `Hidden` (row removed) |
 
-### Summary sheet
+### Summary tab
 
 Read only. Live counts per product: roles, tracks, live tracks, how many course links and manual
 links are filled in. This is your content backlog in one view.
@@ -61,7 +69,7 @@ links are filled in. This is your content backlog in one view.
 
 ## Rules that keep it working
 
-- Keep the file name exactly `onboarding-tracker.xlsx` and keep the column headers unchanged.
+- Keep the tab names `Products` and `Tracks` and keep the column headers unchanged.
 - **Site Key** connects a row to its card. Never change an existing key. Add rows, never columns.
 - A track whose **Product Key** does not match any product simply does not appear.
 - **Course Link empty**: the button still works. It opens the platform sign-in and the card shows
@@ -74,11 +82,11 @@ links are filled in. This is your content backlog in one view.
 
 ## If something goes wrong
 
-If the Excel file is missing, misnamed or cannot be read, the page shows its built-in copy of the
-content and nothing breaks. Upload a corrected file and the site switches back to Excel
-automatically.
+If the Google Sheet cannot be read (renamed tab, link sharing turned off, Google unreachable), the page
+uses the Excel backup, then the built-in copy, and nothing breaks. Fix the sheet and the page
+switches back to it automatically.
 
 ## Important
 
-Everything in `onboarding-tracker.xlsx` is public once uploaded: anyone can download it from the
-site. Keep anything confidential out of the file you publish.
+The sheet is readable by anyone who has its link, and the page exposes that link. Keep anything
+confidential out of it.
