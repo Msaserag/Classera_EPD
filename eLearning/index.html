@@ -1079,16 +1079,25 @@ html[data-lang="ar"] [lang="en"]{display:none !important}
   var dl = document.getElementById('dlics');
   var dlg = document.getElementById('icsdlg');
   if (dl && dlg) {
-    var framed = true;
-    try { framed = (window.self !== window.top); } catch (e) { framed = true; }
     document.getElementById('icstext').value = ICS;
-    if (framed) {
-      dl.addEventListener('click', function(ev){
-        ev.preventDefault();
-        if (typeof dlg.showModal === 'function') { dlg.showModal(); } else { dlg.setAttribute('open',''); }
-        var ta = document.getElementById('icstext'); ta.scrollTop = 0; ta.setSelectionRange(0,0);
-      });
-    }
+    var showDlg = function(){
+      if (typeof dlg.showModal === 'function') { dlg.showModal(); } else { dlg.setAttribute('open',''); }
+      var ta = document.getElementById('icstext'); ta.scrollTop = 0; ta.setSelectionRange(0,0);
+    };
+    // always download the real .ics file; the copy-text dialog is only a last-resort fallback
+    dl.addEventListener('click', function(ev){
+      ev.preventDefault();
+      try {
+        var txt = document.getElementById('icstext').value || ICS;
+        var blob = new Blob([txt], { type: 'text/calendar;charset=utf-8' });
+        if (window.navigator && navigator.msSaveOrOpenBlob) { navigator.msSaveOrOpenBlob(blob, 'Classera-PD-Plan-AY26-27.ics'); return; }
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url; a.download = 'Classera-PD-Plan-AY26-27.ics';
+        document.body.appendChild(a); a.click();
+        setTimeout(function(){ URL.revokeObjectURL(url); a.remove(); }, 1000);
+      } catch (e) { showDlg(); }
+    });
     document.getElementById('icsclose').addEventListener('click', function(){
       if (typeof dlg.close === 'function') { dlg.close(); } else { dlg.removeAttribute('open'); }
     });
