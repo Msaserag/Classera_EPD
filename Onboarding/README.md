@@ -33,9 +33,11 @@ There is one button per product. It shows the product name and its **Platform Ho
 `https://<Platform Host><Login Path>`.
 
 - Change a host or login path in the Products tab and both notes update on the next load.
+- A product with an **empty Platform Host** (C-Pay, Edumalls and C-Inspire for now) shows a dashed
+  "Coming soon" chip instead of a link, and its track cards hide the host tag and the Copy link button.
+  Fill in the host and login path later and the chip becomes a working sign-in button.
 - A product with status `Hidden` is left out. A new product gets its own button automatically.
-- Products can share a host (for example LMS, C-Pay and C-Inspire), so their buttons open the same
-  sign-in page until you give them different hosts.
+- Buttons follow the **Order** column and sit on one line on wide screens.
 
 ---
 
