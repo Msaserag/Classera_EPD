@@ -29,12 +29,13 @@ silently falls back to the Excel backup.
 ## Sign-in buttons (top note and bottom band)
 
 The sign-in buttons are built from the **Products** tab, so you never edit them in the page.
-Each button is one training platform. Products that share the same **Platform Host** share one button
-(for example LMS, C-Pay and C-Inspire all use `elearning.classera.com`), and the button label lists
-those products. The button opens `https://<Platform Host><Login Path>`.
+There is one button per product. It shows the product name and its **Platform Host**, and opens
+`https://<Platform Host><Login Path>`.
 
 - Change a host or login path in the Products tab and both notes update on the next load.
-- A product with status `Hidden` is left out. A new product with a new host gets its own button.
+- A product with status `Hidden` is left out. A new product gets its own button automatically.
+- Products can share a host (for example LMS, C-Pay and C-Inspire), so their buttons open the same
+  sign-in page until you give them different hosts.
 
 ---
 
