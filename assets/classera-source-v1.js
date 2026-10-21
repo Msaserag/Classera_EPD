@@ -2,19 +2,24 @@
    CLASSERA TRACKER SOURCE v1
    Gives every page the tracker workbook as one in-memory .xlsx buffer.
    Order of preference:
-     1. The published Google Sheet (CSV) for the Events and Off-Periods tabs,
+     1. The Google Sheet (read as CSV) for the Events and Off-Periods tabs,
         so edits in Google Sheets show up on the site without any upload.
      2. events-tracker.xlsx in the site root, if Google cannot be reached
         or the sheet looks wrong (it also covers Off-Periods if that tab fails).
-   To switch back to the file only, set GSHEET_CSV to ''.
+   To switch back to the file only, set SHEET_ID to ''.
    You never edit anything else in this file.
    ============================================================ */
 (function () {
   'use strict';
-  var GSHEET_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQbDZqxrYiB8lgxwlJE6pkOCY71IiWIqhrJZXR3sz8r4rEj4CtFaNP2Iy04blZx7G55OaYn5pqnB5GT/pub?output=csv';
+  /* The events tracker Google Sheet. Share it as "Anyone with the link: Viewer" so the site can read it.
+     Tabs read: Events and Off-Periods (by their sheet ids below). */
+  var SHEET_ID = '1bFWi7YwE08F9AQbx1WfcEztUSB-UMi8YQx87ahRCMPY';
+  var EVENTS_GID = '1171779694';
+  var OFF_GID = '2040744501';
+  var gviz = function (gid) { return 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?tqx=out:csv&headers=1&gid=' + gid; };
+  var GSHEET_CSV = SHEET_ID;
   var MON = { jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5, jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11 };
   var DATE_COLS = { startdate: 1, enddate: 1, duedate: 1, from: 1, to: 1 };
-  var OFF_GID = '2040744501';   // the Off-Periods tab of the same published sheet
   var norm = function (s) { return String(s == null ? '' : s).toLowerCase().replace(/[^a-z0-9]/g, ''); };
 
   window.CLASSERA_SOURCE = 'file';
@@ -95,12 +100,12 @@
   window.CLASSERA_TRACKER_BUFFER = function (xlsxUrl, X) {
     var repo = fetch(xlsxUrl + '?v=' + Date.now(), { cache: 'no-store' })
       .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.arrayBuffer(); });
-    if (!GSHEET_CSV) return repo;
-    var google = fetch(GSHEET_CSV + '&_=' + Date.now(), { cache: 'no-store' })
-      .then(function (r) { if (!r.ok) throw new Error('Google HTTP ' + r.status); return r.text(); });
-    var off = fetch(GSHEET_CSV + '&gid=' + OFF_GID + '&single=true&_=' + Date.now(), { cache: 'no-store' })
+    if (!SHEET_ID) return repo;
+    function getText(url) { return fetch(url + '&_=' + Date.now(), { cache: 'no-store' })
       .then(function (r) { if (!r.ok) throw new Error('Google HTTP ' + r.status); return r.text(); })
-      .catch(function () { return null; });
+      .then(function (t) { if (/^\s*<(!doctype|html)/i.test(t)) throw new Error('Google sheet is not shared (got a sign-in page)'); return t; }); }
+    var google = getText(gviz(EVENTS_GID));
+    var off = getText(gviz(OFF_GID)).catch(function () { return null; });
     return Promise.all([google, repo.catch(function () { return null; }), off]).then(function (a) {
       var base = a[1] ? X.read(new Uint8Array(a[1]), { type: 'array' }) : null;
       var wb = fromGoogle(X, a[0], base);

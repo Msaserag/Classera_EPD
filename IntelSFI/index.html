@@ -747,9 +747,51 @@ let theme=0;function retheme(){clearTimeout(theme);theme=setTimeout(()=>{if(D)re
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change',retheme);
 new MutationObserver(retheme).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
 if(window.Chart){Chart.defaults.font.family=css('--f-body');}
+/* ---------- Google Sheet source ----------
+   Edit the sheet "Classera Intel SFI Tracker" (tab Enrollments) and reload this page.
+   The sheet must be shared as "Anyone with the link: Viewer". If it cannot be read, the page
+   falls back to data.json and then to the copy embedded in this file. */
+const SFI_SHEET_ID='1VLEYfaEgBUaGjhneADdfseFye6wOW6YfIKrqDD8uaUo', SFI_SHEET_GID='0';
+function csvRows(t){
+  const rows=[];let row=[],cell='',q=false;
+  if(t.charCodeAt(0)===0xFEFF)t=t.slice(1);
+  for(let i=0;i<t.length;i++){const c=t[i];
+    if(q){if(c==='"'){if(t[i+1]==='"'){cell+='"';i++;}else q=false;}else cell+=c;}
+    else if(c==='"')q=true;
+    else if(c===','){row.push(cell);cell='';}
+    else if(c==='\n'||c==='\r'){if(c==='\r'&&t[i+1]==='\n')i++;row.push(cell);rows.push(row);row=[];cell='';}
+    else cell+=c;}
+  if(cell!==''||row.length){row.push(cell);rows.push(row);}
+  return rows;
+}
+async function fromSheet(){
+  const r=await fetch('https://docs.google.com/spreadsheets/d/'+SFI_SHEET_ID+'/gviz/tq?tqx=out:csv&headers=1&gid='+SFI_SHEET_GID+'&_='+Date.now(),{cache:'no-store'});
+  if(!r.ok)throw new Error('HTTP '+r.status);
+  const t=await r.text();
+  if(/^\s*<(!doctype|html)/i.test(t))throw new Error('sheet is not shared');
+  const rows=csvRows(t);if(rows.length<2)throw new Error('empty sheet');
+  const H=rows[0].map(x=>String(x).trim().toLowerCase());
+  const ix=n=>H.indexOf(n);
+  const cols={course:ix('course title'),pid:ix('participant id'),group:ix('school group'),country:ix('country'),school:ix('school'),cert:ix('certificate date'),enr:ix('enrollment date')};
+  if(Object.values(cols).some(v=>v<0))throw new Error('missing columns');
+  // the core reads dd/mm/yyyy; the sheet uses yyyy-mm-dd (dd/mm/yyyy is also accepted)
+  const dmy=v=>{v=String(v||'').trim();const m=/^(\d{4})-(\d{2})-(\d{2})/.exec(v);return m?m[3]+'/'+m[2]+'/'+m[1]:(/\d{1,2}\/\d{1,2}\/\d{4}/.test(v)?v:'');};
+  const aoa=[['Course Title','Name','Classera School Group','Classera School Country','Classera School','Certificates','Enrollment Date']];
+  for(let i=1;i<rows.length;i++){const x=rows[i];if(!x[cols.course]||!String(x[cols.course]).trim())continue;
+    const cd=dmy(x[cols.cert]);
+    aoa.push([x[cols.course],x[cols.pid],x[cols.group],x[cols.country],x[cols.school],cd?'(1)\n'+cd:'',dmy(x[cols.enr])]);}
+  const built=SFICore.build(aoa,{source:'Google Sheet "Classera Intel SFI Tracker"',sheet:'Enrollments',updated:new Date().toISOString()});
+  if(built.count<100)throw new Error('too few rows');
+  return built;
+}
 async function boot(){
   D=JSON.parse($('sfi-embedded').textContent);
-  if(!isLocal){try{const r=await fetch('data.json',{cache:'no-store'});if(r.ok){const j=await r.json();if(j&&j.rows)D=j;}}catch(e){}}
+  const logos=D.logos;
+  if(!isLocal){
+    let ok=false;
+    try{const b=await fromSheet();D=Object.assign({},b,{logos:logos});ok=true;}catch(e){if(window.console)console.warn('[SFI] Google sheet not used:',e&&e.message);}
+    if(!ok){try{const r=await fetch('data.json',{cache:'no-store'});if(r.ok){const j=await r.json();if(j&&j.rows)D=j;}}catch(e){}}
+  }
   load();
 }
 boot();
