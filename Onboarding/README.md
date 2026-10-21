@@ -121,3 +121,12 @@ Each track's **Manual Link** (Tracks tab) opens its own manual page. When a trac
 | C-SmarX ERP | https://usermanual.csmarx.com/ |
 
 To change one, add a column named **Manual Home** to the Products tab and paste the link on that product's row.
+
+---
+
+## Product logos
+
+Each product card shows its logo instead of a generic icon. Logos are matched by the **Product Key**
+(`lms`, `tms`, `erp`, `cpay`, `edumalls`, `cinspire`) and are embedded in `index.html`, so the page needs no extra files.
+The source PNGs sit in the `logos` folder. A new product without a logo keeps its generic icon from the **Icon** column.
+To replace a logo, swap the PNG in `logos` and ask Claude to re-embed it.
