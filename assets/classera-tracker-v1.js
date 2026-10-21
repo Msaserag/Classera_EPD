@@ -3,7 +3,7 @@
    Reads events-tracker.xlsx (site root) and applies it to the page:
    titles, dates, time, audience, language, partner, pricing, countries,
    status and registration links. If the workbook is missing or cannot
-   be read, the page keeps its built-in content and links.json is used.
+   be read, the page keeps its built-in content.
    You never edit this file. You edit the Google Sheet (or upload events-tracker.xlsx).
    ============================================================ */
 (function () {
