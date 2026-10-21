@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Plans Admin Portal | Classera AY26-27</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@500;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='4' width='56' height='56' rx='14' fill='%230E3350'/%3E%3Crect x='14' y='14' width='16' height='16' rx='3' fill='%232FA9BC'/%3E%3Crect x='34' y='14' width='16' height='16' rx='3' fill='%23D68A21'/%3E%3Crect x='14' y='34' width='16' height='16' rx='3' fill='%236E90E0'/%3E%3Crect x='34' y='34' width='16' height='16' rx='3' fill='%234CC38A'/%3E%3C/svg%3E">
+<style>
+:root{
+  --navy:#0E3350;--cyan:#2FA9BC;--cyan-soft:#E2F3F6;--gold:#D68A21;--gold-soft:#FBF0DE;--blue:#2A4B9B;--blue-soft:#E7ECF8;--green:#1F8A5B;--green-soft:#E3F4EB;
+  --paper:#F2F6FA;--surface:#fff;--surface-2:#F8FBFD;--ink:#1E2E3A;--ink-2:#4A5C6B;--muted:#7A8CA0;--line:#DCE6EE;
+  --side:#0E3350;--side-ink:#E6EFF5;--side-muted:#8FA9BD;--side-hover:#16466B;--side-active:#2FA9BC;
+  --shadow:0 1px 2px rgba(14,51,80,.06),0 8px 24px -12px rgba(14,51,80,.22);
+  --f:'IBM Plex Sans Arabic','Tajawal',system-ui,-apple-system,'Segoe UI',sans-serif;--fd:'Tajawal','IBM Plex Sans Arabic',system-ui,sans-serif;
+}
+:root[data-theme="dark"]{
+  --cyan:#54C6D8;--cyan-soft:#0E3440;--gold:#E9A93F;--gold-soft:#38290F;--blue:#6E90E0;--blue-soft:#132542;--green:#4CC38A;--green-soft:#0F3324;
+  --paper:#081722;--surface:#0E2534;--surface-2:#0B1E2C;--ink:#E6EFF5;--ink-2:#B6C8D6;--muted:#7D95A7;--line:#1C3A4E;
+  --side:#06141F;--side-hover:#0E2A3D;--side-active:#54C6D8;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 28px -14px rgba(0,0,0,.7);
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--f);font-size:15px;line-height:1.5;display:flex;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;cursor:pointer}
+:where(a,button,input):focus-visible{outline:2.5px solid var(--cyan);outline-offset:2px}
+
+/* sidebar */
+aside{width:278px;flex:none;background:var(--side);color:var(--side-ink);display:flex;flex-direction:column;height:100vh;position:sticky;top:0}
+.brand{padding:20px 18px 14px;display:flex;gap:12px;align-items:center;cursor:pointer;border:0;background:none;text-align:start;width:100%}
+.mark{width:36px;height:36px;border-radius:10px;background:#123F62;display:grid;grid-template:1fr 1fr/1fr 1fr;gap:3px;padding:7px}
+.mark i{border-radius:2px;display:block}
+.mark i:nth-child(1){background:#2FA9BC}.mark i:nth-child(2){background:#D68A21}.mark i:nth-child(3){background:#6E90E0}.mark i:nth-child(4){background:#4CC38A}
+.brand b{font-family:var(--fd);font-size:17px;display:block;line-height:1.2}
+.brand small{color:var(--side-muted);font-size:12px}
+.search{margin:6px 14px 10px}
+.search input{width:100%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:10px;padding:9px 12px;color:var(--side-ink);font:inherit;font-size:14px}
+.search input::placeholder{color:var(--side-muted)}
+nav{flex:1;overflow:auto;padding:4px 10px 14px}
+.grp{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--side-muted);padding:14px 10px 6px;font-weight:600}
+.item{display:flex;align-items:center;gap:10px;width:100%;padding:9px 10px;border-radius:10px;border:0;background:none;text-align:start;color:var(--side-ink)}
+.item:hover{background:var(--side-hover)}
+.item[aria-current="true"]{background:var(--side-active);color:#06202D;font-weight:600}
+.item .ic{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;font-size:14px;background:rgba(255,255,255,.1);flex:none}
+.item[aria-current="true"] .ic{background:rgba(6,32,45,.15)}
+.item .t{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item .ext{font-size:12px;opacity:.6}
+.sidefoot{padding:12px 14px;border-top:1px solid rgba(255,255,255,.1);display:flex;gap:8px}
+.sidefoot button{flex:1;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:9px;padding:7px;font-size:13px;color:var(--side-ink)}
+.sidefoot button:hover{background:var(--side-hover)}
+
+/* main */
+main{flex:1;min-width:0;display:flex;flex-direction:column;height:100vh}
+.bar{display:flex;align-items:center;gap:10px;padding:12px 20px;background:var(--surface);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.bar h1{font-family:var(--fd);font-size:18px;margin:0;flex:1;min-width:140px}
+.bar .path{color:var(--muted);font-size:13px;direction:ltr}
+.btn{border:1px solid var(--line);background:var(--surface-2);border-radius:9px;padding:7px 12px;font-size:13px;display:inline-flex;gap:6px;align-items:center}
+.btn:hover{border-color:var(--cyan)}
+.btn.pri{background:var(--navy);color:#fff;border-color:var(--navy)}
+:root[data-theme="dark"] .btn.pri{background:var(--cyan);color:#06202D;border-color:var(--cyan)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden}
+.seg button{border:0;background:var(--surface-2);padding:7px 11px;font-size:13px}
+.seg button[aria-pressed="true"]{background:var(--cyan);color:#06202D;font-weight:600}
+.stage{flex:1;min-height:0;position:relative;background:var(--paper)}
+.frame{position:absolute;inset:0;display:flex;justify-content:center;overflow:auto}
+.frame iframe{border:0;background:#fff;width:100%;height:100%}
+.frame.mobile iframe{width:390px;height:calc(100% - 24px);margin:12px 0;border-radius:16px;box-shadow:var(--shadow);border:1px solid var(--line)}
+.hidden{display:none!important}
+
+/* home */
+.home{position:absolute;inset:0;overflow:auto;padding:26px clamp(16px,3vw,36px) 48px}
+.hero{display:flex;gap:18px;align-items:end;justify-content:space-between;flex-wrap:wrap;margin-bottom:6px}
+.hero h2{font-family:var(--fd);font-size:28px;margin:0}
+.hero p{margin:4px 0 0;color:var(--ink-2)}
+.stats{display:flex;gap:10px;flex-wrap:wrap}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:8px 14px;min-width:96px}
+.stat b{font-family:var(--fd);font-size:22px;display:block;line-height:1.1}
+.stat span{font-size:12px;color:var(--muted)}
+.sec{margin-top:26px}
+.sec h3{font-family:var(--fd);font-size:15px;margin:0 0 10px;color:var(--ink-2);display:flex;align-items:center;gap:8px}
+.sec h3::after{content:"";flex:1;height:1px;background:var(--line)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:8px;transition:transform .15s,border-color .15s;text-align:start;width:100%}
+.card:hover{transform:translateY(-2px);border-color:var(--cyan)}
+.card .top{display:flex;align-items:center;gap:10px}
+.card .ic{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;font-size:19px;flex:none}
+.card h4{margin:0;font-family:var(--fd);font-size:16px;line-height:1.25}
+.card .ar{font-size:13px;color:var(--muted)}
+.card p{margin:0;font-size:13px;color:var(--ink-2);flex:1}
+.card .url{font-size:12px;color:var(--muted);direction:ltr;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.card .acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:2px}
+.card .acts .btn{padding:5px 10px;font-size:12px}
+.c-cyan .ic{background:var(--cyan-soft)}.c-gold .ic{background:var(--gold-soft)}.c-blue .ic{background:var(--blue-soft)}.c-green .ic{background:var(--green-soft)}
+.empty{color:var(--muted);padding:20px 0}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:9px 16px;border-radius:10px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:9}
+.toast.on{opacity:1}
+.menu{display:none}
+
+@media (max-width:860px){
+  aside{position:fixed;inset:0 auto 0 0;z-index:20;transform:translateX(-100%);transition:transform .2s;width:min(300px,86vw)}
+  body.open aside{transform:none;box-shadow:0 0 0 100vmax rgba(0,0,0,.45)}
+  .menu{display:inline-flex}
+  .hero h2{font-size:22px}
+}
+</style>
+</head>
+<body>
+<aside>
+  <button class="brand" id="homeBtn" aria-label="Portal home">
+    <span class="mark"><i></i><i></i><i></i><i></i></span>
+    <span><b>Plans Admin Portal</b><small>Classera AY26-27</small></span>
+  </button>
+  <div class="search"><input id="q" type="search" placeholder="Search pages and tools" aria-label="Search"></div>
+  <nav id="nav" aria-label="Sites"></nav>
+  <div class="sidefoot">
+    <button id="theme">Dark / Light</button>
+  </div>
+</aside>
+
+<main>
+  <div class="bar">
+    <button class="btn menu" id="menu" aria-label="Menu">☰</button>
+    <h1 id="title">All pages</h1>
+    <span class="path" id="path"></span>
+    <span id="tools" class="hidden" style="display:flex;gap:8px;flex-wrap:wrap">
+      <span class="seg" role="group" aria-label="Preview size">
+        <button id="vD" aria-pressed="true">Desktop</button><button id="vM" aria-pressed="false">Mobile</button>
+      </span>
+      <button class="btn" id="reload">Reload</button>
+      <button class="btn" id="copy">Copy link</button>
+      <a class="btn pri" id="open" target="_blank" rel="noopener">Open in new tab ↗</a>
+    </span>
+  </div>
+  <div class="stage">
+    <div class="home" id="home"></div>
+    <div class="frame hidden" id="frame"><iframe id="ifr" title="Preview" loading="lazy"></iframe></div>
+  </div>
+</main>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============ EDIT HERE: add or change pages. type "site" = previewable inside the portal; "ext" = opens in a new tab only ============ */
+var ORIGIN = "https://plans.classera.com";
+var GROUPS = [
+ {id:"plans", name:"Client plan pages", color:"cyan", items:[
+  {t:"Plans Hub", ar:"برامج كلاسيرا", ic:"🏠", u:"/", d:"Public landing page for all AY26-27 plans. Direct links: #pd and #acc.", short:"https://sh.classera.com/2hbY8s"},
+  {t:"Professional Development", ar:"خطة التطوير المهني", ic:"🎓", u:"/eLearning/", d:"Professional Development Plan with its live sessions and course links.", short:"https://sh.classera.com/WanVMq"},
+  {t:"Accreditation Calendar", ar:"جدول اختبارات الاعتماد", ic:"🏅", u:"/Accreditation/", d:"Accreditation exam windows, Sep 2026 to Jun 2027.", short:"https://sh.classera.com/CtRtsG"},
+  {t:"Enrichment Academy", ar:"خطة برامج الإثراء", ic:"🚀", u:"/Enrichment/", d:"Enrichment Programs plan for students on iAcademy."},
+  {t:"Full Events Calendar", ar:"التقويم الكامل للفعاليات", ic:"📅", u:"/Calendar/", d:"One calendar for every event across all programs."}
+ ]},
+ {id:"events", name:"Events", color:"gold", items:[
+  {t:"Product Events", ar:"فعاليات المنتجات", ic:"📦", u:"/ProductEvents/", d:"Product launch and offer events."},
+  {t:"In-Person Events", ar:"الفعاليات الحضورية", ic:"🤝", u:"/InPersonEvents/", d:"Forums, exhibitions and in-person gatherings."},
+  {t:"Events Dashboard", ar:"لوحة الفعاليات", ic:"📊", u:"/Events/", d:"Statistics dashboard driven by the events tracker."},
+  {t:"Events Tracker", ar:"متتبع الفعاليات", ic:"🗂️", u:"/tracker/", d:"Tracker view of the AY26-27 events."}
+ ]},
+ {id:"hubs", name:"Hubs and training", color:"blue", items:[
+  {t:"Onboarding Hub", ar:"مركز التهيئة والتعلم الذاتي", ic:"🧭", u:"/Onboarding/", d:"Self-service onboarding tracks by product and role."},
+  {t:"Back-to-School Training Plan", ar:"", ic:"📚", u:"/Training/", d:"Back-to-School Training Plan AY 2026-27 (from the ClasseraTraining repo)."},
+  {t:"Intel SFI Utilization", ar:"", ic:"💡", u:"/IntelSFI/", d:"Intel Skills for Innovation utilization report."}
+ ]},
+ {id:"ext", name:"Platforms and admin tools", color:"green", items:[
+  {t:"Edit page links (links.json)", ic:"✏️", ext:true, u:"https://github.com/Msaserag/Classera_EPD/edit/main/links.json", d:"Paste course and session URLs for the plan pages, then commit."},
+  {t:"Events tracker (Google Sheet feed)", ic:"📈", ext:true, u:"https://docs.google.com/spreadsheets/d/e/2PACX-1vQbDZqxrYiB8lgxwlJE6pkOCY71IiWIqhrJZXR3sz8r4rEj4CtFaNP2Iy04blZx7G55OaYn5pqnB5GT/pub?output=csv", d:"Published CSV feed the site reads. Edit the source sheet in Google Sheets."},
+  {t:"Plans repo (Classera_EPD)", ic:"🧩", ext:true, u:"https://github.com/Msaserag/Classera_EPD", d:"Source of plans.classera.com."},
+  {t:"Training repo (ClasseraTraining)", ic:"🧩", ext:true, u:"https://github.com/Msaserag/ClasseraTraining", d:"Original repo of the Back-to-School Training page."},
+  {t:"Accreditation platform", ic:"🔗", ext:true, u:"https://accreditation.classera.com/", d:"Exam registration platform."},
+  {t:"eLearning (LeadXera)", ic:"🔗", ext:true, u:"https://elearning.classera.com/", d:"LMS training and event hosting."},
+  {t:"iAcademy", ic:"🔗", ext:true, u:"https://iacademy.classera.com/", d:"Student enrichment courses."},
+  {t:"TMS training (LeadXera)", ic:"🔗", ext:true, u:"https://leadxeratraining.classera.com/", d:"TMS onboarding courses."},
+  {t:"User manual", ic:"🔗", ext:true, u:"https://manual.classera.com/", d:"LMS user manual."}
+ ]}
+];
+/* ================================================================================================================================ */
+
+var $=function(s){return document.querySelector(s)};
+var all=[]; GROUPS.forEach(function(g){g.items.forEach(function(i){i.g=g; i.id=all.length; all.push(i)})});
+var cur=null, mobile=false, filter="";
+
+function full(i){return i.ext?i.u:ORIGIN+i.u}
+function localUrl(i){return i.ext?i.u:i.u}
+function esc(s){return String(s||"").replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function match(i){if(!filter)return true;return (i.t+" "+(i.ar||"")+" "+i.d+" "+i.u).toLowerCase().indexOf(filter)>-1}
+function toast(m){var t=$("#toast");t.textContent=m;t.classList.add("on");setTimeout(function(){t.classList.remove("on")},1600)}
+function copy(text){
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(function(){toast("Link copied")},fb)}else fb();
+  function fb(){var a=document.createElement("textarea");a.value=text;document.body.appendChild(a);a.select();try{document.execCommand("copy");toast("Link copied")}catch(e){toast("Copy failed")}a.remove()}
+}
+
+function renderNav(){
+  var h="";
+  GROUPS.forEach(function(g){
+    var its=g.items.filter(match); if(!its.length)return;
+    h+='<div class="grp">'+esc(g.name)+'</div>';
+    its.forEach(function(i){
+      h+='<button class="item" data-id="'+i.id+'"'+(cur===i.id?' aria-current="true"':'')+'><span class="ic">'+i.ic+'</span><span class="t">'+esc(i.t)+'</span>'+(i.ext?'<span class="ext">↗</span>':'')+'</button>';
+    });
+  });
+  $("#nav").innerHTML=h||'<div class="empty" style="padding:16px;color:#8FA9BD">No match</div>';
+}
+
+function renderHome(){
+  var trainId=all.filter(function(i){return i.u==='/Training/'})[0].id;
+  var sites=all.filter(function(i){return !i.ext}).length;
+  var h='<div class="hero"><div><h2>Plans Admin Portal</h2><p>One place to open, preview and copy every page on plans.classera.com.</p><p style="margin-top:12px"><button class="btn pri" data-prev="'+trainId+'" style="font-size:14px;padding:9px 16px">📚 Back-to-School Training Plan</button></p></div>'
+   +'<div class="stats"><div class="stat"><b>'+sites+'</b><span>Pages</span></div><div class="stat"><b>'+(all.length-sites)+'</b><span>Tools and platforms</span></div></div></div>';
+  var any=false;
+  GROUPS.forEach(function(g){
+    var its=g.items.filter(match); if(!its.length)return; any=true;
+    h+='<section class="sec"><h3>'+esc(g.name)+'</h3><div class="grid">';
+    its.forEach(function(i){
+      h+='<div class="card c-'+g.color+'"><div class="top"><span class="ic">'+i.ic+'</span><div><h4>'+esc(i.t)+'</h4>'+(i.ar?'<div class="ar" dir="rtl">'+esc(i.ar)+'</div>':'')+'</div></div>'
+       +'<p>'+esc(i.d)+'</p><div class="url">'+esc(i.ext?i.u.replace(/^https?:\/\//,''):'plans.classera.com'+i.u)+'</div>'
+       +'<div class="acts">'+(i.ext?'':'<button class="btn pri" data-prev="'+i.id+'">Preview</button>')
+       +'<a class="btn" target="_blank" rel="noopener" href="'+esc(localUrl(i))+'">Open ↗</a>'
+       +'<button class="btn" data-copy="'+i.id+'">Copy link</button>'
+       +(i.short?'<button class="btn" data-copys="'+i.id+'" title="Tracked short link">Short link</button>':'')+'</div></div>';
+    });
+    h+='</div></section>';
+  });
+  $("#home").innerHTML=h+(any?'':'<div class="empty">No match</div>');
+}
+
+function go(id){
+  var i=all[id]; if(!i)return;
+  if(i.ext){window.open(i.u,"_blank","noopener");return}
+  cur=id; mobile=mobile&&true;
+  $("#title").textContent=i.t; $("#path").textContent=i.u;
+  $("#home").classList.add("hidden"); $("#frame").classList.remove("hidden"); $("#tools").classList.remove("hidden");
+  $("#ifr").src=i.u; $("#open").href=i.u;
+  try{history.replaceState(null,"","#"+encodeURIComponent(i.u))}catch(e){}
+  renderNav(); document.body.classList.remove("open");
+}
+function home(){
+  cur=null; $("#title").textContent="All pages"; $("#path").textContent="";
+  $("#frame").classList.add("hidden"); $("#ifr").removeAttribute("src"); $("#tools").classList.add("hidden"); $("#home").classList.remove("hidden");
+  try{history.replaceState(null,"",location.pathname)}catch(e){}
+  renderNav(); document.body.classList.remove("open");
+}
+function setView(m){mobile=m;$("#frame").classList.toggle("mobile",m);$("#vD").setAttribute("aria-pressed",!m);$("#vM").setAttribute("aria-pressed",m)}
+
+document.addEventListener("click",function(e){
+  var n=e.target.closest("[data-id]"); if(n){go(+n.dataset.id);return}
+  var p=e.target.closest("[data-prev]"); if(p){go(+p.dataset.prev);return}
+  var c=e.target.closest("[data-copy]"); if(c){copy(full(all[+c.dataset.copy]));return}
+  var s=e.target.closest("[data-copys]"); if(s){copy(all[+s.dataset.copys].short);return}
+});
+$("#homeBtn").onclick=home;
+$("#menu").onclick=function(){document.body.classList.toggle("open")};
+$("#vD").onclick=function(){setView(false)}; $("#vM").onclick=function(){setView(true)};
+$("#reload").onclick=function(){var f=$("#ifr");f.src=f.src};
+$("#copy").onclick=function(){if(cur!==null)copy(full(all[cur]))};
+$("#q").oninput=function(){filter=this.value.trim().toLowerCase();renderNav();if(cur===null)renderHome()};
+$("#theme").onclick=function(){
+  var d=document.documentElement.dataset.theme==="dark"?"light":"dark";
+  document.documentElement.dataset.theme=d; try{localStorage.setItem("adminTheme",d)}catch(e){}
+};
+try{var t=localStorage.getItem("adminTheme"); if(t)document.documentElement.dataset.theme=t; else if(matchMedia("(prefers-color-scheme: dark)").matches)document.documentElement.dataset.theme="dark"}catch(e){}
+
+renderNav(); renderHome();
+(function(){var h=decodeURIComponent(location.hash.slice(1)); if(!h)return; for(var k=0;k<all.length;k++){if(!all[k].ext&&all[k].u===h){go(k);return}}})();
+</script>
+</body>
+</html>
