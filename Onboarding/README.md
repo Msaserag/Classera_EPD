@@ -105,3 +105,19 @@ switches back to it automatically.
 
 The sheet is readable by anyone who has its link, and the page exposes that link. Keep anything
 confidential out of it.
+
+
+---
+
+## User manuals
+
+Each track's **Manual Link** (Tracks tab) opens its own manual page. When a track has no Manual Link, the button
+**User manual** opens the product's manual home instead:
+
+| Product | Manual home |
+| --- | --- |
+| LMS, C-Pay, C-Inspire | https://manual.classera.com/ |
+| TMS | https://usermanual.leadxera.com/ |
+| C-SmarX ERP | https://usermanual.csmarx.com/ |
+
+To change one, add a column named **Manual Home** to the Products tab and paste the link on that product's row.

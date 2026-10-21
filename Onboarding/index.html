@@ -436,9 +436,14 @@ function loadScript(src){
     document.head.appendChild(s);
   });
 }
+/* User manual home per product. Used when a track has no Manual Link of its own.
+   To change one, add a "Manual Home" column to the Products tab of the Google Sheet; it overrides these. */
+var MANUAL_HOME = {lms:'https://manual.classera.com/', cpay:'https://manual.classera.com/', cinspire:'https://manual.classera.com/',
+  tms:'https://usermanual.leadxera.com/', erp:'https://usermanual.csmarx.com/'};
+function manualHome(p){ var u=((p&&p.manual_home)||MANUAL_HOME[p&&p.key]||'').trim(); return /^https?:\/\//i.test(u) ? u : ''; }
 var PMAP = {'site key':'key','order':'order','product (en)':'name_en','product (ar)':'name_ar',
   'description (en)':'desc_en','description (ar)':'desc_ar','icon':'icon','accent':'accent',
-  'platform host':'host','login path':'login','status':'status'};
+  'platform host':'host','login path':'login','manual home':'manual_home','status':'status'};
 var TMAP = {'site key':'key','product key':'product','role key':'role','role order':'role_order',
   'role (en)':'role_en','role (ar)':'role_ar','track order':'order','track (en)':'title_en',
   'track (ar)':'title_ar','description (en)':'desc_en','description (ar)':'desc_ar','level':'level',
@@ -655,10 +660,11 @@ function renderTracks(){
       : '<a class="btn primary" href="'+esc(url)+'" target="_blank" rel="noopener">'
         +bi('ابدأ المسار','Start track')
         +'<svg class="arr" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>';
-    var manual = (t.manual||'').trim()
-      ? '<a class="btn ghost" href="'+esc(t.manual.trim())+'" target="_blank" rel="noopener">'
+    var mUrl = (t.manual||'').trim(), mHome = !mUrl ? manualHome(p) : '';
+    var manual = (mUrl || mHome)
+      ? '<a class="btn ghost" href="'+esc(mUrl || mHome)+'" target="_blank" rel="noopener">'
         +'<svg viewBox="0 0 24 24"><path d="M4 5h7a2 2 0 0 1 2 2v13a2 2 0 0 0-2-2H4z"/><path d="M20 5h-7a2 2 0 0 0-2 2v13a2 2 0 0 1 2-2h7z"/></svg>'
-        +bi('اقرأ الدليل','Read the manual')+'</a>' : '';
+        +(mUrl ? bi('اقرأ الدليل','Read the manual') : bi('دليل المستخدم','User manual'))+'</a>' : '';
     var plan = (t.plan||'').trim()
       ? '<a class="btn ghost" href="'+esc(planUrl(p,t))+'" target="_blank" rel="noopener">'
         +'<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg>'
