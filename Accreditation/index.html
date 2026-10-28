@@ -79,11 +79,7 @@ html[data-lang="en"] [data-ar]{display:none!important}
 .snwrap a.on{background:var(--navy);color:#fff;border-color:var(--navy)}
 :root[data-theme="dark"] .snwrap a.on{background:var(--cyan);color:#06202D;border-color:var(--cyan)}
 #overview,#months-sec,#renew,#prep,#calendar-all{scroll-margin-top:128px}
-.totop-row{display:flex;justify-content:center;margin-top:26px}
-.totop{display:inline-flex;align-items:center;gap:8px;font-family:inherit;font-size:13.5px;font-weight:700;color:var(--ink-2);text-decoration:none;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:8px 18px;box-shadow:var(--shadow)}
-.totop:hover{color:var(--ink);border-color:var(--cyan)}
-.totop svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-@media print{.secnav,.totop-row{display:none!important}}
+@media print{.secnav{display:none!important}}
 /* hero */
 .hero{position:relative;background:linear-gradient(155deg,var(--navy-2) 0%,var(--navy) 62%,#08243A 100%);color:#EAF3F8;overflow:hidden}
 .hero::before{content:"";position:absolute;inset:0;background-image:radial-gradient(circle at 1px 1px,rgba(255,255,255,.16) 1px,transparent 0);background-size:26px 26px;opacity:.5}
@@ -384,7 +380,6 @@ html[data-lang="ar"] .rn-table thead th{letter-spacing:0;text-transform:none;fon
 <script src="../assets/classera-tracker-v1.js"></script>
 </head>
 <body>
-<span id="top" aria-hidden="true"></span>
 
 <header class="topbar">
   <div class="wrap">
@@ -469,7 +464,6 @@ html[data-lang="ar"] .rn-table thead th{letter-spacing:0;text-transform:none;fon
         <div><span data-ar>الفصل الدراسي الثاني · فبراير – يونيو</span><span data-en>Semester 2 · Feb – Jun</span></div>
       </div>
     </div>
-    <div class="totop-row"><a class="totop" href="#top"><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg><span data-ar>العودة للأعلى</span><span data-en>Back to top</span></a></div>
   </div>
 </section>
 
@@ -483,7 +477,6 @@ html[data-lang="ar"] .rn-table thead th{letter-spacing:0;text-transform:none;fon
     </div>
     <div class="months" id="months"></div>
     <span id="months-top" aria-hidden="true"></span>
-    <div class="totop-row"><a class="totop" href="#top"><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg><span data-ar>العودة للأعلى</span><span data-en>Back to top</span></a></div>
   </div>
 </section>
 
@@ -834,7 +827,6 @@ html[data-lang="ar"] .rn-table thead th{letter-spacing:0;text-transform:none;fon
       </ol>
       <p class="rn-note"><span data-ar>اختبارات التجديد تُعقد في نفس مواعيد اختبارات الاعتماد المعروضة أعلاه. <a href="#months-top">عد إلى جدول الفترات ↑</a></span><span data-en>Renewal exams run on the same dates as the accreditation exams shown above. <a href="#months-top">Back to the exam windows ↑</a></span></p>
     </div>
-    <div class="totop-row"><a class="totop" href="#top"><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg><span data-ar>العودة للأعلى</span><span data-en>Back to top</span></a></div>
   </div>
 </section>
 
@@ -851,7 +843,6 @@ html[data-lang="ar"] .rn-table thead th{letter-spacing:0;text-transform:none;fon
       <div class="step"><div class="n">3</div><b><span data-ar>احجز الفترة</span><span data-en>Pick a window</span></b><p><span data-ar>أضف الفترة إلى تقويمك من هذه الصفحة وسجّل الدخول للمنصة خلال أيام الفترة.</span><span data-en>Add the window to your calendar from this page and sign in to the platform during those days.</span></p></div>
       <div class="step"><div class="n">4</div><b><span data-ar>جدّد في الوقت المناسب</span><span data-en>Renew on time</span></b><p><span data-ar>اختبارات تجديد الاعتماد تُعقد في نفس مواعيد الاختبارات الشهرية.</span><span data-en>Renewal exams run on the same monthly dates as the accreditation exams.</span></p></div>
     </div>
-    <div class="totop-row"><a class="totop" href="#top"><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg><span data-ar>العودة للأعلى</span><span data-en>Back to top</span></a></div>
 
     <div class="band" id="calendar-all">
       <div>
@@ -863,7 +854,6 @@ html[data-lang="ar"] .rn-table thead th{letter-spacing:0;text-transform:none;fon
         <a class="btn ghost" href="https://accreditation.classera.com/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9"/><path d="M20 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h5"/></svg><span data-ar>الذهاب إلى منصة الاعتماد</span><span data-en>Go to the Accreditation Platform</span></a>
       </div>
     </div>
-    <div class="totop-row"><a class="totop" href="#top"><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg><span data-ar>العودة للأعلى</span><span data-en>Back to top</span></a></div>
   </div>
 </section>
 
