@@ -237,6 +237,8 @@ footer a{color:var(--cyan-deep);text-decoration:none;font-weight:600}
 .rn-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
 .rn-grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}
 .rn-card{--tone:var(--cyan);--tone-soft:var(--cyan-soft);background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column}
+.rn-card.t0{--tone:var(--muted);--tone-soft:var(--surface-2)}
+.rn-card.rn-wide{grid-column:1/-1}
 .rn-card.t2{--tone:var(--blue);--tone-soft:var(--blue-soft)}
 .rn-card.t3{--tone:var(--gold);--tone-soft:var(--gold-soft)}
 .rn-card.t4{--tone:var(--green);--tone-soft:var(--green-soft)}
@@ -531,9 +533,22 @@ html[data-lang="ar"] .rn-table thead th{letter-spacing:0;text-transform:none;fon
     <div class="rn-panel on" id="rnp-teacher" role="tabpanel" aria-labelledby="rnt-teacher" data-rnp="teacher">
       <div class="rn-grid">
 
-        <article class="rn-card t1">
+        <article class="rn-card t0 rn-wide">
           <div class="rn-ch">
             <div class="rn-lv"><span class="rn-n">1</span>
+              <h3><span data-ar>المعلم المستخدم</span><span data-en>User Teacher</span><small><span data-ar>الاعتماد · لا يحتاج تجديد</span><span data-en>Accreditation · no renewal needed</span></small></h3></div>
+            <span class="rn-pass"><b>60%</b><span data-ar>نسبة النجاح</span><span data-en>pass mark</span></span>
+          </div>
+          <ul class="rn-req">
+            <li><span data-ar>اجتياز الاختبار بنسبة نجاح <b><span class="ltr">60%</span></b>.</span><span data-en>Pass the exam with <b>60%</b>.</span></li>
+            <li><span data-ar>لا يتطلب هذا المستوى ساعات تدريب أو نسبة تفاعل طلاب أو تطبيقاً تقنياً.</span><span data-en>This level requires no training hours, student engagement rate or technical application.</span></li>
+            <li><span data-ar><b>لا يحتاج هذا المستوى إلى تجديد.</b></span><span data-en><b>This level does not need renewal.</b></span></li>
+          </ul>
+        </article>
+
+        <article class="rn-card t1">
+          <div class="rn-ch">
+            <div class="rn-lv"><span class="rn-n">2</span>
               <h3><span data-ar>المعلم الممارس</span><span data-en>Practitioner Teacher</span><small><span data-ar>الاعتماد والتجديد</span><span data-en>Accreditation &amp; renewal</span></small></h3></div>
             <span class="rn-pass"><b>60%</b><span data-ar>نسبة النجاح</span><span data-en>pass mark</span></span>
           </div>
@@ -547,7 +562,7 @@ html[data-lang="ar"] .rn-table thead th{letter-spacing:0;text-transform:none;fon
 
         <article class="rn-card t2">
           <div class="rn-ch">
-            <div class="rn-lv"><span class="rn-n">2</span>
+            <div class="rn-lv"><span class="rn-n">3</span>
               <h3><span data-ar>المعلم المتقدم</span><span data-en>Advanced Teacher</span><small><span data-ar>الاعتماد والتجديد</span><span data-en>Accreditation &amp; renewal</span></small></h3></div>
             <span class="rn-pass"><b>70%</b><span data-ar>نسبة النجاح</span><span data-en>pass mark</span></span>
           </div>
@@ -561,7 +576,7 @@ html[data-lang="ar"] .rn-table thead th{letter-spacing:0;text-transform:none;fon
 
         <article class="rn-card t3">
           <div class="rn-ch">
-            <div class="rn-lv"><span class="rn-n">3</span>
+            <div class="rn-lv"><span class="rn-n">4</span>
               <h3><span data-ar>المعلم الخبير</span><span data-en>Expert Teacher</span><small><span data-ar>الاعتماد والتجديد</span><span data-en>Accreditation &amp; renewal</span></small></h3></div>
             <span class="rn-pass"><b>75%</b><span data-ar>نسبة النجاح</span><span data-en>pass mark</span></span>
           </div>
@@ -577,7 +592,7 @@ html[data-lang="ar"] .rn-table thead th{letter-spacing:0;text-transform:none;fon
 
         <article class="rn-card t4">
           <div class="rn-ch">
-            <div class="rn-lv"><span class="rn-n">4</span>
+            <div class="rn-lv"><span class="rn-n">5</span>
               <h3><span data-ar>المعلم المحترف</span><span data-en>Professional Teacher</span><small><span data-ar>الاعتماد والتجديد</span><span data-en>Accreditation &amp; renewal</span></small></h3></div>
             <span class="rn-pass"><b>85%</b><span data-ar>نسبة النجاح</span><span data-en>pass mark</span></span>
           </div>
@@ -614,7 +629,6 @@ html[data-lang="ar"] .rn-table thead th{letter-spacing:0;text-transform:none;fon
             <tr><th scope="row"><span data-ar>المحترف</span><span data-en>Professional</span></th><td class="num">10</td><td class="num">50%+</td><td><span data-ar>درسان C_Reality (<span class="ltr">30%</span>) · أو ذكاء اصطناعي · أو حل تقني · أو 10 فصول افتراضية (<span class="ltr">50%</span>)</span><span data-en>2 C_Reality lessons (30%) · or AI feature · or EdTech solution · or 10 virtual classes (50%)</span></td><td class="num">85%</td><td><span class="rn-pill ok"><span data-ar>قابل للتجديد</span><span data-en>Renewable</span></span></td></tr>
           </tbody>
         </table>
-        <p class="rn-tnote"><span data-ar>مستوى المعلم المستخدم لا يحتاج إلى تجديد، لذلك لا تظهر له بطاقة تجديد في الأعلى.</span><span data-en>The User level does not need renewal, so it has no renewal card above.</span></p>
       </div>
     </div>
 
