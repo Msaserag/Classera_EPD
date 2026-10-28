@@ -293,6 +293,11 @@ html[data-lang="ar"] .rn-table thead th{letter-spacing:0;text-transform:none;fon
 .rn-pill{display:inline-block;font-size:12px;font-weight:700;border-radius:999px;padding:3px 11px;white-space:nowrap}
 .rn-pill.ok{background:var(--green-soft);color:var(--green)}
 .rn-pill.muted{background:var(--surface-2);color:var(--muted);border:1px dashed var(--line)}
+.rn-pill.req{background:var(--gold-soft);color:#A9660F}
+.rn-fn{font-weight:800;margin-inline-start:4px;color:var(--ink-2)}
+.rn-notes{padding:12px 18px 14px;border-top:1px solid var(--line-2);display:grid;gap:8px}
+.rn-notes p{margin:0;display:flex;gap:10px;align-items:flex-start;font-size:13px;line-height:1.6;color:var(--ink-2)}
+.rn-notes p b{flex:none;width:20px;height:20px;border-radius:6px;background:var(--surface-2);color:var(--ink);display:grid;place-items:center;font-size:12px;margin-top:2px}
 .rn-tnote{margin:0;padding:12px 18px 14px;font-size:13px;color:var(--muted);border-top:1px solid var(--line-2)}
 .rn-flow{margin-top:30px;background:linear-gradient(135deg,var(--navy-2),var(--navy));border-radius:20px;padding:28px 30px;color:#EAF3F8}
 .rn-flow h3{font-size:19px;color:#fff;margin-bottom:4px}
@@ -616,7 +621,7 @@ html[data-lang="ar"] .rn-table thead th{letter-spacing:0;text-transform:none;fon
               <th scope="col"><span data-ar>المستوى</span><span data-en>Level</span></th>
               <th scope="col"><span data-ar>ساعات التدريب</span><span data-en>Training hours</span></th>
               <th scope="col"><span data-ar>تفاعل الطلاب</span><span data-en>Student engagement</span></th>
-              <th scope="col"><span data-ar>مسارات التطبيق التقني (أحد المسارات)</span><span data-en>Tech application (any one path)</span></th>
+              <th scope="col"><span data-ar>التطبيق التقني</span><span data-en>Tech application</span></th>
               <th scope="col"><span data-ar>نسبة النجاح</span><span data-en>Pass mark</span></th>
               <th scope="col"><span data-ar>التجديد</span><span data-en>Renewal</span></th>
             </tr>
@@ -625,10 +630,14 @@ html[data-lang="ar"] .rn-table thead th{letter-spacing:0;text-transform:none;fon
             <tr class="rn-norenew"><th scope="row"><span data-ar>المستخدم</span><span data-en>User</span></th><td>—</td><td>—</td><td>—</td><td class="num">60%</td><td><span class="rn-pill muted"><span data-ar>لا يحتاج تجديد</span><span data-en>No renewal needed</span></span></td></tr>
             <tr><th scope="row"><span data-ar>الممارس</span><span data-en>Practitioner</span></th><td class="num">2</td><td>—</td><td>—</td><td class="num">60%</td><td><span class="rn-pill ok"><span data-ar>قابل للتجديد</span><span data-en>Renewable</span></span></td></tr>
             <tr><th scope="row"><span data-ar>المتقدم</span><span data-en>Advanced</span></th><td class="num">4</td><td class="num">30%+</td><td>—</td><td class="num">70%</td><td><span class="rn-pill ok"><span data-ar>قابل للتجديد</span><span data-en>Renewable</span></span></td></tr>
-            <tr><th scope="row"><span data-ar>الخبير</span><span data-en>Expert</span></th><td class="num">6</td><td class="num">40%+</td><td><span data-ar>درس C_Reality (<span class="ltr">20%</span>) · أو ذكاء اصطناعي · أو حل تقني · أو 5 فصول افتراضية (<span class="ltr">40%</span>)</span><span data-en>C_Reality lesson (20%) · or AI feature · or EdTech solution · or 5 virtual classes (40%)</span></td><td class="num">75%</td><td><span class="rn-pill ok"><span data-ar>قابل للتجديد</span><span data-en>Renewable</span></span></td></tr>
-            <tr><th scope="row"><span data-ar>المحترف</span><span data-en>Professional</span></th><td class="num">10</td><td class="num">50%+</td><td><span data-ar>درسان C_Reality (<span class="ltr">30%</span>) · أو ذكاء اصطناعي · أو حل تقني · أو 10 فصول افتراضية (<span class="ltr">50%</span>)</span><span data-en>2 C_Reality lessons (30%) · or AI feature · or EdTech solution · or 10 virtual classes (50%)</span></td><td class="num">85%</td><td><span class="rn-pill ok"><span data-ar>قابل للتجديد</span><span data-en>Renewable</span></span></td></tr>
+            <tr><th scope="row"><span data-ar>الخبير</span><span data-en>Expert</span></th><td class="num">6</td><td class="num">40%+</td><td><span class="rn-pill req"><span data-ar>مطلوب</span><span data-en>Required</span></span><sup class="rn-fn">1</sup></td><td class="num">75%</td><td><span class="rn-pill ok"><span data-ar>قابل للتجديد</span><span data-en>Renewable</span></span></td></tr>
+            <tr><th scope="row"><span data-ar>المحترف</span><span data-en>Professional</span></th><td class="num">10</td><td class="num">50%+</td><td><span class="rn-pill req"><span data-ar>مطلوب</span><span data-en>Required</span></span><sup class="rn-fn">2</sup></td><td class="num">85%</td><td><span class="rn-pill ok"><span data-ar>قابل للتجديد</span><span data-en>Renewable</span></span></td></tr>
           </tbody>
         </table>
+        <div class="rn-notes">
+          <p><b>1</b><span data-ar>الخبير، أحد المسارات: درس تفاعلي واحد عبر C_Reality بتفاعل <span class="ltr">20%</span> من الطلاب، أو خاصية ذكاء اصطناعي داخل منصات كلاسيرا مع إثبات الاستخدام، أو حل تقني في التعليم مع ما يثبت ذلك، أو 5 حصص فصول افتراضية خلال شهر بتفاعل <span class="ltr">40%</span>.</span><span data-en>Expert, any one path: one interactive lesson created with C_Reality at 20% student engagement, or an AI feature inside Classera platforms with proof of use, or an EdTech solution with supporting evidence, or 5 virtual classroom sessions within a month at 40% engagement.</span></p>
+          <p><b>2</b><span data-ar>المحترف، أحد المسارات: درسان تفاعليان عبر C_Reality بتفاعل <span class="ltr">30%</span> من الطلاب، أو خاصية ذكاء اصطناعي داخل منصات كلاسيرا مع إثبات الاستخدام، أو حل تقني في التعليم مع ما يثبت ذلك، أو 10 حصص فصول افتراضية خلال شهر بتفاعل <span class="ltr">50%</span>.</span><span data-en>Professional, any one path: two interactive lessons created with C_Reality at 30% student engagement, or an AI feature inside Classera platforms with proof of use, or an EdTech solution with supporting evidence, or 10 virtual classroom sessions within a month at 50% engagement.</span></p>
+        </div>
       </div>
     </div>
 
