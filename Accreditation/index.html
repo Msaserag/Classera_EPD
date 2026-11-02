@@ -311,6 +311,27 @@ html[data-lang="ar"] .rn-table thead th{letter-spacing:0;text-transform:none;fon
 .rn-or{text-align:center;font-weight:800;font-size:12px;line-height:1;color:var(--ink);letter-spacing:.06em}
 .rn-lead{font-weight:700;color:var(--ink)}
 .rn-notes .rn-opt{font-size:12.5px;padding:6px 10px}
+/* teacher carousel */
+.rn-cwrap{position:relative;padding-bottom:6px}
+.rn-grid.rn-carousel{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-inline:0;scrollbar-width:none;padding:2px 2px 14px;margin:0 -2px;outline:none}
+.rn-grid.rn-carousel::-webkit-scrollbar{display:none}
+.rn-carousel>.rn-card{flex:0 0 calc((100% - 16px)/2);scroll-snap-align:start}
+.rn-carousel .rn-req{align-content:start}
+.rn-cbtn{position:absolute;top:calc(50% - 30px);z-index:3;width:42px;height:42px;display:grid;place-items:center;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);box-shadow:var(--shadow-h);cursor:pointer;transition:opacity .15s,transform .15s}
+.rn-cbtn:hover{transform:scale(1.06);border-color:var(--cyan)}
+.rn-cbtn[disabled]{opacity:0;pointer-events:none}
+.rn-cbtn svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.rn-prev{inset-inline-start:-14px}
+.rn-next{inset-inline-end:-14px}
+html[dir="rtl"] .rn-chev{display:inline-flex;transform:scaleX(-1)}
+.rn-chev{display:inline-flex}
+.rn-chev-prev{transform:scaleX(-1)}
+html[dir="rtl"] .rn-chev-prev{transform:none}
+.rn-dots{display:flex;justify-content:center;gap:8px;margin-top:2px}
+.rn-dot{width:9px;height:9px;padding:0;border-radius:999px;border:0;background:var(--line);cursor:pointer;transition:width .2s,background .2s}
+.rn-dot[aria-selected="true"]{width:26px;background:var(--cyan-deep)}
+@media (max-width:860px){.rn-carousel>.rn-card{flex-basis:88%}.rn-prev{inset-inline-start:-6px}.rn-next{inset-inline-end:-6px}}
+@media print{.rn-grid.rn-carousel{display:grid;overflow:visible;padding:0;margin:0}.rn-carousel>.rn-card{flex:none}.rn-cbtn,.rn-dots{display:none!important}}
 .rn-notes{padding:12px 18px 14px;border-top:1px solid var(--line-2);display:grid;gap:8px}
 .rn-notes p{margin:0;display:flex;gap:10px;align-items:flex-start;font-size:13px;line-height:1.6;color:var(--ink-2)}
 .rn-notes p b{flex:none;width:20px;height:20px;border-radius:6px;background:var(--surface-2);color:var(--ink);display:grid;place-items:center;font-size:12px;margin-top:2px}
@@ -563,9 +584,11 @@ html[data-lang="ar"] .rn-table thead th{letter-spacing:0;text-transform:none;fon
 
     <!-- teachers -->
     <div class="rn-panel on" id="rnp-teacher" role="tabpanel" aria-labelledby="rnt-teacher" data-rnp="teacher">
-      <div class="rn-grid">
+      <div class="rn-cwrap">
+        <button type="button" class="rn-cbtn rn-prev" aria-label="Previous level"><span class="rn-chev rn-chev-prev"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span></button>
+        <div class="rn-grid rn-carousel" tabindex="0" role="region" aria-label="Teacher accreditation levels">
 
-        <article class="rn-card t0 rn-wide">
+        <article class="rn-card t0">
           <div class="rn-ch">
             <div class="rn-lv"><span class="rn-n">1</span>
               <h3><span data-ar>المعلم المستخدم</span><span data-en>User Teacher</span><small><span data-ar>الاعتماد · لا يحتاج تجديد</span><span data-en>Accreditation · no renewal needed</span></small></h3></div>
@@ -638,6 +661,9 @@ html[data-lang="ar"] .rn-table thead th{letter-spacing:0;text-transform:none;fon
           </ul>
         </article>
 
+        </div>
+        <button type="button" class="rn-cbtn rn-next" aria-label="Next level"><span class="rn-chev"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span></button>
+        <div class="rn-dots" role="tablist" aria-label="Levels"></div>
       </div>
 
       <div class="rn-tablewrap">
@@ -1035,6 +1061,35 @@ applyTheme();render();
     if(cur){cur.a.classList.add('on');}
   }
   window.addEventListener('scroll',update,{passive:true});update();
+})();
+
+(function(){
+  var wrap=document.querySelector('.rn-cwrap'); if(!wrap) return;
+  var track=wrap.querySelector('.rn-carousel'), cards=[].slice.call(track.children),
+      prev=wrap.querySelector('.rn-prev'), next=wrap.querySelector('.rn-next'), dots=wrap.querySelector('.rn-dots');
+  var ar=function(){return document.documentElement.lang!=='en';};
+  cards.forEach(function(c,i){
+    var b=document.createElement('button'); b.type='button'; b.className='rn-dot'; b.setAttribute('role','tab'); b.setAttribute('aria-label','Level '+(i+1));
+    b.addEventListener('click',function(){ go(i); }); dots.appendChild(b);
+  });
+  function step(){ return cards.length>1 ? Math.abs(cards[1].offsetLeft-cards[0].offsetLeft) : track.clientWidth; }
+  function cur(){ return Math.max(0,Math.min(cards.length-1,Math.round(Math.abs(track.scrollLeft)/step()))); }
+  function go(i){ i=Math.max(0,Math.min(cards.length-1,i)); var x=cards[i].offsetLeft-cards[0].offsetLeft; track.scrollTo({left:x,behavior:'smooth'}); }
+  function maxScroll(){ return track.scrollWidth-track.clientWidth; }
+  function update(){
+    var i=cur(), atStart=Math.abs(track.scrollLeft)<4, atEnd=Math.abs(track.scrollLeft)>=maxScroll()-4;
+    prev.disabled=atStart; next.disabled=atEnd;
+    [].forEach.call(dots.children,function(d,k){ d.setAttribute('aria-selected',String(atEnd?k===cards.length-1:k===i)); });
+  }
+  prev.addEventListener('click',function(){ go(cur()-1); });
+  next.addEventListener('click',function(){ go(cur()+1); });
+  track.addEventListener('scroll',function(){ window.requestAnimationFrame(update); },{passive:true});
+  track.addEventListener('keydown',function(e){
+    var rtl=getComputedStyle(track).direction==='rtl';
+    if(e.key==='ArrowRight'){ e.preventDefault(); go(cur()+(rtl?-1:1)); }
+    if(e.key==='ArrowLeft'){ e.preventDefault(); go(cur()+(rtl?1:-1)); }
+  });
+  window.addEventListener('resize',update); update();
 })();
 </script>
 </body>
