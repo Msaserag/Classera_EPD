@@ -28,6 +28,8 @@
   --blue-soft:#132542;
   --gold:#E9A93F;
   --gold-soft:#38290F;
+  --rose:#EE7D98;
+  --rose-soft:#3A1824;
 
   --paper:#081722;
   --surface:#0E2534;
@@ -56,6 +58,8 @@
   --blue-soft:#E7ECF8;
   --gold:#D68A21;
   --gold-soft:#FBF0DE;
+  --rose:#C2466A;
+  --rose-soft:#FBE6EC;
 
   --paper:#F2F6FA;
   --surface:#FFFFFF;
@@ -177,6 +181,8 @@ html[dir="rtl"] .card h3 a{background-position:100% 100%}
 .meta{display:flex;flex-wrap:wrap;gap:8px 22px;margin-bottom:16px}
 .meta div{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--ink-2);font-variant-numeric:tabular-nums}
 .meta svg{width:16px;height:16px;stroke:var(--muted);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.psrow{display:grid;gap:5px;margin:-4px 0 16px;font-size:13.5px;line-height:1.55;color:var(--ink-2)}
+.psrow b{font-weight:700;color:var(--ink);margin-inline-end:6px}
 .cta{display:inline-flex;align-items:center;gap:9px;background:var(--c);color:var(--on-accent);text-decoration:none;font-family:var(--f-body);
   font-size:14px;font-weight:600;padding:9px 18px;border-radius:9px;transition:filter .18s ease,gap .18s ease}
 .cta:hover{filter:brightness(1.07);gap:13px}
@@ -331,6 +337,11 @@ html[data-lang="ar"] [lang="en"]{display:none !important}
     <circle cx="12" cy="4.6" r="2.4"/><circle cx="4.8" cy="18" r="2.4"/><circle cx="19.2" cy="18" r="2.4"/>
     <path d="M10.6 6.8 6.2 15.8M13.4 6.8l4.4 9M7.2 18h9.6"/>
   </symbol>
+  <symbol id="i-trophy" viewBox="0 0 24 24">
+    <path d="M7.4 4h9.2v5.2a4.6 4.6 0 0 1-9.2 0V4Z"/>
+    <path d="M7.4 6.2H4.6v1.2a3.2 3.2 0 0 0 3.2 3.2M16.6 6.2h2.8v1.2a3.2 3.2 0 0 1-3.2 3.2"/>
+    <path d="M12 13.8v3.6M8.6 20h6.8M9.6 17.4h4.8"/>
+  </symbol>
   <symbol id="i-bulb" viewBox="0 0 24 24">
     <path d="M9.2 16.4a6 6 0 1 1 5.6 0v1.8H9.2Z"/>
     <path d="M10 20.6h4M12 10.2v3.2"/>
@@ -436,6 +447,7 @@ html[data-lang="ar"] [lang="en"]{display:none !important}
         <button type="button" class="track" data-filter="all" aria-pressed="true" style="--c:var(--navy)"><i></i><span lang="en">All sessions</span><span lang="ar">كل الجلسات</span></button>
         <button type="button" class="track" data-filter="partner" aria-pressed="false" style="--c:var(--cyan)"><i></i><span lang="en">EdTech partners</span><span lang="ar">شركاء التقنية</span></button>
         <button type="button" class="track" data-filter="intel" aria-pressed="false" style="--c:var(--blue)"><i></i><span lang="en">Intel® SFI</span><span lang="ar">Intel® SFI</span></button>
+        <button type="button" class="track" data-filter="competition" aria-pressed="false" style="--c:var(--rose)"><i></i><span lang="en">Competition</span><span lang="ar">المسابقة</span></button>
         <button type="button" class="track" data-filter="classera" aria-pressed="false" style="--c:var(--gold)"><i></i><span lang="en">Classera LMS</span><span lang="ar">نظام كلاسيرا</span></button>
       </div>
     </div>
@@ -593,6 +605,50 @@ html[data-lang="ar"] [lang="en"]{display:none !important}
         <div class="mm"><span lang="en">November 2026</span><span lang="ar">نوفمبر 2026</span></div>
         <div class="ml"></div>
       </div>
+      <article class="item reveal" data-track="competition" style="--c:var(--rose);--cs:var(--rose-soft)">
+        <span class="badge" aria-hidden="true">
+          <svg class="ring" viewBox="0 0 100 100">
+            <circle class="disc" cx="50" cy="50" r="38"/>
+            <circle class="dots" cx="50" cy="50" r="45.5"/>
+            <circle class="solid" cx="50" cy="50" r="44"/>
+            <path class="lens" d="M17 24c-9 8-9 44 0 52 9-8 9-44 0-52Z"/>
+          </svg>
+          <svg class="ico"><use href="#i-trophy"></use></svg>
+        </span>
+        <div class="card">
+          <div class="top">
+            <span class="pill"><span lang="en">Competition</span><span lang="ar">مسابقة</span></span>
+            <span class="snum"><span lang="en">WEBINAR</span><span lang="ar">ندوة</span></span>
+          </div>
+          <h3>
+            <a href="https://sh.classera.com/ZL97ST" data-link="pd-c01" target="_blank" rel="noopener">
+              <span lang="en">Innovative Teacher Competition 2027: Everything You Need to Know</span><span lang="ar">مسابقة المعلم المبتكر 2027: كل ما تحتاج معرفته</span>
+            </a>
+          </h3>
+          <div class="meta">
+            <div><svg><use href="#i-calendar"></use></svg><span lang="en">Wednesday, 4 November 2026</span><span lang="ar">الأربعاء 4 نوفمبر 2026</span></div>
+            <div><svg><use href="#i-clock"></use></svg><span lang="en">5:00 PM (GMT+3)</span><span lang="ar">5:00 مساءً (بتوقيت السعودية)</span></div>
+            <div><svg><use href="#i-users"></use></svg><span lang="en">Teachers across the Arab region</span><span lang="ar">معلمو الوطن العربي</span></div>
+            <div><svg><use href="#i-globe"></use></svg><span lang="en">Arabic</span><span lang="ar">الجلسة بالعربية</span></div>
+          </div>
+          <div class="psrow">
+            <div><b><span lang="en">Organized by</span><span lang="ar">تنظيم</span></b><span lang="en">ALECSO, Classera, Intel® and Millennium@EDU</span><span lang="ar">الألكسو، كلاسيرا، إنتل® وMillennium@EDU</span></div>
+            <div><b><span lang="en">Sponsors</span><span lang="ar">الرعاة</span></b><span lang="en">jp.ik and SixUnited</span><span lang="ar">jp.ik وSixUnited</span></div>
+          </div>
+          <div class="ctarow">
+            <a class="cta" href="https://sh.classera.com/ZL97ST" data-link="pd-c01" target="_blank" rel="noopener">
+              <span lang="en">Register now</span><span lang="ar">سجّل الآن</span>
+              <svg><use href="#i-arrow"></use></svg>
+            </a>
+            <span class="calbtns" data-link="pd-c01">
+              <a class="calbtn" href="https://calendar.google.com/calendar/render?action=TEMPLATE&amp;text=Innovative+Teacher+Competition+2027%3A+Everything+You+Need+to+Know&amp;dates=20261104T140000Z%2F20261104T151500Z&amp;details=Innovative+Teacher+Competition+2027%3A+Everything+You+Need+to+Know%0A%D9%85%D8%B3%D8%A7%D8%A8%D9%82%D8%A9+%D8%A7%D9%84%D9%85%D8%B9%D9%84%D9%85+%D8%A7%D9%84%D9%85%D8%A8%D8%AA%D9%83%D8%B1+2027%3A+%D9%83%D9%84+%D9%85%D8%A7+%D8%AA%D8%AD%D8%AA%D8%A7%D8%AC+%D9%85%D8%B9%D8%B1%D9%81%D8%AA%D9%87%0A%0AAudience%3A+Teachers+across+the+Arab+region+%2F+%D9%85%D8%B9%D9%84%D9%85%D9%88+%D8%A7%D9%84%D9%88%D8%B7%D9%86+%D8%A7%D9%84%D8%B9%D8%B1%D8%A8%D9%8A%0ATime%3A+5%3A00+PM+Saudi+Arabia+time+%28GMT%2B3%29%0A%0ARegister%3A+https%3A%2F%2Fsh.classera.com%2FZL97ST&amp;location=Online+%E2%80%94+Classera+Innovation+Platform&amp;ctz=Asia%2FRiyadh" target="_blank" rel="noopener"
+                 title="Add to Google Calendar" aria-label="Add to Google Calendar"><span class="g">G</span></a>
+              <a class="calbtn" href="https://outlook.office.com/calendar/0/deeplink/compose?path=%2Fcalendar%2Faction%2Fcompose&amp;rru=addevent&amp;subject=Innovative+Teacher+Competition+2027%3A+Everything+You+Need+to+Know&amp;startdt=2026-11-04T17%3A00%3A00%2B03%3A00&amp;enddt=2026-11-04T18%3A15%3A00%2B03%3A00&amp;location=Online+%E2%80%94+Classera+Innovation+Platform&amp;body=Innovative+Teacher+Competition+2027%3A+Everything+You+Need+to+Know%0A%D9%85%D8%B3%D8%A7%D8%A8%D9%82%D8%A9+%D8%A7%D9%84%D9%85%D8%B9%D9%84%D9%85+%D8%A7%D9%84%D9%85%D8%A8%D8%AA%D9%83%D8%B1+2027%3A+%D9%83%D9%84+%D9%85%D8%A7+%D8%AA%D8%AD%D8%AA%D8%A7%D8%AC+%D9%85%D8%B9%D8%B1%D9%81%D8%AA%D9%87%0A%0AAudience%3A+Teachers+across+the+Arab+region+%2F+%D9%85%D8%B9%D9%84%D9%85%D9%88+%D8%A7%D9%84%D9%88%D8%B7%D9%86+%D8%A7%D9%84%D8%B9%D8%B1%D8%A8%D9%8A%0ATime%3A+5%3A00+PM+Saudi+Arabia+time+%28GMT%2B3%29%0A%0ARegister%3A+https%3A%2F%2Fsh.classera.com%2FZL97ST" target="_blank" rel="noopener"
+                 title="Add to Outlook" aria-label="Add to Outlook calendar"><svg><use href="#i-calplus"></use></svg></a>
+            </span>
+          </div>
+        </div>
+      </article>
       <article class="item reveal" data-track="partner" style="--c:var(--cyan);--cs:var(--cyan-soft)">
         <span class="badge" aria-hidden="true">
           <svg class="ring" viewBox="0 0 100 100">
