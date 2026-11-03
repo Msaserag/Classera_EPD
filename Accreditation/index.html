@@ -306,9 +306,11 @@ html[data-lang="ar"] .rn-table thead th{letter-spacing:0;text-transform:none;fon
 .rn-pill.req{background:var(--gold-soft);color:#A9660F}
 .rn-fn{font-weight:800;margin-inline-start:4px;color:var(--ink-2)}
 .rn-optwrap{flex:1;min-width:0}
-.rn-opts{display:grid;gap:5px;margin-top:8px}
-.rn-opt{padding:8px 12px;background:var(--surface-2);border:1px solid var(--line-2);border-inline-start:3px solid var(--tone,var(--cyan));border-radius:10px;font-size:13.5px;line-height:1.55;color:var(--ink-2)}
-.rn-or{text-align:center;font-weight:800;font-size:12px;line-height:1;color:var(--ink);letter-spacing:.06em}
+.rn-opts{display:grid;gap:3px;margin-top:6px}
+.rn-opt{padding:4px 10px;background:var(--surface-2);border:1px solid var(--line-2);border-inline-start:3px solid var(--tone,var(--cyan));border-radius:8px;font-size:13px;line-height:1.45;color:var(--ink-2)}
+.rn-or{display:none}
+html:not([data-lang="en"]) .rn-or+.rn-opt::before{content:"أو ";font-weight:800;color:var(--ink)}
+html[data-lang="en"] .rn-or+.rn-opt::before{content:"OR ";font-weight:800;color:var(--ink);letter-spacing:.04em}
 .rn-lead{font-weight:700;color:var(--ink)}
 .rn-notes .rn-opt{font-size:12.5px;padding:6px 10px}
 /* teacher carousel */
