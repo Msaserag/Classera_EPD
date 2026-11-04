@@ -108,6 +108,15 @@
       if (!s) { if (old) old.remove(); return; }
       if (!old && h4) h4.appendChild(makeBadge(s));
     });
+    /* accreditation exam windows: matched by their start date */
+    var accByStart = null;
+    document.querySelectorAll('.period [data-ics]').forEach(function (btn) {
+      var row = btn.closest('.period'), old = row.querySelector('[data-cnew]');
+      if (!accByStart) { accByStart = {}; Object.keys(ev).forEach(function (k) { var e = ev[k]; if (e.b && e.p && e.p.toLowerCase() === 'accreditation') accByStart[e.b] = e; }); }
+      var s = fresh(accByStart[btn.getAttribute('data-ics')]), host = row.querySelector('.pt');
+      if (!s) { if (old) old.remove(); return; }
+      if (!old && host) host.appendChild(makeBadge(s));
+    });
     /* hub: plan cards and plan tabs */
     document.querySelectorAll('.prog[data-plan]').forEach(function (card) {
       var s = planState(card.getAttribute('data-plan')), old = card.querySelector(':scope > [data-cnew]');

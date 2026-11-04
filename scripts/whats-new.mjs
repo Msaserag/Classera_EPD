@@ -74,7 +74,7 @@ async function readEvents() {
     const key = (clean(r[col('sitekey')]) || id).toLowerCase();
     const start = isoDate(r[col('startdate')]), end = isoDate(r[col('enddate')]) || start;
     out[key] = {
-      p: clean(r[col('program')]), s: clean(r[col('eventstatus')]), e: end,
+      p: clean(r[col('program')]), s: clean(r[col('eventstatus')]), b: start, e: end,
       h: sha(WATCH.map(n => col(n) < 0 ? '' : clean(r[col(n)])).join('|'))
     };
   });
