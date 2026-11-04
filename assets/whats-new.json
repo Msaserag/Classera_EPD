@@ -5,6 +5,7 @@
   "pd-lw1": {
    "p": "Professional Development",
    "s": "Delivered",
+   "b": "2026-09-28",
    "e": "2026-09-28",
    "h": "1708b307fd1b",
    "a": null,
@@ -13,6 +14,7 @@
   "enr-lw2": {
    "p": "Enrichment Academy",
    "s": "Delivered",
+   "b": "2026-09-29",
    "e": "2026-09-29",
    "h": "7b42393c007a",
    "a": null,
@@ -21,6 +23,7 @@
   "pd-s01": {
    "p": "Professional Development",
    "s": "Delivered",
+   "b": "2026-09-30",
    "e": "2026-09-30",
    "h": "61f3865d30e9",
    "a": null,
@@ -29,6 +32,7 @@
   "pd-s02": {
    "p": "Professional Development",
    "s": "Delivered",
+   "b": "2026-10-14",
    "e": "2026-10-14",
    "h": "ec235eb6c72c",
    "a": null,
@@ -37,6 +41,7 @@
   "pd-s03": {
    "p": "Professional Development",
    "s": "Delivered",
+   "b": "2026-10-28",
    "e": "2026-10-28",
    "h": "0315898d7dee",
    "a": null,
@@ -45,6 +50,7 @@
   "pd-s04": {
    "p": "Professional Development",
    "s": "Planned",
+   "b": "2026-11-11",
    "e": "2026-11-11",
    "h": "04c684ff1b3e",
    "a": null,
@@ -53,6 +59,7 @@
   "pd-s05": {
    "p": "Professional Development",
    "s": "Planned",
+   "b": "2026-12-09",
    "e": "2026-12-09",
    "h": "916823eebbd8",
    "a": null,
@@ -61,6 +68,7 @@
   "pd-s06": {
    "p": "Professional Development",
    "s": "Planned",
+   "b": "2026-12-23",
    "e": "2026-12-23",
    "h": "4daa0ad3e777",
    "a": null,
@@ -69,6 +77,7 @@
   "pd-s07": {
    "p": "Professional Development",
    "s": "Planned",
+   "b": "2027-03-17",
    "e": "2027-03-17",
    "h": "21962dd922e8",
    "a": null,
@@ -77,6 +86,7 @@
   "pd-s08": {
    "p": "Professional Development",
    "s": "Planned",
+   "b": "2027-03-31",
    "e": "2027-03-31",
    "h": "e41be836e3cb",
    "a": null,
@@ -85,6 +95,7 @@
   "pd-s09": {
    "p": "Professional Development",
    "s": "Planned",
+   "b": "2027-04-07",
    "e": "2027-04-07",
    "h": "71e39a22afeb",
    "a": null,
@@ -93,6 +104,7 @@
   "pd-s10": {
    "p": "Professional Development",
    "s": "Planned",
+   "b": "2027-04-21",
    "e": "2027-04-21",
    "h": "e64298b4604a",
    "a": null,
@@ -101,6 +113,7 @@
   "pd-s11": {
    "p": "Professional Development",
    "s": "Planned",
+   "b": "2027-05-05",
    "e": "2027-05-05",
    "h": "5888e342f148",
    "a": null,
@@ -109,6 +122,7 @@
   "acc-01": {
    "p": "Accreditation",
    "s": "Delivered",
+   "b": "2026-09-21",
    "e": "2026-09-27",
    "h": "1db90ab859ec",
    "a": null,
@@ -117,6 +131,7 @@
   "acc-02": {
    "p": "Accreditation",
    "s": "Delivered",
+   "b": "2026-10-05",
    "e": "2026-10-11",
    "h": "8d5f3456a282",
    "a": null,
@@ -125,6 +140,7 @@
   "acc-03": {
    "p": "Accreditation",
    "s": "Delivered",
+   "b": "2026-10-19",
    "e": "2026-10-29",
    "h": "dde0e4c19b4c",
    "a": null,
@@ -133,6 +149,7 @@
   "acc-04": {
    "p": "Accreditation",
    "s": "Registration Open",
+   "b": "2026-11-09",
    "e": "2026-11-15",
    "h": "53fb248e2d17",
    "a": null,
@@ -141,6 +158,7 @@
   "acc-05": {
    "p": "Accreditation",
    "s": "Registration Open",
+   "b": "2026-11-23",
    "e": "2026-11-29",
    "h": "5147c3a4a1d4",
    "a": null,
@@ -149,6 +167,7 @@
   "acc-06": {
    "p": "Accreditation",
    "s": "Registration Open",
+   "b": "2026-12-07",
    "e": "2026-12-13",
    "h": "53835ac09286",
    "a": null,
@@ -157,6 +176,7 @@
   "acc-07": {
    "p": "Accreditation",
    "s": "Registration Open",
+   "b": "2026-12-21",
    "e": "2026-12-27",
    "h": "e4ee85726751",
    "a": null,
@@ -165,6 +185,7 @@
   "acc-08": {
    "p": "Accreditation",
    "s": "Registration Open",
+   "b": "2027-01-04",
    "e": "2027-01-10",
    "h": "acfadab21831",
    "a": null,
@@ -173,6 +194,7 @@
   "acc-09": {
    "p": "Accreditation",
    "s": "Registration Open",
+   "b": "2027-01-18",
    "e": "2027-01-24",
    "h": "539e3ac291d1",
    "a": null,
@@ -181,6 +203,7 @@
   "acc-10": {
    "p": "Accreditation",
    "s": "Registration Open",
+   "b": "2027-02-08",
    "e": "2027-02-14",
    "h": "14daa206788e",
    "a": null,
@@ -189,6 +212,7 @@
   "acc-11": {
    "p": "Accreditation",
    "s": "Registration Open",
+   "b": "2027-02-22",
    "e": "2027-02-28",
    "h": "ea6f1b29c23a",
    "a": null,
@@ -197,6 +221,7 @@
   "acc-12": {
    "p": "Accreditation",
    "s": "Registration Open",
+   "b": "2027-03-08",
    "e": "2027-03-14",
    "h": "60b71a309585",
    "a": null,
@@ -205,6 +230,7 @@
   "acc-13": {
    "p": "Accreditation",
    "s": "Registration Open",
+   "b": "2027-03-22",
    "e": "2027-03-28",
    "h": "c96d63c28b8c",
    "a": null,
@@ -213,6 +239,7 @@
   "acc-14": {
    "p": "Accreditation",
    "s": "Registration Open",
+   "b": "2027-04-05",
    "e": "2027-04-11",
    "h": "9e28a864f96e",
    "a": null,
@@ -221,6 +248,7 @@
   "acc-15": {
    "p": "Accreditation",
    "s": "Registration Open",
+   "b": "2027-04-19",
    "e": "2027-04-25",
    "h": "09e3e7e644d7",
    "a": null,
@@ -229,6 +257,7 @@
   "acc-16": {
    "p": "Accreditation",
    "s": "Registration Open",
+   "b": "2027-05-03",
    "e": "2027-05-09",
    "h": "6ef48fb7b835",
    "a": null,
@@ -237,6 +266,7 @@
   "acc-17": {
    "p": "Accreditation",
    "s": "Registration Open",
+   "b": "2027-05-24",
    "e": "2027-05-30",
    "h": "fad2de387e41",
    "a": null,
@@ -245,6 +275,7 @@
   "acc-18": {
    "p": "Accreditation",
    "s": "Registration Open",
+   "b": "2027-06-07",
    "e": "2027-06-13",
    "h": "0388a56055bb",
    "a": null,
@@ -253,6 +284,7 @@
   "acc-19": {
    "p": "Accreditation",
    "s": "Registration Open",
+   "b": "2027-06-21",
    "e": "2027-06-27",
    "h": "c8442cd3ae23",
    "a": null,
@@ -261,6 +293,7 @@
   "enr-01": {
    "p": "Enrichment Academy",
    "s": "Delivered",
+   "b": "2026-09-21",
    "e": "2026-09-21",
    "h": "57d9e70d7047",
    "a": null,
@@ -269,6 +302,7 @@
   "enr-02": {
    "p": "Enrichment Academy",
    "s": "Delivered",
+   "b": "2026-10-05",
    "e": "2026-10-05",
    "h": "3ea65fb33ea3",
    "a": null,
@@ -277,6 +311,7 @@
   "enr-03": {
    "p": "Enrichment Academy",
    "s": "Delivered",
+   "b": "2026-10-06",
    "e": "2026-10-06",
    "h": "641eec857276",
    "a": null,
@@ -285,6 +320,7 @@
   "enr-04": {
    "p": "Enrichment Academy",
    "s": "Delivered",
+   "b": "2026-10-12",
    "e": "2026-10-12",
    "h": "70cceaf58d81",
    "a": null,
@@ -293,6 +329,7 @@
   "enr-05": {
    "p": "Enrichment Academy",
    "s": "Delivered",
+   "b": "2026-10-19",
    "e": "2026-10-19",
    "h": "a2174f17f531",
    "a": null,
@@ -301,6 +338,7 @@
   "enr-06": {
    "p": "Enrichment Academy",
    "s": "Delivered",
+   "b": "2026-10-26",
    "e": "2026-10-26",
    "h": "363c01241ea1",
    "a": null,
@@ -309,6 +347,7 @@
   "enr-07": {
    "p": "Enrichment Academy",
    "s": "Postponed",
+   "b": "2026-11-03",
    "e": "2026-11-03",
    "h": "1d2239c74d56",
    "a": null,
@@ -317,6 +356,7 @@
   "enr-08": {
    "p": "Enrichment Academy",
    "s": "Planned",
+   "b": "2026-11-09",
    "e": "2026-11-09",
    "h": "aebfeba7756f",
    "a": null,
@@ -325,6 +365,7 @@
   "enr-09": {
    "p": "Enrichment Academy",
    "s": "Planned",
+   "b": "2026-11-16",
    "e": "2026-11-16",
    "h": "1dab1af620e9",
    "a": null,
@@ -333,6 +374,7 @@
   "enr-10": {
    "p": "Enrichment Academy",
    "s": "Planned",
+   "b": "2026-11-23",
    "e": "2026-11-23",
    "h": "321932887263",
    "a": null,
@@ -341,6 +383,7 @@
   "enr-11": {
    "p": "Enrichment Academy",
    "s": "Planned",
+   "b": "2026-11-30",
    "e": "2026-11-30",
    "h": "6eaee5cbde29",
    "a": null,
@@ -349,6 +392,7 @@
   "enr-12": {
    "p": "Enrichment Academy",
    "s": "Planned",
+   "b": "2026-12-07",
    "e": "2026-12-07",
    "h": "78046c3651a0",
    "a": null,
@@ -357,6 +401,7 @@
   "enr-13": {
    "p": "Enrichment Academy",
    "s": "Planned",
+   "b": "2026-12-14",
    "e": "2026-12-14",
    "h": "c2ee052e2e82",
    "a": null,
@@ -365,6 +410,7 @@
   "enr-14": {
    "p": "Enrichment Academy",
    "s": "Planned",
+   "b": "2026-12-21",
    "e": "2026-12-21",
    "h": "3a05317cb798",
    "a": null,
@@ -373,6 +419,7 @@
   "enr-15": {
    "p": "Enrichment Academy",
    "s": "Planned",
+   "b": "2027-02-01",
    "e": "2027-02-01",
    "h": "0eef82d19512",
    "a": null,
@@ -381,6 +428,7 @@
   "enr-16": {
    "p": "Enrichment Academy",
    "s": "Planned",
+   "b": "2027-02-08",
    "e": "2027-02-08",
    "h": "10bdba4cfe1d",
    "a": null,
@@ -389,6 +437,7 @@
   "enr-17": {
    "p": "Enrichment Academy",
    "s": "Planned",
+   "b": "2027-02-15",
    "e": "2027-02-15",
    "h": "835cc1f2db1e",
    "a": null,
@@ -397,6 +446,7 @@
   "enr-18": {
    "p": "Enrichment Academy",
    "s": "Planned",
+   "b": "2027-02-15",
    "e": "2027-02-15",
    "h": "791758ddf7f8",
    "a": null,
@@ -405,6 +455,7 @@
   "enr-19": {
    "p": "Enrichment Academy",
    "s": "Planned",
+   "b": "2027-02-15",
    "e": "2027-02-15",
    "h": "d3c37218f332",
    "a": null,
@@ -413,6 +464,7 @@
   "enr-20": {
    "p": "Enrichment Academy",
    "s": "Planned",
+   "b": "2027-02-22",
    "e": "2027-02-22",
    "h": "338339a5db1b",
    "a": null,
@@ -421,6 +473,7 @@
   "enr-21": {
    "p": "Enrichment Academy",
    "s": "Planned",
+   "b": "2027-03-01",
    "e": "2027-03-01",
    "h": "5ed0368a97c5",
    "a": null,
@@ -429,6 +482,7 @@
   "enr-22": {
    "p": "Enrichment Academy",
    "s": "Planned",
+   "b": "2027-03-08",
    "e": "2027-03-08",
    "h": "99725cc6d34c",
    "a": null,
@@ -437,6 +491,7 @@
   "enr-23": {
    "p": "Enrichment Academy",
    "s": "Planned",
+   "b": "2027-03-22",
    "e": "2027-03-22",
    "h": "043321816deb",
    "a": null,
@@ -445,6 +500,7 @@
   "enr-24": {
    "p": "Enrichment Academy",
    "s": "Planned",
+   "b": "2027-03-29",
    "e": "2027-03-29",
    "h": "016a95979cf2",
    "a": null,
@@ -453,6 +509,7 @@
   "enr-25": {
    "p": "Enrichment Academy",
    "s": "Planned",
+   "b": "2027-04-05",
    "e": "2027-04-05",
    "h": "efdde8f1762f",
    "a": null,
@@ -461,6 +518,7 @@
   "enr-26": {
    "p": "Enrichment Academy",
    "s": "Planned",
+   "b": "2027-04-12",
    "e": "2027-04-12",
    "h": "78f5f6166c79",
    "a": null,
@@ -469,6 +527,7 @@
   "enr-27": {
    "p": "Enrichment Academy",
    "s": "Planned",
+   "b": "2027-04-19",
    "e": "2027-04-19",
    "h": "bbf8f50418a2",
    "a": null,
@@ -477,6 +536,7 @@
   "enr-28": {
    "p": "Enrichment Academy",
    "s": "Planned",
+   "b": "2027-04-19",
    "e": "2027-04-19",
    "h": "8eb7adad997d",
    "a": null,
@@ -485,6 +545,7 @@
   "enr-29": {
    "p": "Enrichment Academy",
    "s": "Planned",
+   "b": "2027-04-26",
    "e": "2027-04-26",
    "h": "9af76b3b6c49",
    "a": null,
@@ -493,6 +554,7 @@
   "enr-30": {
    "p": "Enrichment Academy",
    "s": "Planned",
+   "b": "2027-05-10",
    "e": "2027-05-10",
    "h": "46b8455eac58",
    "a": null,
@@ -501,6 +563,7 @@
   "enr-31": {
    "p": "Enrichment Academy",
    "s": "Planned",
+   "b": "2027-05-24",
    "e": "2027-05-24",
    "h": "41e715df9393",
    "a": null,
@@ -509,6 +572,7 @@
   "enr-32": {
    "p": "Enrichment Academy",
    "s": "Planned",
+   "b": "2027-06-14",
    "e": "2027-06-14",
    "h": "ab2342e84402",
    "a": null,
@@ -517,6 +581,7 @@
   "product-events-intro-services": {
    "p": "Product Events",
    "s": "Planned",
+   "b": "2026-10-26",
    "e": "2026-10-26",
    "h": "fadc4700d1d9",
    "a": null,
@@ -525,6 +590,7 @@
   "product-events-founding-day": {
    "p": "Product Events",
    "s": "Planned",
+   "b": "2027-02-01",
    "e": "2027-02-01",
    "h": "68cce5430488",
    "a": null,
@@ -533,6 +599,7 @@
   "product-events-csmarks-launch": {
    "p": "Product Events",
    "s": "Planned",
+   "b": "2027-02-01",
    "e": "2027-02-28",
    "h": "8f375a49cf18",
    "a": null,
@@ -541,6 +608,7 @@
   "product-events-year-end-offers": {
    "p": "Product Events",
    "s": "Planned",
+   "b": "2027-04-20",
    "e": "2027-04-20",
    "h": "d48d5076027d",
    "a": null,
@@ -549,6 +617,7 @@
   "in-person-events-forum-kw": {
    "p": "In-Person Events",
    "s": "Planned",
+   "b": "2026-12-01",
    "e": "2026-12-31",
    "h": "f22844eab91c",
    "a": null,
@@ -557,6 +626,7 @@
   "in-person-events-forum-ksa-existing": {
    "p": "In-Person Events",
    "s": "Planned",
+   "b": "2026-12-01",
    "e": "2026-12-31",
    "h": "278d5377eb73",
    "a": null,
@@ -565,6 +635,7 @@
   "in-person-events-bett-uk": {
    "p": "In-Person Events",
    "s": "Planned",
+   "b": "2027-01-01",
    "e": "2027-01-31",
    "h": "3f2ac4d67289",
    "a": null,
@@ -573,6 +644,7 @@
   "in-person-events-ramadan": {
    "p": "In-Person Events",
    "s": "Planned",
+   "b": "2027-02-01",
    "e": "2027-02-28",
    "h": "58d39a232e31",
    "a": null,
@@ -581,6 +653,7 @@
   "in-person-events-innoxera-om": {
    "p": "In-Person Events",
    "s": "Planned",
+   "b": "2027-03-01",
    "e": "2027-03-31",
    "h": "d819caf53cc1",
    "a": null,
@@ -589,6 +662,7 @@
   "in-person-events-innoxera-bh": {
    "p": "In-Person Events",
    "s": "Planned",
+   "b": "2027-03-01",
    "e": "2027-03-31",
    "h": "f1008b784e59",
    "a": null,
@@ -597,6 +671,7 @@
   "in-person-events-forum-eg": {
    "p": "In-Person Events",
    "s": "Planned",
+   "b": "2027-04-01",
    "e": "2027-04-30",
    "h": "cfdf04f08563",
    "a": null,
@@ -605,6 +680,7 @@
   "in-person-events-forum-ksa-new": {
    "p": "In-Person Events",
    "s": "Planned",
+   "b": "2027-04-01",
    "e": "2027-04-30",
    "h": "7f634dc80fc6",
    "a": null,
@@ -613,6 +689,7 @@
   "in-person-events-innoxera-sa": {
    "p": "In-Person Events",
    "s": "Planned",
+   "b": "2027-04-01",
    "e": "2027-04-30",
    "h": "7d5b89661b35",
    "a": null,
@@ -621,6 +698,7 @@
   "in-person-events-hci-edgex": {
    "p": "In-Person Events",
    "s": "Planned",
+   "b": "2027-04-12",
    "e": "2027-04-13",
    "h": "9eb6c4601fe4",
    "a": null,
@@ -629,6 +707,7 @@
   "in-person-events-ewf-london": {
    "p": "In-Person Events",
    "s": "Planned",
+   "b": "2027-05-01",
    "e": "2027-05-31",
    "h": "1c6b00379bc3",
    "a": null,
@@ -637,6 +716,7 @@
   "in-person-events-innoxera-qa": {
    "p": "In-Person Events",
    "s": "Planned",
+   "b": "2027-05-01",
    "e": "2027-05-31",
    "h": "b3e27b89eb4a",
    "a": null,
@@ -645,18 +725,18 @@
   "pd-c01": {
    "p": "Professional Development",
    "s": "Registration Open",
+   "b": "2026-11-04",
    "e": "2026-11-04",
    "h": "1e975a14e95f",
    "a": "2026-11-03T06:06:33Z",
-   "c": "2026-11-03T06:06:33Z",
-   "b": null
+   "c": "2026-11-03T06:06:33Z"
   }
  },
  "pages": {
   "Accreditation": {
-   "h": "794349bd10dc",
+   "h": "35dae11af875",
    "a": null,
-   "c": "2026-11-03T06:53:25Z"
+   "c": "2026-11-04T13:41:16.152Z"
   },
   "Admin": {
    "h": "ac01c0bd70cc",
@@ -714,5 +794,5 @@
    "c": null
   }
  },
- "updated": "2026-11-04T13:23:58.635Z"
+ "updated": "2026-11-04T13:41:16.152Z"
 }
