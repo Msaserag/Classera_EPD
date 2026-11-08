@@ -353,6 +353,15 @@
    "a": null,
    "c": null
   },
+  "enr-08": {
+   "p": "Enrichment Academy",
+   "s": "Planned",
+   "b": "2026-11-09",
+   "e": "2026-11-09",
+   "h": "aebfeba7756f",
+   "a": "2026-11-08T23:31:53.215Z",
+   "c": "2026-11-08T23:31:53.215Z"
+  },
   "enr-09": {
    "p": "Enrichment Academy",
    "s": "Planned",
@@ -735,19 +744,19 @@
    "c": null
   },
   "Calendar": {
-   "h": "f9377bebdd2c",
+   "h": "7b5ae344796d",
    "a": null,
-   "c": null
+   "c": "2026-11-08T23:31:53.215Z"
   },
   "Enrichment": {
-   "h": "9bd4a19e7f3d",
+   "h": "93db3ccd63bc",
    "a": null,
-   "c": null
+   "c": "2026-11-08T23:31:53.215Z"
   },
   "Events": {
-   "h": "180bb6d80328",
+   "h": "c0865e35f1f1",
    "a": null,
-   "c": null
+   "c": "2026-11-08T23:31:53.215Z"
   },
   "InPersonEvents": {
    "h": "8e41a1ec3559",
@@ -785,5 +794,5 @@
    "c": null
   }
  },
- "updated": "2026-11-08T17:55:55.882Z"
+ "updated": "2026-11-08T23:31:53.215Z"
 }
