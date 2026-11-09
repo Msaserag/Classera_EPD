@@ -52,9 +52,9 @@
    "s": "Planned",
    "b": "2026-11-11",
    "e": "2026-11-11",
-   "h": "beccd7db2fc2",
+   "h": "cdb71b758a97",
    "a": null,
-   "c": "2026-11-08T17:55:55.882Z"
+   "c": "2026-11-09T19:50:20.174Z"
   },
   "pd-s05": {
    "p": "Professional Development",
@@ -148,7 +148,7 @@
   },
   "acc-04": {
    "p": "Accreditation",
-   "s": "Registration Open",
+   "s": "Delivered",
    "b": "2026-11-09",
    "e": "2026-11-15",
    "h": "53fb248e2d17",
@@ -346,7 +346,7 @@
   },
   "enr-07": {
    "p": "Enrichment Academy",
-   "s": "Postponed",
+   "s": "Delivered",
    "b": "2026-11-03",
    "e": "2026-11-03",
    "h": "1d2239c74d56",
@@ -785,5 +785,5 @@
    "c": null
   }
  },
- "updated": "2026-11-09T07:08:27.779Z"
+ "updated": "2026-11-09T19:50:20.174Z"
 }
