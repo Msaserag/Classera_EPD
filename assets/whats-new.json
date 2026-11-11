@@ -49,7 +49,7 @@
   },
   "pd-s04": {
    "p": "Professional Development",
-   "s": "Planned",
+   "s": "Delivered",
    "b": "2026-11-11",
    "e": "2026-11-11",
    "h": "cdb71b758a97",
@@ -715,7 +715,7 @@
   },
   "pd-c01": {
    "p": "Professional Development",
-   "s": "Registration Open",
+   "s": "Delivered",
    "b": "2026-11-11",
    "e": "2026-11-11",
    "h": "e5c65db9486b",
@@ -785,5 +785,5 @@
    "c": null
   }
  },
- "updated": "2026-11-10T07:20:25.828Z"
+ "updated": "2026-11-11T17:08:41.534Z"
 }
