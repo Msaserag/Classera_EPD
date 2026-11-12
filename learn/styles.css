@@ -51,3 +51,61 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:9px 10px
 .menu{position:absolute;right:0;top:44px;background:var(--card);border:1px solid var(--line);border-radius:10px;min-width:180px;z-index:20;overflow:hidden}.menu button{display:block;width:100%;text-align:left;background:none;border:0;padding:10px 14px;cursor:pointer}.menu button:hover{background:var(--line)}
 @media(max-width:800px){.shell{grid-template-columns:1fr}.side{display:none}.top input{display:none}.main{padding:14px}}
 @media print{.side,.top,.ph .acts,.filters,#toasts{display:none!important}.shell{display:block;height:auto}.main{overflow:visible}body{background:#fff;color:#000}.card{break-inside:avoid;border-color:#ccc}}
+
+/* ---------- motion layer ----------
+   Principles (Material Design motion, NN/g): purposeful, fast (150-300 ms), decelerate on enter, only transform/opacity,
+   never block the user, and switch off completely for prefers-reduced-motion. */
+:root{--ease:cubic-bezier(.4,0,.2,1);--ease-out:cubic-bezier(0,0,.2,1);--ease-in:cubic-bezier(.4,0,1,1);--d1:150ms;--d2:225ms;--d3:300ms}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes pop{from{opacity:0;transform:scale(.96) translateY(6px)}to{opacity:1;transform:none}}
+@keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes ringdraw{from{stroke-dasharray:0 100}}
+@keyframes slidein{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:none}}
+@keyframes shimmer{from{background-position:200% 0}to{background-position:-200% 0}}
+@keyframes shake{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.main>*:not(.grid){animation:rise var(--d3) var(--ease-out) both}
+.grid>.card{animation:rise var(--d3) var(--ease-out) both}
+.grid>.card:nth-child(1){animation-delay:0ms}.grid>.card:nth-child(2){animation-delay:45ms}.grid>.card:nth-child(3){animation-delay:90ms}.grid>.card:nth-child(4){animation-delay:135ms}.grid>.card:nth-child(5){animation-delay:180ms}.grid>.card:nth-child(6){animation-delay:225ms}.grid>.card:nth-child(7){animation-delay:270ms}.grid>.card:nth-child(8){animation-delay:315ms}
+.main[data-quiet] *{animation:none!important}
+.card{transition:transform var(--d1) var(--ease),box-shadow var(--d1) var(--ease),border-color var(--d1) var(--ease)}
+.card.click{cursor:pointer;position:relative}
+.card.click:hover,.card.click:focus-visible{transform:translateY(-3px);border-color:var(--primary);box-shadow:0 10px 26px rgba(0,0,0,.2);outline:0}
+.card.click:active{transform:translateY(-1px) scale(.99)}
+.card.hasring .ring{position:absolute;right:16px;top:16px;width:46px;height:46px}
+[dir=rtl] .card.hasring .ring{right:auto;left:16px}
+.ring circle:nth-child(2){animation:ringdraw 800ms var(--ease-out) both}
+.rank .bar i{transform-origin:left;animation:grow 600ms var(--ease-out) both}
+[dir=rtl] .rank .bar i,[dir=rtl] .bar2>div{transform-origin:right}
+.rank:nth-child(1) .bar i{animation-delay:80ms}.rank:nth-child(2) .bar i{animation-delay:125ms}.rank:nth-child(3) .bar i{animation-delay:170ms}.rank:nth-child(4) .bar i{animation-delay:215ms}.rank:nth-child(5) .bar i{animation-delay:260ms}.rank:nth-child(6) .bar i{animation-delay:305ms}.rank:nth-child(7) .bar i{animation-delay:350ms}.rank:nth-child(8) .bar i{animation-delay:395ms}.rank:nth-child(9) .bar i{animation-delay:440ms}.rank:nth-child(10) .bar i{animation-delay:485ms}.rank:nth-child(11) .bar i{animation-delay:530ms}.rank:nth-child(12) .bar i{animation-delay:575ms}
+.bar2>div{transform-origin:left;animation:grow 600ms var(--ease-out) both}
+.rank.pick{cursor:pointer;border-radius:8px;padding:4px 6px;margin:0 -6px 8px;transition:background var(--d1) var(--ease)}
+.rank.pick:hover{background:rgba(59,130,246,.1)}
+.rank.pick:hover .nm{color:var(--primary)}
+tbody tr{animation:fade var(--d2) var(--ease-out) both;transition:background var(--d1) var(--ease)}
+tbody tr:hover{background:rgba(59,130,246,.09)}
+tbody tr:nth-child(1){animation-delay:0ms}tbody tr:nth-child(2){animation-delay:25ms}tbody tr:nth-child(3){animation-delay:50ms}tbody tr:nth-child(4){animation-delay:75ms}tbody tr:nth-child(5){animation-delay:100ms}tbody tr:nth-child(6){animation-delay:125ms}tbody tr:nth-child(7){animation-delay:150ms}tbody tr:nth-child(8){animation-delay:175ms}tbody tr:nth-child(9){animation-delay:200ms}tbody tr:nth-child(10){animation-delay:225ms}
+.main[data-quiet] tbody tr{animation:none}
+.btn,.pill,.tabs button,.side a,.chip,.links a,.menu button{transition:background var(--d1) var(--ease),border-color var(--d1) var(--ease),transform var(--d1) var(--ease),color var(--d1) var(--ease),box-shadow var(--d1) var(--ease)}
+.btn:hover:not(:disabled),.pill:hover,.tabs button:hover{border-color:var(--primary)}
+.btn:active:not(:disabled),.pill:active,.tabs button:active,.login .go:active{transform:scale(.97)}
+.btn.p:hover:not(:disabled){box-shadow:0 4px 14px rgba(47,107,214,.45)}
+.side a:hover:not(.on){background:rgba(59,130,246,.12);transform:translateX(3px)}
+[dir=rtl] .side a:hover:not(.on){transform:translateX(-3px)}
+.links a:hover{transform:translateX(4px);border-color:var(--primary)}
+[dir=rtl] .links a:hover{transform:translateX(-4px)}
+.tabs button.on{animation:pop var(--d2) var(--ease-out)}
+:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+.shell{transition:grid-template-columns var(--d3) var(--ease)}
+.side a .n{animation:pop var(--d2) var(--ease-out)}
+.modal{animation:fade var(--d2) var(--ease-out)}
+.modal .card{animation:pop var(--d2) var(--ease-out)}
+.toast{animation:slidein var(--d3) var(--ease-out)}
+.menu{animation:pop var(--d1) var(--ease-out);transform-origin:top right}
+.sk{background:linear-gradient(90deg,var(--line) 25%,rgba(127,147,190,.28) 50%,var(--line) 75%);background-size:200% 100%;animation:shimmer 1.4s linear infinite}
+.login .box{animation:rise 500ms var(--ease-out) both}
+.login .box.shake{animation:shake 380ms var(--ease)}
+.login input:focus{box-shadow:0 0 0 3px rgba(255,255,255,.35)}
+html.theme-anim *{transition:background-color 220ms var(--ease),color 220ms var(--ease),border-color 220ms var(--ease)!important}
+.meter i{transition:width var(--d2) var(--ease),background var(--d2) var(--ease)}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}

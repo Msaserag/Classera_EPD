@@ -29,6 +29,24 @@
     return el;
   }
   function toast(msg, bad) { var x = h('div', { class: 'toast' + (bad ? ' e' : '') }, msg); document.getElementById('toasts').appendChild(x); setTimeout(function () { x.remove(); }, 4500); }
+  var REDUCED = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  /* count-up for plain numbers like 462, 16,648 or 49.3% (700 ms, decelerating); anything else is left as is */
+  function countUp(el, text) {
+    var m = /^([\d,]+(?:\.\d+)?)(%?)$/.exec(String(text)); el.textContent = text;
+    if (!m || REDUCED) return;
+    var to = parseFloat(m[1].replace(/,/g, '')), dec = (m[1].split('.')[1] || '').length, suf = m[2], t0 = null;
+    function fmt(v) { return dec ? v.toFixed(dec) : Math.round(v).toLocaleString() + ''; }
+    el.textContent = fmt(0) + suf;
+    function step(ts) { if (t0 === null) t0 = ts; var k = Math.min(1, (ts - t0) / 700), e = 1 - Math.pow(1 - k, 3); el.textContent = fmt(to * e) + suf; if (k < 1) requestAnimationFrame(step); else el.textContent = text; }
+    requestAnimationFrame(step);
+  }
+  function ring(frac, color) {
+    var ns = 'http://www.w3.org/2000/svg', svg = document.createElementNS(ns, 'svg'); svg.setAttribute('viewBox', '0 0 36 36'); svg.setAttribute('class', 'ring');
+    var bg = document.createElementNS(ns, 'circle'), fg = document.createElementNS(ns, 'circle');
+    [bg, fg].forEach(function (c) { c.setAttribute('cx', 18); c.setAttribute('cy', 18); c.setAttribute('r', 15.9); c.setAttribute('fill', 'none'); c.setAttribute('stroke-width', 3.6); });
+    bg.setAttribute('stroke', 'var(--line)'); fg.setAttribute('stroke', color || 'var(--ok)'); fg.setAttribute('pathLength', 100); fg.setAttribute('stroke-linecap', 'round'); fg.setAttribute('transform', 'rotate(-90 18 18)'); fg.style.strokeDasharray = Math.max(0, Math.min(1, frac)) * 100 + ' 100';
+    svg.appendChild(bg); svg.appendChild(fg); return svg;
+  }
   function lvl() { return S.user ? (LEVEL[S.user.role] || 0) : 0; }
   function num(n) { return Number(n || 0).toLocaleString(); }
   function pct(n) { return (Number(n || 0) * 100).toFixed(1) + '%'; }
@@ -56,8 +74,8 @@
     S.theme = ls('pshub.theme') || 'dark'; // dark by default, like the CRM; the user's choice is remembered
     S.lang = ls('pshub.lang') || 'en'; applyPrefs();
   }
-  function toggleTheme() { S.theme = S.theme === 'dark' ? 'light' : 'dark'; ls('pshub.theme', S.theme); applyPrefs(); }
-  function toggleLang() { S.lang = S.lang === 'en' ? 'ar' : 'en'; ls('pshub.lang', S.lang); applyPrefs(); render(); }
+  function toggleTheme() { var d = document.documentElement; d.classList.add('theme-anim'); setTimeout(function () { d.classList.remove('theme-anim'); }, 350); S.theme = S.theme === 'dark' ? 'light' : 'dark'; ls('pshub.theme', S.theme); applyPrefs(); }
+  function toggleLang() { S.lang = S.lang === 'en' ? 'ar' : 'en'; ls('pshub.lang', S.lang); applyPrefs(); render(true); }
 
   // ---------- auth
   function storeToken(tok, remember) { S.token = tok; if (remember) { ls('pshub.token', tok); ss('pshub.token', null); } else { ss('pshub.token', tok); ls('pshub.token', null); } }
@@ -70,12 +88,12 @@
     var cap = h('div', { id: 'captcha', style: 'margin:0 0 12px' });
     var eye = h('button', { type: 'button', title: 'Show', onclick: function () { p.type = p.type === 'password' ? 'text' : 'password'; } }, '👁');
     var form = h('form', { class: 'box', onsubmit: function (e) {
-      e.preventDefault(); err.textContent = ''; go.disabled = true;
+      e.preventDefault(); err.textContent = ''; go.disabled = true; go.textContent = '...';
       var captcha = ''; if (CFG.RECAPTCHA_SITE_KEY && window.grecaptcha && recaptchaId !== null) captcha = window.grecaptcha.getResponse(recaptchaId);
       if (CFG.RECAPTCHA_SITE_KEY && !captcha) { err.textContent = 'Please complete the CAPTCHA'; go.disabled = false; return; }
       api('login', { username: u.value, password: p.value, captcha: captcha, remember: rem.checked }).then(function (d) {
         storeToken(d.token, rem.checked); S.user = d.user; p.value = ''; render();
-      }).catch(function (x) { err.textContent = x.message; go.disabled = false; if (window.grecaptcha && recaptchaId !== null) window.grecaptcha.reset(recaptchaId); });
+      }).catch(function (x) { err.textContent = x.message; go.disabled = false; go.textContent = t('login'); form.classList.remove('shake'); void form.offsetWidth; form.classList.add('shake'); if (window.grecaptcha && recaptchaId !== null) window.grecaptcha.reset(recaptchaId); });
     } },
       h('div', { class: 'brand' }, h('div', { class: 'logo' }, 'C'), h('div', {}, h('b', {}, 'Classera®'), h('small', {}, 'The Learning Super Platform'))),
       h('h1', {}, 'Login to', h('br'), 'PS Training HUB'),
@@ -123,21 +141,29 @@
     } }, h('div', { class: 'av' }, (S.user.name || '?').charAt(0).toUpperCase()), h('span', {}, S.user.email || S.user.username, ' — ' + S.user.role));
     var q = h('input', { placeholder: t('search'), onkeydown: function (e) { if (e.key === 'Enter' && q.value.trim()) { S.search = q.value.trim(); location.hash = '#/certificates'; render(); } } });
     var top = h('header', { class: 'top' },
-      h('button', { class: 'pill', onclick: function () { S.collapsed = !S.collapsed; render(); } }, '☰'),
+      h('button', { class: 'pill', onclick: function () { S.collapsed = !S.collapsed; render(true); } }, '☰'),
       h('div', { class: 'brand' }, h('div', { class: 'logo' }, 'C'), h('div', {}, h('b', {}, 'Classera®'), h('small', {}, 'The Learning Super Platform'))),
       h('div', { class: 'title' }, 'PS Training HUB'), q,
       h('button', { class: 'pill', onclick: toggleLang }, S.lang === 'en' ? 'AR' : 'EN'),
-      h('button', { class: 'pill', title: 'Theme', onclick: function () { toggleTheme(); render(); } }, S.theme === 'dark' ? '☀' : '☾'), chip);
+      h('button', { class: 'pill', title: 'Theme', onclick: function () { toggleTheme(); render(true); } }, S.theme === 'dark' ? '☀' : '☾'), chip);
     var main = h('main', { class: 'main', id: 'main' });
     return { el: h('div', { class: 'shell' + (S.collapsed ? ' collapsed' : '') }, top, side, main), main: main };
   }
+  function pickSup(n) { S.certState = { page: 1, path: '', status: '', q: n }; location.hash = '#/certificates'; }
   function head(title, sub, acts) { return h('div', { class: 'ph' }, h('div', {}, h('h2', {}, title), h('p', {}, sub || '')), h('div', { class: 'acts', style: 'display:flex;gap:8px' }, acts || [])); }
   function skeleton() { return h('div', { class: 'card' }, h('div', { class: 'sk', style: 'width:40%' }), h('div', { class: 'sk' }), h('div', { class: 'sk', style: 'width:70%' })); }
-  function kpi(label, val, sub) { return h('div', { class: 'card kpi' }, h('div', { class: 'lb' }, label), h('div', { class: 'v' }, val), h('div', { class: 's' }, sub || '')); }
-  function rankList(items, fmt, max) {
+  function kpi(label, val, sub) { var v = h('div', { class: 'v' }); countUp(v, val); return h('div', { class: 'card kpi' }, h('div', { class: 'lb' }, label), v, h('div', { class: 's' }, sub || '')); }
+  function pathKpi(p, r0) {
+    var c = r0 ? kpi(p + ' path', pct(r0.validPct), num(r0.valid) + ' valid · ' + num(r0.expired) + ' expired') : kpi(p + ' path', '-', 'no data');
+    c.classList.add('click'); c.title = 'Open ' + p + ' details'; c.tabIndex = 0;
+    if (r0) { c.classList.add('hasring'); c.appendChild(ring(Number(r0.validPct))); }
+    var go = function () { S.pathTab = p; location.hash = '#/platforms'; };
+    c.addEventListener('click', go); c.addEventListener('keydown', function (e) { if (e.key === 'Enter') go(); }); return c;
+  }
+  function rankList(items, fmt, max, onPick) {
     if (!items.length) return h('div', { class: 'empty' }, 'No data yet');
     max = max || Math.max.apply(null, items.map(function (i) { return i.v; })) || 1;
-    return h('div', {}, items.map(function (it, i) { return h('div', { class: 'rank' }, h('span', { class: 'no' }, i + 1), h('span', { class: 'nm' }, it.n), h('span', { class: 'vl' }, fmt(it.v)), h('div', { class: 'bar' }, h('i', { style: 'width:' + Math.min(100, (it.v / max) * 100) + '%' }))); }));
+    return h('div', {}, items.map(function (it, i) { return h('div', Object.assign({ class: 'rank' + (onPick ? ' pick' : '') }, onPick ? { title: 'Show certificates for ' + it.n, onclick: function () { onPick(it.n); } } : {}), h('span', { class: 'no' }, i + 1), h('span', { class: 'nm' }, it.n), h('span', { class: 'vl' }, fmt(it.v)), h('div', { class: 'bar' }, h('i', { style: 'width:' + Math.min(100, (it.v / max) * 100) + '%' }))); }));
   }
   function table(cols, rows, onRow) {
     return h('div', { class: 'tw' }, h('table', {}, h('thead', {}, h('tr', {}, cols.map(function (c) { return h('th', {}, c.h); }))),
@@ -165,9 +191,9 @@
       S.cache.counts = { req: open, overdue: overdue };
       var tot = sum.byPath.reduce(function (a, p) { return { p: a.p + Number(p.people), v: a.v + Number(p.valid) }; }, { p: 0, v: 0 });
       box.appendChild(h('div', { class: 'grid g4' }, kpi('Clients', num(sum.clients), 'projects in scope'), kpi('Valid certificates', tot.p ? pct(tot.v / tot.p) : '-', num(tot.v) + ' of ' + num(tot.p) + ' (all paths)'), kpi('Open requests', open, reqs.length + ' total'), kpi('Overdue actions', overdue, acts.length + ' actions')));
-      box.appendChild(h('div', { class: 'grid g4' }, PATHS.map(function (p) { var r0 = sum.byPath.filter(function (x) { return x.path === p; })[0]; return r0 ? kpi(p + ' path', pct(r0.validPct), num(r0.valid) + ' valid · ' + num(r0.expired) + ' expired') : kpi(p + ' path', '-', 'no data'); })));
+      box.appendChild(h('div', { class: 'grid g4' }, PATHS.map(function (p) { return pathKpi(p, sum.byPath.filter(function (x) { return x.path === p; })[0]); })));
       var sup = sum.bySupervisor.filter(function (x) { return x.path === 'Teacher'; }).sort(function (a, b) { return b.validPct - a.validPct; }).map(function (x) { return { n: x.supervisor, v: Number(x.validPct) }; });
-      box.appendChild(h('div', { class: 'grid g2' }, h('div', { class: 'card' }, h('h3', {}, 'Teacher path: valid % by supervisor'), rankList(sup.slice(0, 10), pct, 1)),
+      box.appendChild(h('div', { class: 'grid g2' }, h('div', { class: 'card' }, h('h3', {}, 'Teacher path: valid % by supervisor'), rankList(sup.slice(0, 10), pct, 1, pickSup)),
         h('div', { class: 'card' }, h('h3', {}, 'Quick links'), h('div', { class: 'links' }, hub.links.length ? hub.links.map(function (l) { var internal = String(l.url).charAt(0) === '#'; return h('a', { href: l.url, target: internal ? null : '_blank', rel: 'noopener' }, h('b', {}, l.title), h('div', { class: 'sub', style: 'margin:2px 0 0' }, l.group)); }) : h('div', { class: 'empty' }, 'No links configured')))));
       shellRefreshBadges();
     }).catch(fail(box, ph));
@@ -185,7 +211,7 @@
       var r0 = sum.byPath.filter(function (x) { return x.path === cur; })[0];
       area.appendChild(h('div', { class: 'grid g4' }, kpi('People with certificate', r0 ? num(r0.people) : '-', PATH_NOTE[cur]), kpi('Valid', r0 ? num(r0.valid) : '-', r0 ? pct(r0.validPct) : ''), kpi('Expired', r0 ? num(r0.expired) : '-', 'older than 3 years'), kpi('As of', r0 ? r0.asOf : '-', 'newest certificate per person in this path')));
       var rows = sum.bySupervisor.filter(function (x) { return x.path === cur; }).sort(function (a, b) { return b.validPct - a.validPct; });
-      area.appendChild(h('div', { class: 'grid g2' }, h('div', { class: 'card' }, h('h3', {}, cur + ': valid % by supervisor'), rankList(rows.map(function (x) { return { n: x.supervisor, v: Number(x.validPct) }; }), pct, 1)),
+      area.appendChild(h('div', { class: 'grid g2' }, h('div', { class: 'card' }, h('h3', {}, cur + ': valid % by supervisor'), rankList(rows.map(function (x) { return { n: x.supervisor, v: Number(x.validPct) }; }), pct, 1, pickSup)),
         h('div', { class: 'card' }, h('h3', {}, cur + ': valid vs expired'), rows.length ? rows.map(function (x) { var tot = Number(x.valid) + Number(x.expired) || 1; return h('div', { style: 'margin-bottom:10px' }, h('div', { style: 'display:flex;justify-content:space-between' }, h('span', {}, x.supervisor), h('span', { class: 'sub', style: 'margin:0' }, num(x.valid) + ' / ' + num(x.expired))), h('div', { class: 'bar2' }, h('div', { class: 'ok', style: 'width:' + (Number(x.valid) / tot * 100) + '%' }), h('div', { class: 'bad', style: 'width:' + (Number(x.expired) / tot * 100) + '%' }))); }) : h('div', { class: 'empty' }, 'No data yet'))));
       if (cur === 'School') area.appendChild(kpiCard(sum.kpi));
       box.appendChild(h('div', { class: 'grid g2' }, h('div', { class: 'card' }, h('h3', {}, 'eLearning platform'), h('div', { class: 'empty' }, 'Enrollment summary will appear here once the weekly export is loaded.')), h('div', { class: 'card' }, h('h3', {}, 'Enrichment platform'), h('div', { class: 'empty' }, 'Enrollment summary will appear here once the BigQuery summary is connected.'))));
@@ -313,16 +339,16 @@
   PAGES.settings = function (box) {
     box.appendChild(head(t('settings'), 'Account and preferences'));
     box.appendChild(h('div', { class: 'grid g2' }, h('div', { class: 'card' }, h('h3', {}, 'Account'), h('p', {}, S.user.name + ' · ' + S.user.role), h('p', { class: 'sub' }, S.user.username), h('button', { class: 'btn', onclick: function () { passwordDialog(false); } }, t('changepw'))),
-      h('div', { class: 'card' }, h('h3', {}, 'Preferences'), h('div', { style: 'display:flex;gap:8px' }, h('button', { class: 'btn', onclick: function () { toggleTheme(); render(); } }, 'Theme: ' + S.theme), h('button', { class: 'btn', onclick: toggleLang }, 'Language: ' + S.lang.toUpperCase())))));
+      h('div', { class: 'card' }, h('h3', {}, 'Preferences'), h('div', { style: 'display:flex;gap:8px' }, h('button', { class: 'btn', onclick: function () { toggleTheme(); render(true); } }, 'Theme: ' + S.theme), h('button', { class: 'btn', onclick: toggleLang }, 'Language: ' + S.lang.toUpperCase())))));
   };
 
   // ---------- router / render
   function route() { var r = (location.hash || '#/dashboard').replace('#/', '') || 'dashboard'; S.route = PAGES[r] ? r : 'dashboard'; }
-  function render() {
+  function render(quiet) {
     applyPrefs(); var root = document.getElementById('app'); root.replaceChildren(); route();
     if (!S.token) { root.appendChild(loginView()); return; }
     if (!S.user) { root.appendChild(h('div', { class: 'login' }, h('div', { class: 'box' }, 'Loading...'))); api('me').then(function (u) { S.user = u; render(); }).catch(function () { doLogout(true); }); return; }
-    var sh = shell(); root.appendChild(sh.el);
+    var sh = shell(); if (quiet) sh.main.setAttribute('data-quiet', '1'); root.appendChild(sh.el);
     if (S.user.mustChange) { passwordDialog(true); return; }
     PAGES[S.route](sh.main);
   }
