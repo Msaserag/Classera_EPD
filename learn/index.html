@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
+  <script>if (location.pathname === "/learn") location.replace("/learn/" + location.search + location.hash);</script>
+  <base href="/learn/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>PS Training HUB</title>
   <meta name="theme-color" content="#2f6bd6">
@@ -11,9 +13,10 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div id="app"></div>
+  <div id="app"><p style="font-family:Arial,sans-serif;padding:24px;color:#6b7794">Loading PS Training HUB...</p></div>
   <div id="toasts"></div>
   <script src="config.js"></script>
   <script src="app.js"></script>
+  <noscript>PS Training HUB needs JavaScript enabled.</noscript>
 </body>
 </html>
