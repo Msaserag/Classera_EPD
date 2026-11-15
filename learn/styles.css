@@ -139,3 +139,4 @@ select.viewas{background:var(--input);border:1px solid var(--line);color:var(--t
 /* reports tiles: text under the bar must not be pulled up by the sub-title margin */
 .card .bar2{margin:8px 0 0}.card .bar2+.sub{margin:8px 0 0}
 select.viewas{max-width:320px}
+.g5{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}

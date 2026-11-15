@@ -10,8 +10,8 @@
   var PATH_NOTE = { Teacher: 'Teacher accreditation program', Admin: 'System administrator program', School: 'School program: Silver, Gold, Diamond Tech School', Other: 'Activation supervisor and trainer' };
 
   var I18N = {
-    en: { dashboard: 'Dashboard', platforms: 'Platforms', certificates: 'Certificates', clients: 'Clients', requests: 'Training Requests', actions: 'Actions', reports: 'Reports', users: 'Users', settings: 'Settings', search: 'Search clients, certificates, requests...', refresh: 'Refresh', print: 'Print', export: 'Export CSV', logout: 'Log out', changepw: 'Change password', login: 'LOGIN', user: 'Username', pass: 'Password', remember: 'Remember me', forgot: 'Forgot password?', forgotmsg: 'Ask a PS Training HUB admin to reset your password.' },
-    ar: { dashboard: 'لوحة التحكم', platforms: 'المنصات', certificates: 'الشهادات', clients: 'العملاء', requests: 'طلبات التدريب', actions: 'الإجراءات', reports: 'التقارير', users: 'المستخدمون', settings: 'الإعدادات', search: 'ابحث في العملاء والشهادات والطلبات...', refresh: 'تحديث', print: 'طباعة', export: 'تصدير CSV', logout: 'تسجيل الخروج', changepw: 'تغيير كلمة المرور', login: 'دخول', user: 'اسم المستخدم', pass: 'كلمة المرور', remember: 'تذكرني', forgot: 'نسيت كلمة المرور؟', forgotmsg: 'اطلب من مسؤول المنصة إعادة تعيين كلمة المرور.' }
+    en: { dashboard: 'Dashboard', platforms: 'Platforms', academies: 'Academies', clients: 'Clients', requests: 'Training Requests', actions: 'Actions', reports: 'Reports', users: 'Users', settings: 'Settings', search: 'Search clients, academies, requests...', refresh: 'Refresh', print: 'Print', export: 'Export CSV', logout: 'Log out', changepw: 'Change password', login: 'LOGIN', user: 'Username', pass: 'Password', remember: 'Remember me', forgot: 'Forgot password?', forgotmsg: 'Ask a PS Training HUB admin to reset your password.' },
+    ar: { dashboard: 'لوحة التحكم', platforms: 'المنصات', academies: 'الأكاديميات', clients: 'العملاء', requests: 'طلبات التدريب', actions: 'الإجراءات', reports: 'التقارير', users: 'المستخدمون', settings: 'الإعدادات', search: 'ابحث في العملاء والشهادات والطلبات...', refresh: 'تحديث', print: 'طباعة', export: 'تصدير CSV', logout: 'تسجيل الخروج', changepw: 'تغيير كلمة المرور', login: 'دخول', user: 'اسم المستخدم', pass: 'كلمة المرور', remember: 'تذكرني', forgot: 'نسيت كلمة المرور؟', forgotmsg: 'اطلب من مسؤول المنصة إعادة تعيين كلمة المرور.' }
   };
   var S = { token: null, user: null, real: null, viewAs: null, theme: 'dark', lang: 'en', route: 'dashboard', cache: {}, collapsed: false };
   function t(k) { return (I18N[S.lang] && I18N[S.lang][k]) || I18N.en[k] || k; }
@@ -129,16 +129,16 @@
   }
 
   // ---------- layout
-  var NAV = [['dashboard', '▦'], ['platforms', '◎'], ['certificates', '✔'], ['clients', '🏫'], ['requests', '🗓'], ['actions', '☑'], ['reports', '📊'], ['users', '👥'], ['settings', '⚙']];
+  var NAV = [['dashboard', '▦'], ['platforms', '◎'], ['academies', '🎓'], ['clients', '🏫'], ['requests', '🗓'], ['actions', '☑'], ['reports', '📊'], ['users', '👥'], ['settings', '⚙']];
   function shell() {
     var counts = S.cache.counts || {};
     var side = h('nav', { class: 'side' }, NAV.filter(function (n) { return n[0] !== 'users' || lvl() >= 80; }).map(function (n) {
       var badge = n[0] === 'requests' && counts.req ? h('span', { class: 'n', style: 'background:var(--active)' }, counts.req) : n[0] === 'actions' && counts.overdue ? h('span', { class: 'n' }, counts.overdue) : null;
-      var link = h('a', { href: '#/' + (n[0] === 'certificates' ? 'certificates/accreditation' : n[0]), class: S.route === n[0] ? 'on' : '' }, h('span', { class: 'ic' }, n[1]), h('span', { class: 'l' }, t(n[0])), badge);
-      if (n[0] !== 'certificates') return link;
-      var fly = h('div', { class: 'fly', role: 'menu' }, [['accreditation', 'Accreditation', 'Accreditation'], ['elearning', 'eLearning', 'eLearning'], ['enrichment', 'Enrichment', 'Enrichment']].map(function (x) {
+      var link = h('a', { href: '#/' + (n[0] === 'academies' ? 'academies/accreditation' : n[0]), class: S.route === n[0] ? 'on' : '' }, h('span', { class: 'ic' }, n[1]), h('span', { class: 'l' }, t(n[0])), badge);
+      if (n[0] !== 'academies') return link;
+      var fly = h('div', { class: 'fly', role: 'menu' }, [['elearning', 'eLearning'], ['accreditation', 'Accreditation'], ['enrichment', 'Enrichment']].map(function (x) {
         var soon = x[0] !== 'accreditation';
-        return h('a', { href: '#/certificates/' + x[0], role: 'menuitem', class: (S.route === 'certificates' && S.sub === x[0] ? 'on' : '') + (soon ? ' soon' : '') }, h('span', { class: 'l' }, x[1]), soon ? h('span', { class: 'soon-tag' }, 'Soon') : null);
+        return h('a', { href: '#/academies/' + x[0], role: 'menuitem', class: (S.route === 'academies' && S.sub === x[0] ? 'on' : '') + (soon ? ' soon' : '') }, h('span', { class: 'l' }, x[1]), soon ? h('span', { class: 'soon-tag' }, 'Soon') : null);
       }));
       var grp = h('div', { class: 'navgrp' }, link, fly);
       function place() { var b = grp.getBoundingClientRect(); fly.style.top = b.top + 'px'; if (document.dir === 'rtl' || document.documentElement.dir === 'rtl') { fly.style.right = (window.innerWidth - b.right + b.width + 6) + 'px'; fly.style.left = 'auto'; } else { fly.style.left = (b.right + 6) + 'px'; } }
@@ -154,7 +154,7 @@
       if (menu) { menu.remove(); menu = null; return; }
       menu = h('div', { class: 'menu' }, h('button', { onclick: function () { passwordDialog(false); } }, t('changepw')), h('button', { onclick: function () { doLogout(); } }, t('logout'))); chip.appendChild(menu);
     } }, h('div', { class: 'av' }, (S.user.name || '?').charAt(0).toUpperCase()), h('span', {}, S.user.email || S.user.username, ' — ' + S.user.role));
-    var q = h('input', { placeholder: t('search'), onkeydown: function (e) { if (e.key === 'Enter' && q.value.trim()) { S.search = q.value.trim(); location.hash = '#/certificates/accreditation'; render(); } } });
+    var q = h('input', { placeholder: t('search'), onkeydown: function (e) { if (e.key === 'Enter' && q.value.trim()) { S.search = q.value.trim(); location.hash = '#/academies/accreditation'; render(); } } });
     var top = h('header', { class: 'top' },
       h('button', { class: 'pill', onclick: function () { S.collapsed = !S.collapsed; render(true); } }, '☰'),
       h('div', { class: 'brand' }, h('div', { class: 'logo' }, 'C'), h('div', {}, h('b', {}, 'Classera®'), h('small', {}, 'The Learning Super Platform'))),
@@ -178,11 +178,11 @@
   }
   function setView(v) {
     S.viewAs = v; S.user = v ? Object.assign({}, S.real, { role: v.role, name: v.name || S.real.name }) : S.real;
-    S.cache = {}; S.certState = null;
+    S.cache = {}; S.certState = null; S.enrState = null;
     if (S.route === 'users' && lvl() < 80) location.hash = '#/dashboard';
     toast(v ? 'Previewing as ' + v.role + (v.name ? ' · ' + v.name : '') : 'Back to your own view'); render(true);
   }
-  function pickSup(n) { S.certState = { page: 1, period: '', f: { supervisor: n } }; location.hash = '#/certificates/accreditation'; }
+  function pickSup(n) { S.certState = { page: 1, period: '', f: { supervisor: n } }; S.accTab = 'certificates'; location.hash = '#/academies/accreditation'; }
   function head(title, sub, acts) { return h('div', { class: 'ph' }, h('div', {}, h('h2', {}, title), h('p', {}, sub || '')), h('div', { class: 'acts', style: 'display:flex;gap:8px' }, acts || [])); }
   function skeleton() { return h('div', { class: 'card' }, h('div', { class: 'sk', style: 'width:40%' }), h('div', { class: 'sk' }), h('div', { class: 'sk', style: 'width:70%' })); }
   function kpi(label, val, sub) { var v = h('div', { class: 'v' }); countUp(v, val); return h('div', { class: 'card kpi' }, h('div', { class: 'lb' }, label), v, h('div', { class: 's' }, sub || '')); }
@@ -255,14 +255,17 @@
       table([{ h: 'Supervisor', k: 'supervisor' }, { h: 'Schools', f: function (r) { return num(r.schools); } }, { h: 'L1 Silver', f: function (r) { return r.L1 + ' (' + pct(r.L1pct) + ')'; } }, { h: 'L2 Gold', f: function (r) { return r.L2 + ' (' + pct(r.L2pct) + ')'; } }, { h: 'L3 Diamond', f: function (r) { return r.L3 + ' (' + pct(r.L3pct) + ')'; } }, { h: 'KPI score', f: function (r) { var s = Number(r.score5pct) * 100; return h('span', { class: 'tag ' + (s >= 4.99 ? 'ok' : s > 0 ? 'warn' : 'bad') }, s.toFixed(2) + '% of 5%'); } }], rows.slice().sort(function (a, b) { return b.score5pct - a.score5pct; })));
   }
 
-  PAGES.certificates = function (box) {
+  PAGES.academies = function (box) {
     if (S.sub === 'elearning' || S.sub === 'enrichment') {
       var nm = S.sub === 'elearning' ? 'eLearning' : 'Enrichment';
-      box.appendChild(head(t('certificates') + ' · ' + nm, 'Coming soon', []));
-      box.appendChild(h('div', { class: 'card soonbox' }, h('div', { class: 'big' }, '🚧'), h('h3', {}, nm + ' certificates are coming soon'), h('p', {}, 'This view will list certificates and validity for the ' + nm + ' platform once its data is loaded into the hub.'), h('a', { class: 'btn p', href: '#/certificates/accreditation' }, 'Open Accreditation certificates')));
+      box.appendChild(head(t('academies') + ' · ' + nm, 'Coming soon', []));
+      box.appendChild(h('div', { class: 'card soonbox' }, h('div', { class: 'big' }, '🚧'), h('h3', {}, nm + ' academy data is coming soon'), h('p', {}, 'This view will list enrollments, certificates and validity for the ' + nm + ' platform once its data is loaded into the hub.'), h('a', { class: 'btn p', href: '#/academies/accreditation' }, 'Open Accreditation academy')));
       return;
     }
-    box.appendChild(head(t('certificates') + ' · Accreditation', 'Newest certificate per person per path. Valid for 3 years. Counts and filters cover every certificate.', [h('button', { class: 'btn', onclick: function () { api('export', { dataset: 'certs', filter: cleanF(st.f) }).then(function (r) { csv(r, 'certificates'); }).catch(function (e) { toast(e.message, true); }); } }, t('export') + ' (filtered)')]));
+    var tab = S.accTab || 'enrollments';
+    var tabsBar = h('div', { class: 'tabs' }, [['enrollments', 'All enrollments'], ['certificates', 'Certificates and validity']].map(function (x) { return h('button', { class: tab === x[0] ? 'on' : '', onclick: function () { S.accTab = x[0]; render(); } }, x[1]); }));
+    if (tab === 'enrollments') return enrollView(box, tabsBar);
+    box.appendChild(head(t('academies') + ' · Accreditation', 'Newest certificate per person per path. Valid for 3 years. Counts and filters cover every certificate.', [h('button', { class: 'btn', onclick: function () { api('export', { dataset: 'certs', filter: cleanF(st.f) }).then(function (r) { csv(r, 'certificates'); }).catch(function (e) { toast(e.message, true); }); } }, t('export') + ' (filtered)')]));
     var st = S.certState = S.certState || { page: 1, f: {}, period: '' };
     if (S.search) { st.f.q = S.search; S.search = null; st.page = 1; }
     function cleanF(f) { var o = {}; Object.keys(f).forEach(function (k) { if (f[k]) o[k] = f[k]; }); return o; }
@@ -317,20 +320,97 @@
     }
     function drawSummary(sm) {
       var bp = sm.byPath || {}, n = Object.keys(st.f).filter(function (k) { return st.f[k]; }).length;
-      var tiles = [kpi('Matching certificates', sm.total, n ? n + ' filter' + (n > 1 ? 's' : '') + ' active' : 'no filters'), kpi('Valid', sm.valid, sm.total ? pct(sm.valid / sm.total) : '-'), kpi('Expired', sm.expired, sm.total ? pct(sm.expired / sm.total) : '-')];
+      var tiles = [kpi('Matching certificates', num(sm.total), n ? n + ' filter' + (n > 1 ? 's' : '') + ' active' : 'no filters'), kpi('Valid', num(sm.valid), sm.total ? pct(sm.valid / sm.total) : '-'), kpi('Expired', num(sm.expired), sm.total ? pct(sm.expired / sm.total) : '-')];
       var chips = PATHS.filter(function (p) { return bp[p]; }).map(function (p) { var b = bp[p]; return h('button', { class: 'chipb' + (st.f.path === p ? ' on' : ''), title: 'Filter to ' + p + ' path', onclick: function () { st.f.path = st.f.path === p ? '' : p; buildFilters(); change(); } }, h('b', {}, p), h('span', {}, num(b.valid) + ' valid'), h('small', {}, 'of ' + num(b.total) + ' · ' + num(b.expired) + ' expired')); });
       var lv = sm.schoolLevels || {}, lvNames = ['Silver', 'Gold', 'Diamond', 'Unclassified'].filter(function (k) { return lv[k]; });
       var school = bp.School ? h('div', { class: 'card schoolbar' }, h('b', {}, 'School path'), h('span', {}, num(bp.School.valid) + ' valid certificates'), h('span', { class: 'sub' }, num(sm.validSchools) + ' schools with a valid certificate'), lvNames.map(function (k) { return h('span', { class: 'lvl' }, k + ': ', h('b', {}, num(lv[k].valid)), ' valid / ' + num(lv[k].total)); })) : null;
-      sumBox.replaceChildren(h('div', { class: 'grid g4' }, tiles), h('div', { class: 'chiprow' }, chips), school);
+      sumBox.replaceChildren.apply(sumBox, [h('div', { class: 'grid g4' }, tiles), h('div', { class: 'chiprow' }, chips), emptyHint(sm, n), school].filter(Boolean));
     }
     function drawTable(d) {
       tbl.replaceChildren(h('div', { class: 'card' }, table([{ h: 'Name', k: 'name' }, { h: 'Path', k: 'path' }, { h: 'Role', k: 'role' }, { h: 'School', k: 'school' }, { h: 'Country', k: 'country' }, { h: 'Course', k: 'course' }, { h: 'Issued', k: 'issueDate' }, { h: 'Expires', k: 'expiresOn' }, { h: 'Status', f: function (r) { return h('span', { class: 'tag ' + (r.status === 'Valid' ? 'ok' : 'bad') }, r.status); } }, { h: 'Supervisor', k: 'supervisor' }], d.rows)));
       var pages = Math.max(1, Math.ceil(d.total / d.per));
       pg.replaceChildren(h('div', { class: 'pager' }, h('button', { class: 'btn', disabled: st.page <= 1, onclick: function () { st.page--; fetchRows(false); } }, '‹'), 'Page ' + st.page + ' of ' + pages + ' · ' + num(d.total) + ' rows', h('button', { class: 'btn', disabled: st.page >= pages, onclick: function () { st.page++; fetchRows(false); } }, '›')));
     }
-    box.appendChild(sumBox); box.appendChild(filt); box.appendChild(ph); box.appendChild(tbl); box.appendChild(pg);
+    box.appendChild(tabsBar); box.appendChild(sumBox); box.appendChild(filt); box.appendChild(ph); box.appendChild(tbl); box.appendChild(pg);
     fetchRows(true);
   };
+  /** Explains a zero for supervisors: records are linked to them through the CRM School Group ID. */
+  function emptyHint(sm, nFilters) {
+    if (sm.total || nFilters || S.user.role !== 'PS Supervisor') return null;
+    return h('div', { class: 'card', style: 'margin-bottom:12px' }, h('b', {}, 'Nothing is linked to ' + S.user.name + ' yet'), h('p', { class: 'sub', style: 'margin:6px 0 0' }, 'Records reach a supervisor through the CRM: the client\'s "Assigned To" must match this name, and its School Group ID must match the platform group. Ask an admin to check the Clients tab and run the pipeline again.'));
+  }
+  var ENR_STATES = ['Certified', 'Passed, no certificate', 'In progress', 'Enrolled'];
+  /** Accreditation: every enrollment (transaction), certified or not. */
+  function enrollView(box, tabsBar) {
+    box.appendChild(head(t('academies') + ' · Accreditation', 'Every enrollment on the Accreditation platform, whether or not the person is certified. Use the status filter to see who is certified.', [h('button', { class: 'btn', onclick: function () { api('export', { dataset: 'enrollments', filter: cleanF(st.f) }).then(function (r) { csv(r, 'accreditation-enrollments'); }).catch(function (e) { toast(e.message, true); }); } }, t('export') + ' (filtered)')]));
+    var st = S.enrState = S.enrState || { page: 1, f: {}, period: '' };
+    if (S.search) { st.f.q = S.search; S.search = null; st.page = 1; }
+    function cleanF(f) { var o = {}; Object.keys(f).forEach(function (k) { if (f[k]) o[k] = f[k]; }); return o; }
+    var sumBox = h('div'), filt = h('div'), tbl = h('div'), pg = h('div'), ph = skeleton(), seq = 0, timer = null;
+    function iso(d) { return d.toISOString().slice(0, 10); }
+    function setPeriod(v) {
+      st.period = v; var now = new Date(), y = now.getFullYear(), f = st.f;
+      if (!v) { f.enrolledFrom = ''; f.enrolledTo = ''; }
+      else if (v === '30' || v === '90') { var d0 = new Date(now); d0.setDate(d0.getDate() - Number(v)); f.enrolledFrom = iso(d0); f.enrolledTo = iso(now); }
+      else if (v === 'ytd') { f.enrolledFrom = y + '-01-01'; f.enrolledTo = iso(now); }
+      else if (v === 'ay') { var ay = now.getMonth() >= 6 ? y : y - 1; f.enrolledFrom = ay + '-07-01'; f.enrolledTo = iso(now); }
+      else if (v === 'lastyear') { f.enrolledFrom = (y - 1) + '-01-01'; f.enrolledTo = (y - 1) + '-12-31'; }
+    }
+    function fetchRows(first) {
+      var my = ++seq; tbl.style.opacity = '.55';
+      api('enrolls', { filter: cleanF(st.f), page: st.page, per: 50, facets: !S.cache.enrFacets }).then(function (d) {
+        if (my !== seq) return; tbl.style.opacity = '';
+        if (d.facets) S.cache.enrFacets = d.facets;
+        if (ph.parentNode) ph.remove();
+        if (first || !filt.firstChild) buildFilters();
+        drawSummary(d.summary); drawTable(d);
+      }).catch(function (e) { if (my !== seq) return; tbl.style.opacity = ''; if (ph.parentNode) ph.remove(); tbl.replaceChildren(h('div', { class: 'card' }, h('b', {}, 'Could not load enrollments'), h('p', { class: 'sub' }, e.message), h('p', { class: 'sub' }, 'If this says Unknown action, the Apps Script deployment is older than the hub. Paste the latest Code.gs and deploy a new version.'))); });
+    }
+    function change(delay) { st.page = 1; clearTimeout(timer); timer = setTimeout(function () { fetchRows(false); }, delay || 0); }
+    function sel(key, label, opts, all) {
+      var el = h('select', { onchange: function () { st.f[key] = el.value; change(); } }, h('option', { value: '' }, all), opts.map(function (o) { return h('option', { value: o, selected: st.f[key] === o }, o); }));
+      return h('label', { class: 'ff' }, h('span', {}, label), el);
+    }
+    function txt(key, label, ph2) {
+      var el = h('input', { type: 'text', placeholder: ph2 || '', value: st.f[key] || '', oninput: function () { st.f[key] = el.value; change(350); } });
+      return h('label', { class: 'ff' }, h('span', {}, label), el);
+    }
+    function buildFilters() {
+      var fc = S.cache.enrFacets || {};
+      var per = h('select', { onchange: function () { setPeriod(per.value); fF.value = st.f.enrolledFrom || ''; fT.value = st.f.enrolledTo || ''; change(); } },
+        [['', 'Any time'], ['30', 'Last 30 days'], ['90', 'Last 90 days'], ['ay', 'This academic year (Jul to Jun)'], ['ytd', 'This calendar year'], ['lastyear', 'Last calendar year'], ['custom', 'Custom dates']].map(function (o) { return h('option', { value: o[0], selected: (st.period || '') === o[0] }, o[1]); }));
+      var fF = h('input', { type: 'date', value: st.f.enrolledFrom || '', oninput: function () { st.f.enrolledFrom = fF.value; st.period = 'custom'; per.value = 'custom'; change(); } });
+      var fT = h('input', { type: 'date', value: st.f.enrolledTo || '', oninput: function () { st.f.enrolledTo = fT.value; st.period = 'custom'; per.value = 'custom'; change(); } });
+      filt.replaceChildren(h('div', { class: 'card fgrid' },
+        txt('q', 'Search', 'Name, school, course...'),
+        sel('path', 'Path', fc.paths || PATHS, 'All paths'),
+        sel('state', 'Status', ENR_STATES, 'All statuses'),
+        sel('role', 'Role', fc.roles || [], 'All roles'),
+        txt('school', 'School', 'School name contains...'),
+        sel('country', 'Country', fc.countries || [], 'All countries'),
+        sel('supervisor', 'Supervisor', fc.supervisors || [], 'All supervisors'),
+        sel('course', 'Course', fc.courses || [], 'All courses'),
+        h('label', { class: 'ff' }, h('span', {}, 'Enrollment period'), per),
+        h('label', { class: 'ff' }, h('span', {}, 'Enrolled from'), fF),
+        h('label', { class: 'ff' }, h('span', {}, 'Enrolled to'), fT),
+        h('div', { class: 'ff', style: 'align-self:end' }, h('button', { class: 'btn', onclick: function () { st.f = {}; st.period = ''; st.page = 1; buildFilters(); fetchRows(false); } }, 'Reset filters'))));
+    }
+    function drawSummary(sm) {
+      var bs = sm.byState || {}, bp = sm.byPath || {}, n = Object.keys(st.f).filter(function (k) { return st.f[k]; }).length;
+      var cert = bs.Certified || 0, tiles = [kpi('Enrollments', num(sm.total), n ? n + ' filter' + (n > 1 ? 's' : '') + ' active' : 'no filters'), kpi('Certified', num(cert), sm.total ? pct(cert / sm.total) : '-'), kpi('Passed, no certificate', num(bs['Passed, no certificate'] || 0), 'passed the course'), kpi('In progress', num(bs['In progress'] || 0), 'started, not passed'), kpi('Not started', num(bs.Enrolled || 0), 'enrolled, no activity')];
+      var chips = PATHS.filter(function (p) { return bp[p]; }).map(function (p) { var b = bp[p]; return h('button', { class: 'chipb' + (st.f.path === p ? ' on' : ''), title: 'Filter to ' + p + ' path', onclick: function () { st.f.path = st.f.path === p ? '' : p; buildFilters(); change(); } }, h('b', {}, p), h('span', {}, num(b.total) + ' enrollments'), h('small', {}, num(b.certified) + ' certified')); });
+      var chipsRow = ENR_STATES.filter(function (x) { return bs[x]; }).map(function (x) { return h('button', { class: 'chipb' + (st.f.state === x ? ' on' : ''), onclick: function () { st.f.state = st.f.state === x ? '' : x; buildFilters(); change(); } }, h('b', {}, x), h('span', {}, num(bs[x]))); });
+      sumBox.replaceChildren.apply(sumBox, [h('div', { class: 'grid g5' }, tiles), h('div', { class: 'chiprow' }, chips), h('div', { class: 'chiprow' }, chipsRow), emptyHint(sm, n)].filter(Boolean));
+    }
+    function drawTable(d) {
+      tbl.replaceChildren(h('div', { class: 'card' }, table([{ h: 'Name', k: 'name' }, { h: 'Path', k: 'path' }, { h: 'Role', k: 'role' }, { h: 'School', k: 'school' }, { h: 'Country', k: 'country' }, { h: 'Course', k: 'course' }, { h: 'Enrolled', k: 'enrollDate' }, { h: 'Last progress', k: 'lastProgress' }, { h: 'Status', f: function (r) { return h('span', { class: 'tag ' + (r.state === 'Certified' ? 'ok' : r.state === 'Enrolled' ? 'bad' : 'warn') }, r.state); } }, { h: 'Supervisor', k: 'supervisor' }], d.rows)));
+      var pages = Math.max(1, Math.ceil(d.total / d.per));
+      pg.replaceChildren(h('div', { class: 'pager' }, h('button', { class: 'btn', disabled: st.page <= 1, onclick: function () { st.page--; fetchRows(false); } }, '‹'), 'Page ' + st.page + ' of ' + pages + ' · ' + num(d.total) + ' rows', h('button', { class: 'btn', disabled: st.page >= pages, onclick: function () { st.page++; fetchRows(false); } }, '›')));
+    }
+    box.appendChild(tabsBar); box.appendChild(sumBox); box.appendChild(filt); box.appendChild(ph); box.appendChild(tbl); box.appendChild(pg);
+    fetchRows(true);
+  }
+
 
   PAGES.clients = function (box) {
     var st = S.clientState = S.clientState || { page: 1, q: '', sup: '', country: '' };
@@ -437,7 +517,7 @@
   };
 
   // ---------- router / render
-  function route() { var p = ((location.hash || '#/dashboard').replace('#/', '') || 'dashboard').split('/'), r = p[0]; S.route = PAGES[r] ? r : 'dashboard'; S.sub = S.route === 'certificates' ? (['elearning', 'enrichment'].indexOf(p[1]) >= 0 ? p[1] : 'accreditation') : ''; }
+  function route() { var p = ((location.hash || '#/dashboard').replace('#/', '') || 'dashboard').split('/'), r = p[0]; if (r === 'certificates') r = 'academies'; S.route = PAGES[r] ? r : 'dashboard'; S.sub = S.route === 'academies' ? (['elearning', 'enrichment'].indexOf(p[1]) >= 0 ? p[1] : 'accreditation') : ''; }
   function render(quiet) {
     applyPrefs(); var root = document.getElementById('app'); root.replaceChildren(); route();
     if (!S.token) { root.appendChild(loginView()); return; }
@@ -468,11 +548,23 @@
         var per = p.per || 50, page = p.page || 1, uq = function (k) { return Object.keys(base.reduce(function (a, r) { a[r[k]] = 1; return a; }, {})).sort(); };
         var out = { rows: rows.slice((page - 1) * per, page * per), total: rows.length, page: page, per: per, summary: { total: rows.length, valid: valid, expired: rows.length - valid, byPath: by, schoolLevels: lv, validSchools: Object.keys(sch).length } };
         if (p.facets) out.facets = { paths: uq('path'), roles: uq('role'), countries: uq('country'), supervisors: uq('supervisor'), courses: uq('course') };
-        return out; },      requests: function () { return S.mockReq = S.mockReq || [{ id: 'TR001', client: 'Demo School', platform: 'eLearning', audience: 'Teachers', preferredStart: '2026-12-01T10:00', noticeOk: 'Yes', supervisor: 'Rehab Negm', status: 'Requested' }]; },
+        return out; },      enrolls: function () {
+        if (!S.mockEnr) { var P = ['Teacher', 'Teacher', 'Teacher', 'Admin', 'School', 'Other'], C = ['Saudi Arabia', 'Egypt', 'Iraq'], R = ['Teacher', 'System Admin', 'Principal'], ST = ['Certified', 'Passed, no certificate', 'In progress', 'Enrolled', 'Enrolled', 'In progress'], rows = [];
+          for (var i = 0; i < 1500; i++) { var d = new Date(Date.UTC(2023 + (i % 4), (i * 5) % 12, 1 + i % 27)); rows.push({ name: 'Person ' + (i % 900), role: R[i % 3], path: P[i % 6], schoolId: 'S' + (i % 120), school: 'Demo School ' + (i % 120), country: C[i % 3], course: P[i % 6] === 'School' ? ['Silver', 'Gold', 'Diamond'][i % 3] + ' Tech School' : 'Accreditation course ' + P[i % 6], enrollDate: d.toISOString().slice(0, 10), lastProgress: i % 4 ? d.toISOString().slice(0, 10) : '', state: ST[i % 6], certified: ST[i % 6] === 'Certified' ? 'Yes' : 'No', supervisor: sup[i % 4] }); }
+          S.mockEnr = rows; }
+        var f = p.filter || {}, q = (f.q || '').toLowerCase(), sc = (f.school || '').toLowerCase(), base = S.mockEnr;
+        if (S.viewAs && S.viewAs.role === 'PS Supervisor' && S.viewAs.name) base = base.filter(function (r) { return r.supervisor === S.viewAs.name; });
+        var rows2 = base.filter(function (r) { return (!f.path || r.path === f.path) && (!f.state || r.state === f.state) && (!f.role || r.role === f.role) && (!f.country || r.country === f.country) && (!f.course || r.course === f.course) && (!f.supervisor || r.supervisor === f.supervisor) && (!sc || r.school.toLowerCase().indexOf(sc) >= 0) && (!f.enrolledFrom || r.enrollDate >= f.enrolledFrom) && (!f.enrolledTo || r.enrollDate <= f.enrolledTo) && (!q || [r.name, r.school, r.course, r.role, r.country].join(' ').toLowerCase().indexOf(q) >= 0); });
+        var bs = {}, bp = {}; rows2.forEach(function (r) { bs[r.state] = (bs[r.state] || 0) + 1; var b = bp[r.path] = bp[r.path] || { total: 0, certified: 0 }; b.total++; if (r.certified === 'Yes') b.certified++; });
+        var per = p.per || 50, page = p.page || 1, uq = function (k) { return Object.keys(base.reduce(function (a, r) { a[r[k]] = 1; return a; }, {})).sort(); };
+        var out = { rows: rows2.slice((page - 1) * per, page * per), total: rows2.length, page: page, per: per, summary: { total: rows2.length, byState: bs, byPath: bp }, scope: { available: base.length } };
+        if (p.facets) out.facets = { paths: uq('path'), roles: uq('role'), countries: uq('country'), supervisors: uq('supervisor'), courses: uq('course'), states: uq('state') };
+        return out; },
+      requests: function () { return S.mockReq = S.mockReq || [{ id: 'TR001', client: 'Demo School', platform: 'eLearning', audience: 'Teachers', preferredStart: '2026-12-01T10:00', noticeOk: 'Yes', supervisor: 'Rehab Negm', status: 'Requested' }]; },
       saveRequest: function () { var r = p.record; r.id = 'TR00' + (D.requests().length + 1); r.status = 'Requested'; r.noticeOk = 'Yes'; D.requests().push(r); return r; },
       setRequestStatus: function () { D.requests().forEach(function (r) { if (r.id === p.id) r.status = p.status; }); return true; },
       actions: function () { return S.mockAct = S.mockAct || [{ id: 'A001', title: 'Follow up on training request', assignee: 'demo', status: 'Open', dueDate: '2026-11-01' }]; }, saveAction: function () { D.actions().push(Object.assign({ id: 'A00' + (D.actions().length + 1) }, p.record)); return true; },
-      users: function () { return [{ id: 'U1', username: 'demo', name: 'Demo Admin', role: 'Super Admin', email: 'demo@example.com', active: 'TRUE' }].concat(sup.map(function (n, i) { return { id: 'U' + (i + 2), username: 'sup' + i, name: n, role: 'PS Supervisor', email: '', active: 'TRUE' }; })); }, saveUser: function () { return { temporaryPassword: 'Demo-Temp-123' }; }, resetPassword: function () { return { temporaryPassword: 'Demo-Temp-456' }; }, runPipeline: function () { return { certificates: 0 }; }, export: function () { return D.certs({ filter: p.filter, per: 200, page: 1 }).rows; }
+      users: function () { return [{ id: 'U1', username: 'demo', name: 'Demo Admin', role: 'Super Admin', email: 'demo@example.com', active: 'TRUE' }].concat(sup.map(function (n, i) { return { id: 'U' + (i + 2), username: 'sup' + i, name: n, role: 'PS Supervisor', email: '', active: 'TRUE' }; })); }, saveUser: function () { return { temporaryPassword: 'Demo-Temp-123' }; }, resetPassword: function () { return { temporaryPassword: 'Demo-Temp-456' }; }, runPipeline: function () { return { certificates: 0 }; }, export: function () { return (p.dataset === 'enrollments' ? D.enrolls : D.certs)({ filter: p.filter, per: 200, page: 1 }).rows; }
     };
     return new Promise(function (res, rej) { setTimeout(function () { try { res(D[action](p)); } catch (e) { rej(e); } }, 120); });
   }
