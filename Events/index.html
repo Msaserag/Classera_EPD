@@ -211,6 +211,24 @@ td .sub{display:block;font-size:11.5px;color:var(--muted);max-width:420px;overfl
 .muted{color:var(--muted)}
 footer{color:var(--muted);font-size:12px;padding-block:0 30px}
 footer .wrap{display:flex;flex-wrap:wrap;gap:8px 20px;justify-content:space-between}
+/* Program KPIs */
+.pkgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (max-width:900px){.pkgrid{grid-template-columns:1fr}}
+.pk{display:grid;gap:14px}
+.pk-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.pk-h h3{font:600 16px/1.2 var(--f-display);margin:0}.pk-h span{color:var(--muted);font-size:12px}
+.pk-top{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center}
+.pk-ring{--v:0;width:96px;height:96px;border-radius:50%;background:conic-gradient(var(--accent) calc(var(--v)*1%),var(--grid) 0);display:grid;place-items:center;flex:none}
+.pk-ring b{width:74px;height:74px;border-radius:50%;background:var(--surface);display:grid;place-items:center;font:600 20px/1 var(--f-display);font-variant-numeric:tabular-nums}
+.pk-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 14px}
+.pk-stats div{display:grid;gap:1px}.pk-stats small{color:var(--muted);font-size:11.5px}.pk-stats b{font:600 17px/1.15 var(--f-display);font-variant-numeric:tabular-nums}
+.pk-bar{height:8px;border-radius:99px;background:var(--grid);overflow:hidden}.pk-bar i{display:block;height:100%;background:var(--accent);border-radius:99px}
+.pk-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+@media (max-width:520px){.pk-row{grid-template-columns:1fr}}
+.pk-m{background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:9px 11px;display:grid;gap:2px}
+.pk-m small{color:var(--muted);font-size:11.5px}.pk-m b{font:600 16px/1.15 var(--f-display)}.pk-m em{font-style:normal;color:var(--ink-2);font-size:11.5px}
+.pk-m.na b{color:var(--muted)}
+.pk-note{color:var(--muted);font-size:12px;margin:10px 2px 0}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 @media (max-width:640px){.hrow{grid-template-columns:minmax(90px,120px) 1fr auto}.cd b{font-size:16px}}
@@ -272,6 +290,12 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:8px 20px;justify-content:space-betw
     <section aria-labelledby="h-kpi">
       <h2 id="h-kpi" class="sr">Headline figures</h2>
       <div class="kpis" id="kpis"></div>
+    </section>
+
+    <section aria-labelledby="h-pk">
+      <div class="sec-h"><h2 id="h-pk">Program KPIs</h2><p id="pk-asof">eLearning (teachers) and Enrichment (students)</p></div>
+      <div class="pkgrid" id="pkgrid"></div>
+      <p class="pk-note" id="pk-note"></p>
     </section>
 
     <section aria-labelledby="h-next">
@@ -596,6 +620,69 @@ function kpis(L){
   });
 }
 
+
+/* ---------- Program KPIs (eLearning and Enrichment) ----------
+   Source: a tab named "KPIs" in the events tracker Google Sheet, one row per program.
+   Columns: Program | Audience | Population | Target % | Enrollments | Enrollment basis | Total enrollments | Progressing |
+            New enrollments in period | Certified | Last week enrollments | Week label | Satisfaction | Satisfaction target | Renewal | Renewal target | As of
+   If the tab is missing the built-in figures below (weekly deck, 31 Oct 2026) are shown. */
+var PK_SHEET_ID = '1bFWi7YwE08F9AQbx1WfcEztUSB-UMi8YQx87ahRCMPY', PK = null, PK_SRC = 'built-in';
+var PK_DEFAULT = [
+  {program:'eLearning',audience:'Teachers',pop:84494,tpct:.4,enr:5735,basis:'Unique enrollments',total:20071,prog:6023,newEnr:null,cert:null,last:2392,week:'25 to 31 Oct 2026',sat:null,satT:null,ren:.988,renT:1,asof:'25 Oct 2026'},
+  {program:'Enrichment',audience:'Students',pop:775416,tpct:.4,enr:12207,basis:'Total enrollments',total:12207,prog:2536,newEnr:null,cert:null,last:1691,week:'25 to 31 Oct 2026',sat:null,satT:null,ren:.988,renT:1,asof:'25 Oct 2026'}];
+function pkCsv(t){ var rows=[],row=[],cell='',q=false,i=0,c; if(t.charCodeAt(0)===0xFEFF) t=t.slice(1);
+  for(;i<t.length;i++){ c=t[i]; if(q){ if(c==='"'){ if(t[i+1]==='"'){cell+='"';i++} else q=false } else cell+=c }
+    else if(c==='"') q=true; else if(c===','){row.push(cell);cell=''} else if(c==='\n'||c==='\r'){ if(c==='\r'&&t[i+1]==='\n') i++; row.push(cell);rows.push(row);row=[];cell='' } else cell+=c }
+  if(cell!==''||row.length){row.push(cell);rows.push(row)} return rows }
+function pkNum(v){ if(v==null) return null; v=String(v).replace(/[,%\s]/g,''); if(v==='') return null; var n=Number(v); return isNaN(n)?null:n }
+function pkFrac(v){ var raw=v==null?'':String(v), n=pkNum(v); if(n==null) return null; return (/%/.test(raw)||n>1) ? n/100 : n }
+function loadPK(){
+  var url='https://docs.google.com/spreadsheets/d/'+PK_SHEET_ID+'/gviz/tq?tqx=out:csv&sheet=KPIs&headers=1';
+  return fetch(url,{cache:'no-store'}).then(function(r){ if(!r.ok) throw 0; return r.text() }).then(function(t){
+    var a=pkCsv(t); var h=(a[0]||[]).map(norm); if(h.indexOf('program')<0 || h.indexOf('population')<0) throw 0;
+    var col=function(r,n){ var i=h.indexOf(n); return i<0?'':r[i] };
+    var out=a.slice(1).filter(function(r){ return clean(col(r,'program')) }).map(function(r){ return {
+      program:clean(col(r,'program')),audience:clean(col(r,'audience')),pop:pkNum(col(r,'population')),tpct:pkFrac(col(r,'targetpercent'))||pkFrac(col(r,'target')),
+      enr:pkNum(col(r,'enrollments')),basis:clean(col(r,'enrollmentbasis')),total:pkNum(col(r,'totalenrollments')),prog:pkNum(col(r,'progressing')),
+      newEnr:pkNum(col(r,'newenrollmentsinperiod')),cert:pkNum(col(r,'certified')),last:pkNum(col(r,'lastweekenrollments')),week:clean(col(r,'weeklabel')),
+      sat:pkFrac(col(r,'satisfaction')),satT:pkFrac(col(r,'satisfactiontarget')),ren:pkFrac(col(r,'renewal')),renT:pkFrac(col(r,'renewaltarget')),asof:clean(col(r,'asof'))} });
+    if(!out.length) throw 0; PK=out; PK_SRC='sheet';
+  }).catch(function(){ PK=PK_DEFAULT; PK_SRC='built-in'; });
+}
+function programKpis(){
+  var box=$('pkgrid'); if(!box||!PK) return; box.innerHTML='';
+  var f1=function(n){ return n==null?'—':Number(n).toLocaleString('en-US') }, p1=function(x,d){ return x==null?'—':(x*100).toFixed(d==null?1:d).replace(/\.0$/,'')+'%' };
+  PK.forEach(function(k){
+    var tpct=k.tpct==null?.4:k.tpct, target=k.pop!=null?Math.round(k.pop*tpct):null;
+    var ful=(target&&k.enr!=null)?k.enr/target:null, gap=(target!=null&&k.enr!=null)?Math.max(0,target-k.enr):null;
+    var cert=(k.cert!=null&&k.newEnr)?k.cert/k.newEnr:null, lastPct=(target&&k.last!=null)?k.last/target:null;
+    var satGap=(k.sat!=null&&k.satT!=null)?(k.satT-k.sat)*100:null, renGap=(k.ren!=null&&k.renT!=null)?(k.renT-k.ren)*100:null;
+    var d=document.createElement('div'); d.className='card pk';
+    d.innerHTML='<div class="pk-h"><h3></h3><span class="asof"></span></div>'
+     +'<div class="pk-top"><div class="pk-ring" style="--v:'+(ful==null?0:Math.min(100,ful*100))+'"><b></b></div><div class="pk-stats">'
+     +'<div><small>Targeted population</small><b class="pop"></b></div><div><small class="tl"></small><b class="tg"></b></div>'
+     +'<div><small class="bl"></small><b class="en"></b></div><div><small>Gap to target</small><b class="gp"></b></div></div></div>'
+     +'<div class="pk-bar" aria-hidden="true"><i style="width:'+(ful==null?0:Math.min(100,ful*100))+'%"></i></div>'
+     +'<div class="pk-row"><div class="pk-m"><small>Total enrollments</small><b class="to"></b><em class="pg"></em></div>'
+     +'<div class="pk-m"><small>Last week</small><b class="lw"></b><em class="lwe"></em></div>'
+     +'<div class="pk-m cert"><small>Certification rate</small><b class="ce"></b><em class="cee"></em></div></div>'
+     +'<div class="pk-row" style="grid-template-columns:repeat(2,minmax(0,1fr))"><div class="pk-m sat"><small>Customer satisfaction</small><b class="sa"></b><em class="sae"></em></div>'
+     +'<div class="pk-m ren"><small>Product renewal rate</small><b class="re"></b><em class="ree"></em></div></div>';
+    var q=function(c,t){ d.querySelector(c).textContent=t };
+    q('h3',k.program+(k.audience?' · '+k.audience:'')); q('.asof',k.asof?'Enrollments as of '+k.asof:''); q('.pk-ring b',ful==null?'—':p1(ful,0));
+    q('.pop',f1(k.pop)); q('.tl','Target ('+Math.round(tpct*100)+'%)'); q('.tg',f1(target)); q('.bl',k.basis||'Enrollments'); q('.en',f1(k.enr)); q('.gp',f1(gap));
+    q('.to',f1(k.total)); q('.pg',k.prog!=null?f1(k.prog)+' progressing'+(k.total?' ('+Math.round(k.prog/k.total*100)+'%)':''):'');
+    q('.lw',k.last!=null?'+'+f1(k.last):'—'); q('.lwe',k.last!=null?(k.week||'')+(lastPct!=null?' · '+p1(lastPct,1)+' of target':''):'Not added yet');
+    q('.ce',cert==null?'Pending':p1(cert,0)); q('.cee',cert==null?'Certified ÷ new enrollments':f1(k.cert)+' of '+f1(k.newEnr)+' new');
+    q('.sa',k.sat==null?'Pending':p1(k.sat)); q('.sae',k.sat==null?'Latest figure to be added':(k.satT!=null?'Target '+p1(k.satT,0)+(satGap>0?' · gap '+satGap.toFixed(1)+' pts':' · target met'):''));
+    q('.re',k.ren==null?'Pending':p1(k.ren)); q('.ree',k.ren==null?'Latest figure to be added':(k.renT!=null?'Target '+p1(k.renT,0)+(renGap>0?' · gap '+renGap.toFixed(1)+' pts':' · target met'):''));
+    ['cert','sat','ren'].forEach(function(c){ var m=d.querySelector('.'+c); if(/Pending/.test(m.querySelector('b').textContent)) m.classList.add('na') });
+    box.appendChild(d);
+  });
+  $('pk-note').textContent='Target = '+Math.round((PK[0].tpct||.4)*100)+'% of the teacher population (eLearning) or the student population (Enrichment). Fulfillment = enrollments ÷ target. eLearning uses unique enrollments, Enrichment total enrollments. '
+    +(PK_SRC==='sheet'?'Figures come from the KPIs tab of the events tracker Google Sheet.':'Showing the built-in figures from the weekly deck. Add a tab named KPIs to the tracker Google Sheet to update them here.');
+}
+
 /* ---------- next up (countdowns) ---------- */
 var timers=[];
 function nextUp(L){
@@ -826,7 +913,7 @@ function header(){
 function render(){
   setupFilters(); chips();
   var L=rows();
-  kpis(L); nextUp(L); trend(L); breakdowns(); outcomes(L); evBars(L); attention(L); table(L);
+  kpis(L); programKpis(); nextUp(L); trend(L); breakdowns(); outcomes(L); evBars(L); attention(L); table(L);
 }
 
 /* ---------- wire up ---------- */
@@ -843,7 +930,7 @@ addEventListener('scroll',hideTip,{passive:true});
 $('themeBtn').onclick=function(){ var r=document.documentElement, dark = r.getAttribute('data-theme') ? r.getAttribute('data-theme')==='dark' : matchMedia('(prefers-color-scheme: dark)').matches;
   r.setAttribute('data-theme', dark?'light':'dark'); try{ localStorage.setItem('ev_theme', dark?'light':'dark') }catch(e){} };
 try{ var th=localStorage.getItem('ev_theme'); if(th) document.documentElement.setAttribute('data-theme',th) }catch(e){}
-load().then(function(){ header(); render() });
+Promise.all([load(), loadPK()]).then(function(){ header(); render() });
 })();
 </script>
 <script src="../assets/classera-fx-v1.js" defer></script>
