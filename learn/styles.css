@@ -121,3 +121,18 @@ html.theme-anim *{transition:background-color 220ms var(--ease),color 220ms var(
 [data-theme=dark] .soon-tag{color:#fbbf24}
 .soonbox{text-align:center;padding:48px 20px}.soonbox .big{font-size:40px}.soonbox p{color:var(--muted);max-width:460px;margin:6px auto 18px}
 @media(max-width:800px){.fly{display:none!important}}
+
+/* certificate filters, summary, view-as */
+.fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px 12px;margin-bottom:14px}
+.ff{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted)}
+.ff span{font-weight:600;letter-spacing:.02em}
+.ff input,.ff select{background:var(--input);border:1px solid var(--line);border-radius:8px;padding:8px 10px;color:var(--text);font:inherit;min-width:0}
+.chiprow{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}
+.chipb{display:flex;flex-direction:column;gap:1px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 14px;color:var(--text);cursor:pointer;font:inherit;text-align:left}
+.chipb span{font-size:15px;font-weight:700}.chipb small{color:var(--muted);font-size:11px}
+.chipb.on{border-color:var(--primary);box-shadow:0 0 0 2px rgba(47,107,214,.25)}
+.schoolbar{display:flex;gap:18px;flex-wrap:wrap;align-items:center;margin-bottom:12px;padding:12px 16px}
+.schoolbar .lvl{font-size:13px}
+select.viewas{background:var(--input);border:1px solid var(--line);color:var(--text);border-radius:999px;padding:8px 12px;font:inherit;font-size:13px;max-width:240px}
+.vbar{position:sticky;top:-18px;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:12px;background:#f59e0b;color:#2a1a00;border-radius:10px;padding:8px 14px;margin-bottom:14px;font-weight:600;font-size:13px}
+.vbar .btn{background:#fff;color:#2a1a00;border:0}
