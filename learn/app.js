@@ -132,14 +132,27 @@
     var counts = S.cache.counts || {};
     var side = h('nav', { class: 'side' }, NAV.filter(function (n) { return n[0] !== 'users' || lvl() >= 80; }).map(function (n) {
       var badge = n[0] === 'requests' && counts.req ? h('span', { class: 'n', style: 'background:var(--active)' }, counts.req) : n[0] === 'actions' && counts.overdue ? h('span', { class: 'n' }, counts.overdue) : null;
-      return h('a', { href: '#/' + n[0], class: S.route === n[0] ? 'on' : '' }, h('span', { class: 'ic' }, n[1]), h('span', { class: 'l' }, t(n[0])), badge);
+      var link = h('a', { href: '#/' + (n[0] === 'certificates' ? 'certificates/accreditation' : n[0]), class: S.route === n[0] ? 'on' : '' }, h('span', { class: 'ic' }, n[1]), h('span', { class: 'l' }, t(n[0])), badge);
+      if (n[0] !== 'certificates') return link;
+      var fly = h('div', { class: 'fly', role: 'menu' }, [['accreditation', 'Accreditation', 'Accreditation'], ['elearning', 'eLearning', 'eLearning'], ['enrichment', 'Enrichment', 'Enrichment']].map(function (x) {
+        var soon = x[0] !== 'accreditation';
+        return h('a', { href: '#/certificates/' + x[0], role: 'menuitem', class: (S.route === 'certificates' && S.sub === x[0] ? 'on' : '') + (soon ? ' soon' : '') }, h('span', { class: 'l' }, x[1]), soon ? h('span', { class: 'soon-tag' }, 'Soon') : null);
+      }));
+      var grp = h('div', { class: 'navgrp' }, link, fly);
+      function place() { var b = grp.getBoundingClientRect(); fly.style.top = b.top + 'px'; if (document.dir === 'rtl' || document.documentElement.dir === 'rtl') { fly.style.right = (window.innerWidth - b.right + b.width + 6) + 'px'; fly.style.left = 'auto'; } else { fly.style.left = (b.right + 6) + 'px'; } }
+      grp.addEventListener('mouseenter', function () { place(); grp.classList.add('open'); });
+      grp.addEventListener('mouseleave', function () { grp.classList.remove('open'); });
+      grp.addEventListener('focusin', function () { place(); grp.classList.add('open'); });
+      grp.addEventListener('focusout', function (e) { if (!grp.contains(e.relatedTarget)) grp.classList.remove('open'); });
+      fly.addEventListener('click', function () { grp.classList.remove('open'); });
+      return grp;
     }), h('div', { class: 'ver' }, 'v1.0 · Sheets-backed'));
     var menu = null;
     var chip = h('div', { class: 'chip', onclick: function () {
       if (menu) { menu.remove(); menu = null; return; }
       menu = h('div', { class: 'menu' }, h('button', { onclick: function () { passwordDialog(false); } }, t('changepw')), h('button', { onclick: function () { doLogout(); } }, t('logout'))); chip.appendChild(menu);
     } }, h('div', { class: 'av' }, (S.user.name || '?').charAt(0).toUpperCase()), h('span', {}, S.user.email || S.user.username, ' — ' + S.user.role));
-    var q = h('input', { placeholder: t('search'), onkeydown: function (e) { if (e.key === 'Enter' && q.value.trim()) { S.search = q.value.trim(); location.hash = '#/certificates'; render(); } } });
+    var q = h('input', { placeholder: t('search'), onkeydown: function (e) { if (e.key === 'Enter' && q.value.trim()) { S.search = q.value.trim(); location.hash = '#/certificates/accreditation'; render(); } } });
     var top = h('header', { class: 'top' },
       h('button', { class: 'pill', onclick: function () { S.collapsed = !S.collapsed; render(true); } }, '☰'),
       h('div', { class: 'brand' }, h('div', { class: 'logo' }, 'C'), h('div', {}, h('b', {}, 'Classera®'), h('small', {}, 'The Learning Super Platform'))),
@@ -149,7 +162,7 @@
     var main = h('main', { class: 'main', id: 'main' });
     return { el: h('div', { class: 'shell' + (S.collapsed ? ' collapsed' : '') }, top, side, main), main: main };
   }
-  function pickSup(n) { S.certState = { page: 1, path: '', status: '', q: n }; location.hash = '#/certificates'; }
+  function pickSup(n) { S.certState = { page: 1, path: '', status: '', q: n }; location.hash = '#/certificates/accreditation'; }
   function head(title, sub, acts) { return h('div', { class: 'ph' }, h('div', {}, h('h2', {}, title), h('p', {}, sub || '')), h('div', { class: 'acts', style: 'display:flex;gap:8px' }, acts || [])); }
   function skeleton() { return h('div', { class: 'card' }, h('div', { class: 'sk', style: 'width:40%' }), h('div', { class: 'sk' }), h('div', { class: 'sk', style: 'width:70%' })); }
   function kpi(label, val, sub) { var v = h('div', { class: 'v' }); countUp(v, val); return h('div', { class: 'card kpi' }, h('div', { class: 'lb' }, label), v, h('div', { class: 's' }, sub || '')); }
@@ -225,7 +238,13 @@
   PAGES.certificates = function (box) {
     var st = S.certState = S.certState || { page: 1, path: '', status: '', q: '' };
     if (S.search) { st.q = S.search; S.search = null; st.page = 1; }
-    box.appendChild(head(t('certificates'), 'Newest certificate per person per path. Valid for 3 years.', [exportBtn('certs')]));
+    if (S.sub === 'elearning' || S.sub === 'enrichment') {
+      var nm = S.sub === 'elearning' ? 'eLearning' : 'Enrichment';
+      box.appendChild(head(t('certificates') + ' · ' + nm, 'Coming soon', []));
+      box.appendChild(h('div', { class: 'card soonbox' }, h('div', { class: 'big' }, '🚧'), h('h3', {}, nm + ' certificates are coming soon'), h('p', {}, 'This view will list certificates and validity for the ' + nm + ' platform once its data is loaded into the hub.'), h('a', { class: 'btn p', href: '#/certificates/accreditation' }, 'Open Accreditation certificates')));
+      return;
+    }
+    box.appendChild(head(t('certificates') + ' · Accreditation', 'Newest certificate per person per path. Valid for 3 years.', [exportBtn('certs')]));
     var tbl = h('div'), ph = skeleton();
     function draw(all) {
       var rows = all.filter(function (r) { return (!st.path || r.path === st.path) && (!st.status || r.status === st.status) && (!st.q || JSON.stringify(r).toLowerCase().indexOf(st.q.toLowerCase()) >= 0); });
@@ -343,7 +362,7 @@
   };
 
   // ---------- router / render
-  function route() { var r = (location.hash || '#/dashboard').replace('#/', '') || 'dashboard'; S.route = PAGES[r] ? r : 'dashboard'; }
+  function route() { var p = ((location.hash || '#/dashboard').replace('#/', '') || 'dashboard').split('/'), r = p[0]; S.route = PAGES[r] ? r : 'dashboard'; S.sub = S.route === 'certificates' ? (['elearning', 'enrichment'].indexOf(p[1]) >= 0 ? p[1] : 'accreditation') : ''; }
   function render(quiet) {
     applyPrefs(); var root = document.getElementById('app'); root.replaceChildren(); route();
     if (!S.token) { root.appendChild(loginView()); return; }
