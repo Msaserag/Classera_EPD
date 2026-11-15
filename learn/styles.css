@@ -136,3 +136,6 @@ html.theme-anim *{transition:background-color 220ms var(--ease),color 220ms var(
 select.viewas{background:var(--input);border:1px solid var(--line);color:var(--text);border-radius:999px;padding:8px 12px;font:inherit;font-size:13px;max-width:240px}
 .vbar{position:sticky;top:-18px;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:12px;background:#f59e0b;color:#2a1a00;border-radius:10px;padding:8px 14px;margin-bottom:14px;font-weight:600;font-size:13px}
 .vbar .btn{background:#fff;color:#2a1a00;border:0}
+/* reports tiles: text under the bar must not be pulled up by the sub-title margin */
+.card .bar2{margin:8px 0 0}.card .bar2+.sub{margin:8px 0 0}
+select.viewas{max-width:320px}
