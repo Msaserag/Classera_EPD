@@ -105,9 +105,10 @@
       h('div', { class: 'foot' }, h('a', { href: '#', style: 'color:#cfe0ff', onclick: function (e) { e.preventDefault(); toggleLang(); } }, S.lang === 'en' ? 'العربية' : 'English'), ' · ', h('a', { href: '#', style: 'color:#cfe0ff', onclick: function (e) { e.preventDefault(); toggleTheme(); } }, S.theme === 'dark' ? 'Light' : 'Dark')));
     setTimeout(function () {
       if (!CFG.RECAPTCHA_SITE_KEY) return;
-      function mount() { if (window.grecaptcha && window.grecaptcha.render && document.getElementById('captcha')) { recaptchaId = window.grecaptcha.render('captcha', { sitekey: CFG.RECAPTCHA_SITE_KEY }); } else setTimeout(mount, 400); }
+      function mount() { if (window.grecaptcha && window.grecaptcha.render && document.getElementById('captcha')) { try { recaptchaId = window.grecaptcha.render('captcha', { sitekey: CFG.RECAPTCHA_SITE_KEY, 'error-callback': function () { err.textContent = 'CAPTCHA could not verify. Check your connection, then reload the page.'; } }); } catch (x) { err.textContent = 'CAPTCHA setup problem: ' + x.message + ' (site key or domain). Tell the hub admin.'; } } else setTimeout(mount, 400); }
       if (!window.grecaptcha) { var s = document.createElement('script'); s.src = 'https://www.google.com/recaptcha/api.js?render=explicit'; s.async = true; document.head.appendChild(s); }
       mount();
+      setTimeout(function () { if (recaptchaId === null && !err.textContent) err.textContent = 'CAPTCHA did not load. Check that plans.classera.com is allowed for the site key, or disable ad blockers, then reload.'; }, 9000);
     }, 0);
     return h('div', { class: 'login' }, form);
   }
