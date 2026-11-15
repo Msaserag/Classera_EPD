@@ -412,7 +412,7 @@
     if (sm.total || nFilters || S.user.role !== 'PS Supervisor') return null;
     return h('div', { class: 'card', style: 'margin-bottom:12px' }, h('b', {}, 'Nothing is linked to ' + S.user.name + ' yet'), h('p', { class: 'sub', style: 'margin:6px 0 0' }, 'Records reach a supervisor through the CRM: the client\'s "Assigned To" must match this name, and its School Group ID must match the platform group. Ask an admin to check the Clients tab and run the pipeline again.'));
   }
-  var ENR_STATES = ['Certified', 'Passed, no certificate', 'In progress', 'Enrolled'];
+  var ENR_STATES = ['Certified', 'Passed, no certificate', 'In progress', 'Inactive', 'Enrolled'];
   /** Accreditation: every enrollment (transaction), certified or not. */
   function enrollView(box, tabsBar) {
     box.appendChild(head(t('academies') + ' · Accreditation', 'Every enrollment on the Accreditation platform, whether or not the person is certified. Use the status filter to see who is certified.', [h('button', { class: 'btn', onclick: function () { api('export', { dataset: 'enrollments', filter: cleanF(st.f) }).then(function (r) { csv(r, 'accreditation-enrollments'); }).catch(function (e) { toast(e.message, true); }); } }, t('export') + ' (filtered)')]));
@@ -470,13 +470,13 @@
     }
     function drawSummary(sm) {
       var bs = sm.byState || {}, bp = sm.byPath || {}, n = Object.keys(st.f).filter(function (k) { return st.f[k]; }).length;
-      var cert = bs.Certified || 0, tiles = [kpi('Enrollments', num(sm.total), n ? n + ' filter' + (n > 1 ? 's' : '') + ' active' : 'no filters'), kpi('Certified', num(cert), sm.total ? pct(cert / sm.total) : '-'), kpi('Passed, no certificate', num(bs['Passed, no certificate'] || 0), 'passed the course'), kpi('In progress', num(bs['In progress'] || 0), 'started, not passed'), kpi('Not started', num(bs.Enrolled || 0), 'enrolled, no activity')];
+      var cert = bs.Certified || 0, tiles = [kpi('Enrollments', num(sm.total), n ? n + ' filter' + (n > 1 ? 's' : '') + ' active' : 'no filters'), kpi('Certified', num(cert), sm.total ? pct(cert / sm.total) : '-'), kpi('Passed, no certificate', num(bs['Passed, no certificate'] || 0), 'passed the course'), kpi('In progress', num(bs['In progress'] || 0), 'active in the last 6 months'), kpi('Inactive', num(bs.Inactive || 0), 'no activity for 6 months'), kpi('Not started', num(bs.Enrolled || 0), 'enrolled, no activity')];
       var chips = PATHS.filter(function (p) { return bp[p]; }).map(function (p) { var b = bp[p]; return h('button', { class: 'chipb' + (st.f.path === p ? ' on' : ''), title: 'Filter to ' + p + ' path', onclick: function () { st.f.path = st.f.path === p ? '' : p; buildFilters(); change(); } }, h('b', {}, p), h('span', {}, num(b.total) + ' enrollments'), h('small', {}, num(b.certified) + ' certified')); });
       var chipsRow = ENR_STATES.filter(function (x) { return bs[x]; }).map(function (x) { return h('button', { class: 'chipb' + (st.f.state === x ? ' on' : ''), onclick: function () { st.f.state = st.f.state === x ? '' : x; buildFilters(); change(); } }, h('b', {}, x), h('span', {}, num(bs[x]))); });
       sumBox.replaceChildren.apply(sumBox, [h('div', { class: 'grid g5 strip' }, tiles), h('div', { class: 'chiprow' }, chips), h('div', { class: 'chiprow' }, chipsRow), emptyHint(sm, n)].filter(Boolean));
     }
     function drawTable(d) {
-      tbl.replaceChildren(h('div', { class: 'card' }, table([{ h: 'Name', k: 'name' }, { h: 'Path', k: 'path' }, { h: 'Role', k: 'role' }, { h: 'School', k: 'school' }, { h: 'Country', k: 'country' }, { h: 'Course', k: 'course' }, { h: 'Enrolled', k: 'enrollDate' }, { h: 'Last progress', k: 'lastProgress' }, { h: 'Status', f: function (r) { return h('span', { class: 'tag ' + (r.state === 'Certified' ? 'ok' : r.state === 'Enrolled' ? 'bad' : 'warn') }, r.state); } }, { h: 'Supervisor', k: 'supervisor' }], d.rows, null, { sortable: false })));
+      tbl.replaceChildren(h('div', { class: 'card' }, table([{ h: 'Name', k: 'name' }, { h: 'Path', k: 'path' }, { h: 'Role', k: 'role' }, { h: 'School', k: 'school' }, { h: 'Country', k: 'country' }, { h: 'Course', k: 'course' }, { h: 'Enrolled', k: 'enrollDate' }, { h: 'Last progress', k: 'lastProgress' }, { h: 'Status', f: function (r) { return h('span', { class: 'tag ' + (r.state === 'Certified' ? 'ok' : r.state === 'Enrolled' || r.state === 'Inactive' ? 'bad' : 'warn') }, r.state); } }, { h: 'Supervisor', k: 'supervisor' }], d.rows, null, { sortable: false })));
       var pages = Math.max(1, Math.ceil(d.total / d.per));
       pg.replaceChildren(h('div', { class: 'pager' }, h('button', { class: 'btn', disabled: st.page <= 1, onclick: function () { st.page--; fetchRows(false); } }, '‹'), 'Page ' + st.page + ' of ' + pages + ' · ' + num(d.total) + ' rows', h('button', { class: 'btn', disabled: st.page >= pages, onclick: function () { st.page++; fetchRows(false); } }, '›')));
     }
@@ -627,7 +627,7 @@
         var out = { rows: rows.slice((page - 1) * per, page * per), total: rows.length, page: page, per: per, summary: { total: rows.length, valid: valid, expired: rows.length - valid, byPath: by, schoolLevels: lv, validSchools: Object.keys(sch).length } };
         if (p.facets) out.facets = { paths: uq('path'), roles: uq('role'), countries: uq('country'), supervisors: uq('supervisor'), courses: uq('course') };
         return out; },      enrolls: function () {
-        if (!S.mockEnr) { var P = ['Teacher', 'Teacher', 'Teacher', 'Admin', 'School', 'Other'], C = ['Saudi Arabia', 'Egypt', 'Iraq'], R = ['Teacher', 'System Admin', 'Principal'], ST = ['Certified', 'Passed, no certificate', 'In progress', 'Enrolled', 'Enrolled', 'In progress'], rows = [];
+        if (!S.mockEnr) { var P = ['Teacher', 'Teacher', 'Teacher', 'Admin', 'School', 'Other'], C = ['Saudi Arabia', 'Egypt', 'Iraq'], R = ['Teacher', 'System Admin', 'Principal'], ST = ['Certified', 'Passed, no certificate', 'In progress', 'Inactive', 'Enrolled', 'In progress'], rows = [];
           for (var i = 0; i < 1500; i++) { var d = new Date(Date.UTC(2023 + (i % 4), (i * 5) % 12, 1 + i % 27)); rows.push({ name: 'Person ' + (i % 900), role: R[i % 3], path: P[i % 6], schoolId: 'S' + (i % 120), school: 'Demo School ' + (i % 120), country: C[i % 3], course: P[i % 6] === 'School' ? ['Silver', 'Gold', 'Diamond'][i % 3] + ' Tech School' : 'Accreditation course ' + P[i % 6], enrollDate: d.toISOString().slice(0, 10), lastProgress: i % 4 ? d.toISOString().slice(0, 10) : '', state: ST[i % 6], certified: ST[i % 6] === 'Certified' ? 'Yes' : 'No', supervisor: sup[i % 4] }); }
           S.mockEnr = rows; }
         var f = p.filter || {}, q = (f.q || '').toLowerCase(), sc = (f.school || '').toLowerCase(), base = S.mockEnr;
