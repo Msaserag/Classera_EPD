@@ -109,3 +109,15 @@ tbody tr:nth-child(1){animation-delay:0ms}tbody tr:nth-child(2){animation-delay:
 html.theme-anim *{transition:background-color 220ms var(--ease),color 220ms var(--ease),border-color 220ms var(--ease)!important}
 .meter i{transition:width var(--d2) var(--ease),background var(--d2) var(--ease)}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+
+/* certificates flyout */
+.navgrp{position:relative}.navgrp>a{margin-bottom:4px}
+.fly{display:none;position:fixed;z-index:60;min-width:200px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:6px;box-shadow:0 14px 34px -12px rgba(0,0,0,.45)}
+.navgrp.open .fly{display:block;animation:pop var(--d2) var(--ease-out)}
+.fly a{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 12px;border-radius:8px;margin:0}
+.fly a.on{background:var(--active);color:#fff}
+.fly a.soon{color:var(--muted)}.fly a.soon.on{color:#fff}
+.soon-tag{font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;background:rgba(245,158,11,.16);color:#b45309;border-radius:999px;padding:2px 8px}
+[data-theme=dark] .soon-tag{color:#fbbf24}
+.soonbox{text-align:center;padding:48px 20px}.soonbox .big{font-size:40px}.soonbox p{color:var(--muted);max-width:460px;margin:6px auto 18px}
+@media(max-width:800px){.fly{display:none!important}}
