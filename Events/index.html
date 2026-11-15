@@ -72,6 +72,16 @@ a{color:var(--accent)}
 .fld{display:grid;gap:3px;min-width:0}
 .fld label{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
 .fld select{appearance:none;background:var(--surface-2) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%2366798C'/%3E%3C/svg%3E") no-repeat right 10px center;border:1px solid var(--line);border-radius:8px;padding:7px 28px 7px 10px;min-width:118px;max-width:220px;color:var(--ink);cursor:pointer}
+.ms{position:relative;min-width:118px;max-width:240px}
+.ms-btn{appearance:none;width:100%;text-align:left;background:var(--surface-2) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%2366798C'/%3E%3C/svg%3E") no-repeat right 10px center;border:1px solid var(--line);border-radius:8px;padding:7px 28px 7px 10px;color:var(--ink);cursor:pointer;font:inherit;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ms-btn.on{border-color:var(--accent);background-color:var(--accent-soft)}
+.ms-p{position:absolute;z-index:60;top:calc(100% + 4px);left:0;min-width:240px;max-width:340px;max-height:340px;overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:10px;box-shadow:0 14px 34px -12px rgba(0,0,0,.35);padding:8px;display:grid;gap:4px}
+.ms-p[hidden]{display:none}
+.ms-q{width:100%;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:6px 9px;color:var(--ink);font:inherit}
+.ms-a{display:flex;gap:6px}.ms-a button{background:none;border:0;color:var(--accent);cursor:pointer;font:inherit;font-size:12px;padding:2px 4px}
+.fld .ms-o{text-transform:none;letter-spacing:0;font-weight:400;font-size:13px;color:var(--ink)}
+.ms-o{display:flex;gap:8px;align-items:center;padding:5px 6px;border-radius:6px;cursor:pointer;font-size:13px}
+.ms-o:hover{background:var(--surface-2)}.ms-o input{accent-color:var(--accent);flex:none}
 .fld select.on{border-color:var(--accent);background-color:var(--accent-soft)}
 .rail .spacer{flex:1}
 .btn{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;padding:7px 12px;cursor:pointer;font-weight:500;white-space:nowrap;text-decoration:none}
@@ -269,13 +279,13 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:8px 20px;justify-content:space-betw
       <option value="past">Past</option><option value="s1">Semester 1</option><option value="s2">Semester 2</option><option value="custom">Custom months</option></select></div>
     <div class="fld" id="fld-from" hidden><label for="f-from">From</label><select id="f-from"></select></div>
     <div class="fld" id="fld-to" hidden><label for="f-to">To</label><select id="f-to"></select></div>
-    <div class="fld"><label for="f-program">Program</label><select id="f-program"></select></div>
-    <div class="fld"><label for="f-track">Track</label><select id="f-track"></select></div>
-    <div class="fld"><label for="f-event">Event</label><select id="f-event" style="max-width:260px"></select></div>
-    <div class="fld"><label for="f-status">Event status</label><select id="f-status"></select></div>
-    <div class="fld"><label for="f-announce">Announcement</label><select id="f-announce"></select></div>
-    <div class="fld"><label for="f-mode">Delivery</label><select id="f-mode"></select></div>
-    <div class="fld"><label for="f-partner">Partner / host</label><select id="f-partner"></select></div>
+    <div class="fld"><label id="l-program">Program</label><div class="ms" id="f-program"></div></div>
+    <div class="fld"><label id="l-track">Track</label><div class="ms" id="f-track"></div></div>
+    <div class="fld"><label id="l-event">Event</label><div class="ms" id="f-event"></div></div>
+    <div class="fld"><label id="l-status">Event status</label><div class="ms" id="f-status"></div></div>
+    <div class="fld"><label id="l-announce">Announcement</label><div class="ms" id="f-announce"></div></div>
+    <div class="fld"><label id="l-mode">Delivery</label><div class="ms" id="f-mode"></div></div>
+    <div class="fld"><label id="l-partner">Partner / host</label><div class="ms" id="f-partner"></div></div>
     <button class="btn" id="reset" type="button">Reset</button>
     <div class="spacer"></div>
     <button class="btn" id="print" type="button"><svg viewBox="0 0 24 24"><path d="M6 9V3h12v6M6 18H4a1 1 0 0 1-1-1v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6a1 1 0 0 1-1 1h-2"/><rect x="6" y="14" width="12" height="7"/></svg>Print / PDF</button>
@@ -511,23 +521,44 @@ function load(){
 /* ---------- filters ---------- */
 var FILTERS = [['program','f-program','Program'],['track','f-track','Track'],['event','f-event','Event'],['status','f-status','Event status'],['announce','f-announce','Announcement'],['mode','f-mode','Delivery'],['partner','f-partner','Partner']];
 function uniq(arr){ return arr.filter(function(v,i,a){ return v && a.indexOf(v)===i }) }
-function fillSelect(id, all, opts, cur){
-  var s=$(id); s.innerHTML=''; var o=document.createElement('option'); o.value=''; o.textContent=all; s.appendChild(o);
-  opts.forEach(function(v){ var x=document.createElement('option'); x.value=v; x.textContent=v; s.appendChild(x) });
-  s.value = opts.indexOf(cur)>-1 ? cur : ''; s.classList.toggle('on', !!s.value);
+var SEL = function(k){ return F[k] || [] };
+function msFill(key,id,all,opts,cur){
+  var host=$(id); cur=(cur||[]).filter(function(v){ return opts.indexOf(v)>-1 }); F[key]=cur;
+  var wasOpen=host.classList.contains('open'), oq=host.querySelector('.ms-q'), qv=oq?oq.value:'', hadQ=oq && document.activeElement===oq;
+  var af=document.activeElement && host.contains(document.activeElement) && document.activeElement.dataset ? document.activeElement.dataset.v : null;
+  host.innerHTML='';
+  var btn=document.createElement('button'); btn.type='button'; btn.className='ms-btn'+(cur.length?' on':''); btn.setAttribute('aria-haspopup','true'); btn.setAttribute('aria-expanded',String(wasOpen));
+  btn.textContent = cur.length===0 ? all : cur.length===1 ? cur[0] : cur.length+' selected'; btn.title = cur.join(', ');
+  var pan=document.createElement('div'); pan.className='ms-p'; pan.hidden=!wasOpen;
+  if(opts.length>8){ var q=document.createElement('input'); q.type='search'; q.className='ms-q'; q.placeholder='Search...'; q.value=qv; q.setAttribute('aria-label','Search options'); pan.appendChild(q);
+    q.addEventListener('input',function(){ var t=q.value.toLowerCase(); pan.querySelectorAll('.ms-o').forEach(function(l){ l.hidden = l.textContent.toLowerCase().indexOf(t)<0 }) });
+    if(qv) q.dispatchEvent(new Event('input')); if(hadQ) setTimeout(function(){ q.focus() },0) }
+  var act=document.createElement('div'); act.className='ms-a';
+  var all_=document.createElement('button'); all_.type='button'; all_.textContent='Select all'; var clr=document.createElement('button'); clr.type='button'; clr.textContent='Clear';
+  all_.onclick=function(){ F[key]=opts.slice(); afterSel(key) }; clr.onclick=function(){ F[key]=[]; afterSel(key) }; act.appendChild(all_); act.appendChild(clr); pan.appendChild(act);
+  opts.forEach(function(v){ var l=document.createElement('label'); l.className='ms-o'; var c=document.createElement('input'); c.type='checkbox'; c.checked=cur.indexOf(v)>-1; c.dataset.v=v;
+    c.addEventListener('change',function(){ var a=SEL(key).slice(), i=a.indexOf(v); if(c.checked && i<0) a.push(v); if(!c.checked && i>-1) a.splice(i,1); F[key]=a; afterSel(key,v) });
+    l.appendChild(c); l.appendChild(document.createTextNode(v)); pan.appendChild(l); if(af===v) setTimeout(function(){ c.focus() },0) });
+  btn.addEventListener('click',function(e){ e.stopPropagation(); var open=!host.classList.contains('open'); closeMs(); if(open){ host.classList.add('open'); pan.hidden=false; btn.setAttribute('aria-expanded','true'); var qq=pan.querySelector('.ms-q'); if(qq) qq.focus() } });
+  pan.addEventListener('click',function(e){ e.stopPropagation() });
+  host.appendChild(btn); host.appendChild(pan);
 }
+function closeMs(){ document.querySelectorAll('.ms.open').forEach(function(h){ h.classList.remove('open'); var p=h.querySelector('.ms-p'); if(p) p.hidden=true; var b=h.querySelector('.ms-btn'); if(b) b.setAttribute('aria-expanded','false') }) }
+document.addEventListener('click',closeMs); document.addEventListener('keydown',function(e){ if(e.key==='Escape') closeMs() });
+function afterSel(key){ if(key==='program'){ /* options of Track and Event narrow to the chosen programs; invalid picks are dropped in setupFilters */ } render() }
 function setupFilters(){
-  fillSelect('f-program','All programs', orderBy(uniq(EV.map(function(e){return e.program})),PROGRAM_ORDER), F.program);
-  var tr = EV.filter(function(e){ return !F.program || e.program===F.program }).map(function(e){return e.track});
-  fillSelect('f-track','All tracks', uniq(tr).sort(), F.track); if(F.track && tr.indexOf(F.track)<0) F.track='';
-  var evs = EV.filter(function(e){ return (!F.program || e.program===F.program) && (!F.track || e.track===F.track) }).slice()
+  var inSel=function(k,v){ var a=SEL(k); return !a.length || a.indexOf(v)>-1 };
+  msFill('program','f-program','All programs', orderBy(uniq(EV.map(function(e){return e.program})),PROGRAM_ORDER), F.program);
+  var tr = EV.filter(function(e){ return inSel('program',e.program) }).map(function(e){return e.track});
+  msFill('track','f-track','All tracks', uniq(tr).sort(), F.track);
+  var evs = EV.filter(function(e){ return inSel('program',e.program) && inSel('track',e.track) }).slice()
     .sort(function(a,b){ return (a.start==null?9e15:a.start)-(b.start==null?9e15:b.start) }).map(function(e){return e.title});
-  evs = uniq(evs); fillSelect('f-event','All events', evs, F.event); if(F.event && evs.indexOf(F.event)<0) F.event='';
-  fillSelect('f-status','All statuses', orderBy(uniq(EV.map(function(e){return e.status})),STATUS_ORDER), F.status);
-  fillSelect('f-announce','All', orderBy(uniq(EV.map(function(e){return e.announce})),ANNOUNCE_ORDER), F.announce);
-  fillSelect('f-mode','All', uniq(EV.map(function(e){return e.mode})).sort(), F.mode);
+  msFill('event','f-event','All events', uniq(evs), F.event);
+  msFill('status','f-status','All statuses', orderBy(uniq(EV.map(function(e){return e.status})),STATUS_ORDER), F.status);
+  msFill('announce','f-announce','All', orderBy(uniq(EV.map(function(e){return e.announce})),ANNOUNCE_ORDER), F.announce);
+  msFill('mode','f-mode','All', uniq(EV.map(function(e){return e.mode})).sort(), F.mode);
   var ps=[]; EV.forEach(function(e){ ps = ps.concat(e.partners) });
-  fillSelect('f-partner','All', uniq(ps).sort(), F.partner);
+  msFill('partner','f-partner','All', uniq(ps).sort(), F.partner);
   var ms = uniq(EV.filter(function(e){return e.start!=null}).map(function(e){ return mkey(e.start) })).sort(function(a,b){return a-b});
   ['f-from','f-to'].forEach(function(id,i){
     var s=$(id), cur = i? F.to : F.from; s.innerHTML='';
@@ -554,10 +585,10 @@ function inPeriod(e){
 function rows(skip){
   return EV.filter(function(e){
     if(!inPeriod(e)) return false;
-    for(var i=0;i<FILTERS.length;i++){ var k=FILTERS[i][0]; if(k===skip || !F[k]) continue;
-      if(k==='partner'){ if(e.partners.indexOf(F.partner)<0) return false }
-      else if(k==='event'){ if(e.title!==F.event) return false }
-      else if(e[k]!==F[k]) return false; }
+    for(var i=0;i<FILTERS.length;i++){ var k=FILTERS[i][0], a=SEL(k); if(k===skip || !a.length) continue;
+      if(k==='partner'){ if(!e.partners.some(function(x){ return a.indexOf(x)>-1 })) return false }
+      else if(k==='event'){ if(a.indexOf(e.title)<0) return false }
+      else if(a.indexOf(e[k])<0) return false; }
     return true;
   });
 }
@@ -567,9 +598,9 @@ function chips(){
     var x=document.createElement('span'); x.textContent='×'; x.setAttribute('aria-hidden','true'); b.appendChild(x); b.setAttribute('aria-label','Remove filter '+label);
     b.onclick=function(){ clear(); render() }; c.appendChild(b) };
   if(F.period && F.period!=='all') add('Period: '+$('f-period').selectedOptions[0].textContent+(F.period==='custom'? ' ('+mlabel(+$('f-from').value)+' to '+mlabel(+$('f-to').value)+')':''), function(){ F.period='all' });
-  FILTERS.forEach(function(f){ if(F[f[0]]) add(f[2]+': '+F[f[0]], function(){ F[f[0]]='' }) });
+  FILTERS.forEach(function(f){ var a=SEL(f[0]); if(a.length) add(f[2]+': '+(a.length<=2?a.join(', '):a.slice(0,2).join(', ')+' +'+(a.length-2)), function(){ F[f[0]]=[] }) });
 }
-function toggle(k,v){ F[k] = F[k]===v ? '' : v; if(k==='program') F.track=''; render() }
+function toggle(k,v){ var a=SEL(k).slice(), i=a.indexOf(v); if(i>-1) a.splice(i,1); else a.push(v); F[k]=a; render() }
 
 /* ---------- tooltip ---------- */
 var tip=$('tip');
@@ -704,8 +735,8 @@ function nextUp(L){
     var acts=c.querySelector('.acts');
     if(e.link){ var a=document.createElement('a'); a.className='btn primary'; a.href=e.link; a.target='_blank'; a.rel='noopener'; a.textContent='Register'; acts.appendChild(a) }
     else { var s=document.createElement('span'); s.className='tag warn'; s.textContent='Link not published yet'; acts.appendChild(s) }
-    var fb=document.createElement('button'); fb.type='button'; fb.className='btn'; fb.textContent=F.program===p?'Show all programs':'Focus on this program';
-    fb.onclick=function(){ toggle('program',p) }; acts.appendChild(fb);
+    var fb=document.createElement('button'); fb.type='button'; fb.className='btn'; var only=SEL('program').length===1 && SEL('program')[0]===p; fb.textContent=only?'Show all programs':'Focus on this program';
+    fb.onclick=function(){ F.program = only ? [] : [p]; render() }; acts.appendChild(fb);
     box.appendChild(c);
     timers.push({el:c, at: e.tbc ? e.start-3*3600000 : startMoment(e), end: e.end+DAY-3*3600000});
   });
@@ -732,7 +763,7 @@ function trend(L){
   var dated=L.filter(function(e){return e.start!=null});
   var progs=orderBy(uniq(dated.map(function(e){return e.program})),PROGRAM_ORDER);
   lg.innerHTML='';
-  progs.forEach(function(p){ var b=document.createElement('button'); b.type='button'; b.className=(HIDDEN[p]?'off':'')+(F.program===p?' sel':'');
+  progs.forEach(function(p){ var b=document.createElement('button'); b.type='button'; b.className=(HIDDEN[p]?'off':'')+(SEL('program').indexOf(p)>-1?' sel':'');
     b.setAttribute('aria-pressed',HIDDEN[p]?'false':'true'); b.title='Show or hide in this chart';
     var i=document.createElement('i'); i.style.background=progColor(p); b.appendChild(i); b.appendChild(document.createTextNode(p));
     b.onclick=function(){ HIDDEN[p]=!HIDDEN[p]; trend(rows()) }; lg.appendChild(b) });
@@ -783,8 +814,8 @@ function hbars(id, items, key, colorFn, total, note){
   if(!items.length){ box.innerHTML='<div class="empty">Nothing in this view.</div>'; return }
   var max=Math.max.apply(null,items.map(function(i){return i.v}));
   items.forEach(function(it){
-    var b=document.createElement('button'); b.type='button'; b.className='hrow'+(F[key]===it.k?' sel':'')+(F[key]&&F[key]!==it.k?' dim':'');
-    b.setAttribute('aria-pressed',F[key]===it.k?'true':'false');
+    var b=document.createElement('button'); b.type='button'; var on=SEL(key).indexOf(it.k)>-1; b.className='hrow'+(on?' sel':'')+(SEL(key).length&&!on?' dim':'');
+    b.setAttribute('aria-pressed',on?'true':'false');
     b.innerHTML='<span class="nm"></span><span class="tr"><i></i></span><b></b>';
     b.querySelector('.nm').textContent=it.k; b.querySelector('.nm').title=it.k;
     var bar=b.querySelector('.tr i'); bar.style.width='0%'; bar.style.background=colorFn(it.k);
@@ -917,7 +948,7 @@ function render(){
 }
 
 /* ---------- wire up ---------- */
-FILTERS.forEach(function(f){ $(f[1]).addEventListener('change',function(e){ F[f[0]]=e.target.value; if(f[0]==='program'){ F.track=''; F.event='' } if(f[0]==='track') F.event=''; render() }) });
+/* multi-select filters are wired inside msFill */
 $('f-period').addEventListener('change',function(e){ F.period=e.target.value; if(F.period==='custom'){ F.from=$('f-from').value; F.to=$('f-to').value } render() });
 ['f-from','f-to'].forEach(function(id,i){ $(id).addEventListener('change',function(e){ if(i) F.to=e.target.value; else F.from=e.target.value; render() }) });
 $('reset').onclick=function(){ F={}; HIDDEN={}; $('q').value=''; render() };
