@@ -222,8 +222,7 @@ td .sub{display:block;font-size:11.5px;color:var(--muted);max-width:420px;overfl
 footer{color:var(--muted);font-size:12px;padding-block:0 30px}
 footer .wrap{display:flex;flex-wrap:wrap;gap:8px 20px;justify-content:space-between}
 /* Program KPIs */
-.pkgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-@media (max-width:900px){.pkgrid{grid-template-columns:1fr}}
+.pkgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,400px),1fr));gap:12px}
 .pk{display:grid;gap:14px}
 .pk-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
 .pk-h h3{font:600 16px/1.2 var(--f-display);margin:0}.pk-h span{color:var(--muted);font-size:12px}
@@ -303,7 +302,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:8px 20px;justify-content:space-betw
     </section>
 
     <section aria-labelledby="h-pk">
-      <div class="sec-h"><h2 id="h-pk">Program KPIs</h2><p id="pk-asof">eLearning (teachers) and Enrichment (students)</p></div>
+      <div class="sec-h"><h2 id="h-pk">Program KPIs</h2><p id="pk-asof">eLearning (teachers), Enrichment (students) and Accreditation (educators)</p></div>
       <div class="pkgrid" id="pkgrid"></div>
       <p class="pk-note" id="pk-note"></p>
     </section>
@@ -656,11 +655,13 @@ function kpis(L){
    Source: a tab named "KPIs" in the events tracker Google Sheet, one row per program.
    Columns: Program | Audience | Population | Target % | Enrollments | Enrollment basis | Total enrollments | Progressing |
             New enrollments in period | Certified | Last week enrollments | Week label | Satisfaction | Satisfaction target | Renewal | Renewal target | As of
+            Optional: Unique users | Progress average (Accreditation has no population target, so leave Population empty)
    If the tab is missing the built-in figures below (weekly deck, 31 Oct 2026) are shown. */
 var PK_SHEET_ID = '1bFWi7YwE08F9AQbx1WfcEztUSB-UMi8YQx87ahRCMPY', PK = null, PK_SRC = 'built-in';
 var PK_DEFAULT = [
   {program:'eLearning',audience:'Teachers',pop:84494,tpct:.4,enr:5735,basis:'Unique enrollments',total:20071,prog:6023,newEnr:null,cert:null,last:2392,week:'25 to 31 Oct 2026',sat:null,satT:null,ren:.988,renT:1,asof:'25 Oct 2026'},
-  {program:'Enrichment',audience:'Students',pop:775416,tpct:.4,enr:12207,basis:'Total enrollments',total:12207,prog:2536,newEnr:null,cert:null,last:1691,week:'25 to 31 Oct 2026',sat:null,satT:null,ren:.988,renT:1,asof:'25 Oct 2026'}];
+  {program:'Enrichment',audience:'Students',pop:775416,tpct:.4,enr:12207,basis:'Total enrollments',total:12207,prog:2536,newEnr:null,cert:null,last:1691,week:'25 to 31 Oct 2026',sat:null,satT:null,ren:.988,renT:1,asof:'25 Oct 2026'},
+  {program:'Accreditation',audience:'Educators',pop:null,tpct:null,enr:809,basis:'Enrollments',total:809,prog:null,uniq:560,avg:430,newEnr:null,cert:null,last:null,week:'',sat:null,satT:null,ren:null,renT:null,asof:''}];
 function pkCsv(t){ var rows=[],row=[],cell='',q=false,i=0,c; if(t.charCodeAt(0)===0xFEFF) t=t.slice(1);
   for(;i<t.length;i++){ c=t[i]; if(q){ if(c==='"'){ if(t[i+1]==='"'){cell+='"';i++} else q=false } else cell+=c }
     else if(c==='"') q=true; else if(c===','){row.push(cell);cell=''} else if(c==='\n'||c==='\r'){ if(c==='\r'&&t[i+1]==='\n') i++; row.push(cell);rows.push(row);row=[];cell='' } else cell+=c }
@@ -676,7 +677,7 @@ function loadPK(){
       program:clean(col(r,'program')),audience:clean(col(r,'audience')),pop:pkNum(col(r,'population')),tpct:pkFrac(col(r,'targetpercent'))||pkFrac(col(r,'target')),
       enr:pkNum(col(r,'enrollments')),basis:clean(col(r,'enrollmentbasis')),total:pkNum(col(r,'totalenrollments')),prog:pkNum(col(r,'progressing')),
       newEnr:pkNum(col(r,'newenrollmentsinperiod')),cert:pkNum(col(r,'certified')),last:pkNum(col(r,'lastweekenrollments')),week:clean(col(r,'weeklabel')),
-      sat:pkFrac(col(r,'satisfaction')),satT:pkFrac(col(r,'satisfactiontarget')),ren:pkFrac(col(r,'renewal')),renT:pkFrac(col(r,'renewaltarget')),asof:clean(col(r,'asof'))} });
+      uniq:pkNum(col(r,'uniqueusers')),avg:pkNum(col(r,'progressaverage')),sat:pkFrac(col(r,'satisfaction')),satT:pkFrac(col(r,'satisfactiontarget')),ren:pkFrac(col(r,'renewal')),renT:pkFrac(col(r,'renewaltarget')),asof:clean(col(r,'asof'))} });
     if(!out.length) throw 0; PK=out; PK_SRC='sheet';
   }).catch(function(){ PK=PK_DEFAULT; PK_SRC='built-in'; });
 }
@@ -689,6 +690,17 @@ function programKpis(){
     var cert=(k.cert!=null&&k.newEnr)?k.cert/k.newEnr:null, lastPct=(target&&k.last!=null)?k.last/target:null;
     var satGap=(k.sat!=null&&k.satT!=null)?(k.satT-k.sat)*100:null, renGap=(k.ren!=null&&k.renT!=null)?(k.renT-k.ren)*100:null;
     var d=document.createElement('div'); d.className='card pk';
+    if(k.pop==null){ /* program without a population target (Accreditation): show the figures as they are */
+      d.innerHTML='<div class="pk-h"><h3></h3><span class="asof"></span></div><div class="pk-row"><div class="pk-m"><small>Enrollments</small><b class="a1"></b><em class="a1e"></em></div><div class="pk-m"><small>Unique users</small><b class="a2"></b><em class="a2e"></em></div><div class="pk-m"><small>Progress average</small><b class="a3"></b><em class="a3e"></em></div></div>'
+       +'<div class="pk-row" style="grid-template-columns:repeat(2,minmax(0,1fr))"><div class="pk-m"><small>Last week</small><b class="lw"></b><em class="lwe"></em></div><div class="pk-m cert"><small>Certification rate</small><b class="ce"></b><em class="cee"></em></div></div>';
+      var q0=function(c,t){ d.querySelector(c).textContent=t };
+      q0('h3',k.program+(k.audience?' · '+k.audience:'')); q0('.asof',k.asof?'As of '+k.asof:'No population target');
+      q0('.a1',f1(k.enr)); q0('.a1e',k.basis||''); q0('.a2',f1(k.uniq)); q0('.a2e',(k.uniq&&k.enr)?Math.round(k.uniq/k.enr*100)+'% of enrollments':''); q0('.a3',f1(k.avg)); q0('.a3e','');
+      q0('.lw',k.last!=null?'+'+f1(k.last):'—'); q0('.lwe',k.last!=null?(k.week||''):'Not added yet');
+      q0('.ce',cert==null?'Pending':p1(cert,0)); q0('.cee',cert==null?'Certified ÷ new enrollments':f1(k.cert)+' of '+f1(k.newEnr)+' new');
+      if(cert==null) d.querySelector('.cert').classList.add('na'); if(k.last==null) d.querySelectorAll('.pk-m')[3].classList.add('na');
+      box.appendChild(d); return;
+    }
     d.innerHTML='<div class="pk-h"><h3></h3><span class="asof"></span></div>'
      +'<div class="pk-top"><div class="pk-ring" style="--v:'+(ful==null?0:Math.min(100,ful*100))+'"><b></b></div><div class="pk-stats">'
      +'<div><small>Targeted population</small><b class="pop"></b></div><div><small class="tl"></small><b class="tg"></b></div>'
@@ -710,7 +722,7 @@ function programKpis(){
     ['cert','sat','ren'].forEach(function(c){ var m=d.querySelector('.'+c); if(/Pending/.test(m.querySelector('b').textContent)) m.classList.add('na') });
     box.appendChild(d);
   });
-  $('pk-note').textContent='Target = '+Math.round((PK[0].tpct||.4)*100)+'% of the teacher population (eLearning) or the student population (Enrichment). Fulfillment = enrollments ÷ target. eLearning uses unique enrollments, Enrichment total enrollments. '
+  $('pk-note').textContent='Target = '+Math.round(((PK.filter(function(x){return x.pop!=null})[0]||{}).tpct||.4)*100)+'% of the teacher population (eLearning) or the student population (Enrichment). Fulfillment = enrollments ÷ target. eLearning uses unique enrollments, Enrichment total enrollments. Accreditation has no population target. '
     +(PK_SRC==='sheet'?'Figures come from the KPIs tab of the events tracker Google Sheet.':'Showing the built-in figures from the weekly deck. Add a tab named KPIs to the tracker Google Sheet to update them here.');
 }
 
