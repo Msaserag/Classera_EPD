@@ -224,17 +224,23 @@ footer a{color:var(--cyan-deep);text-decoration:none;font-weight:600}
 .signnote .signlinks{width:100%;display:block}
 .signnote .btn.sl{display:flex;width:100%;flex:1 1 100%;align-items:center;text-align:center}
 .band .btn.sl{flex:0 0 auto;min-width:240px}
-.heroactions{display:flex;flex-wrap:wrap;gap:10px;margin:20px 0 0}
-.hero .btn.gold{background:#D68A21;color:#1E2E3A}
-.hero .btn.line{color:#fff;border-color:rgba(255,255,255,.4)}
-.guide{margin-top:34px;display:grid;grid-template-columns:1fr auto;gap:22px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);padding:22px 26px;border-inline-start:6px solid var(--gold)}
-.guide h2{font-size:clamp(19px,2.1vw,23px);font-weight:800;margin:0 0 6px}
-.guide p{margin:0 0 12px;color:var(--ink-2);font-size:14.5px;max-width:62ch}
-.gstats{display:flex;gap:10px;flex-wrap:wrap}
-.gstats span{background:var(--gold-soft);color:#A9660F;font-weight:800;font-size:13px;padding:4px 12px;border-radius:999px}
-:root[data-theme="dark"] .gstats span{color:var(--gold)}
-.guide .acts{display:flex;flex-direction:column;gap:10px;min-width:210px}
-@media (max-width:760px){.guide{grid-template-columns:1fr;padding:20px}.guide .acts{min-width:0}}
+.prefoot{margin-top:44px;background:linear-gradient(135deg,var(--navy-2),var(--navy));color:#EAF3F8}
+.prefoot .wrap{display:flex;align-items:center;justify-content:space-between;gap:22px;flex-wrap:wrap;padding:30px 0}
+.prefoot h2{font-size:clamp(20px,2.4vw,26px);color:#fff;margin:0 0 6px}
+.prefoot p{margin:0;color:#BBD5E3;font-size:14.5px;max-width:62ch}
+.pf-acts{display:flex;gap:10px;flex-wrap:wrap}
+.prefoot .btn.gold{background:#D68A21;color:#1E2E3A}.prefoot .btn.line{color:#fff;border-color:rgba(255,255,255,.4)}
+footer.site{margin:0;border-top:0;background:#071C2B;color:#B6C8D6;padding:34px 0 22px}
+footer.site .fgrid{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:30px;align-items:start}
+footer.site .fbrand img{height:44px;width:auto;margin-bottom:12px}
+footer.site .fbrand p{margin:0 0 10px;font-size:14px;line-height:1.7;max-width:46ch}
+footer.site .slogan{color:#F0AC3E;font-size:14px}
+footer.site h4{margin:0 0 12px;color:#fff;font-size:15px}
+footer.site ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+footer.site a{color:#B6C8D6;text-decoration:none;font-weight:500;font-size:14px}
+footer.site a:hover{color:#fff;text-decoration:underline}
+footer.site .fcopy{display:block;margin-top:26px;padding-top:16px;border-top:1px solid rgba(255,255,255,.14);font-size:13px;color:#8FA6B7;text-align:center}
+@media (max-width:760px){footer.site .fgrid{grid-template-columns:1fr}.prefoot .wrap{padding:26px 0}.pf-acts .btn{flex:1 1 100%}}
 .how{margin-top:-40px;position:relative;z-index:2;background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:16px 18px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
 .how .step[data-state]{cursor:default}
 .cgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
@@ -261,8 +267,8 @@ footer a{color:var(--cyan-deep);text-decoration:none;font-weight:600}
 @media (max-width:560px){.course .foot .btn{flex:1 1 100%}}
 
 </style>
-<link rel="stylesheet" href="../assets/classera-fx-v1.css">
-<script>window.FX_EXTRA={reveal:'.course, .band, .guide', spot:'.course', ripple:'.course, .iconbtn'};</script>
+<link rel="stylesheet" href="/assets/classera-fx-v1.css">
+<script>window.FX_EXTRA={reveal:'.course, .band', spot:'.course', ripple:'.course, .iconbtn'};</script>
 </head>
 <body>
 <header class="topbar">
@@ -301,10 +307,6 @@ footer a{color:var(--cyan-deep);text-decoration:none;font-weight:600}
       <div><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span data-ar>ذاتية التعلم وفي الوقت المناسب لك</span><span data-en>Self-paced, whenever suits you</span></div>
       <div><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 20h8M12 18v2"/></svg><span class="ltr">elearning.classera.com</span></div>
     </div>
-    <div class="heroactions">
-      <a class="btn gold" href="guide/"><svg viewBox="0 0 24 24"><path d="M4 4h7a3 3 0 0 1 3 3v13a2.5 2.5 0 0 0-2.5-2.5H4z"/><path d="M20 4h-7a3 3 0 0 0-3 3v13a2.5 2.5 0 0 1 2.5-2.5H20z"/></svg><span data-ar>عرض دليل المبادرة</span><span data-en>View the initiative guide</span></a>
-      <a class="btn line" href="LearningNeverStops-Guide-v1.0.pdf" download><svg viewBox="0 0 24 24"><path d="M12 4v12M7 11l5 5 5-5M5 20h14"/></svg><span data-ar>تحميل الدليل (PDF)</span><span data-en>Download guide (PDF)</span></a>
-    </div>
     <div class="signnote" role="note">
       <div class="sn-txt">
         <svg viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="M10 17l5-5-5-5M15 12H3"/></svg>
@@ -332,18 +334,6 @@ footer a{color:var(--cyan-deep);text-decoration:none;font-weight:600}
     <div class="cgrid" id="cgrid"></div>
   </section>
 
-  <section class="guide" id="guide">
-    <div>
-      <h2><span data-ar>دليل المبادرة: الخدمات والأدوار وجدول التفعيل</span><span data-en>Initiative guide: services, roles and activation plan</span></h2>
-      <p><span data-ar>دليل تعريفي بخدمات المبادرة ومسؤوليات كل دور، مع جدول مقترح لتفعيل الخدمات خلال 8 أسابيع. اقرأه مباشرة في الصفحة أو حمّله بصيغة PDF.</span><span data-en>An introduction to the initiative's services and each role's responsibilities, with a suggested 8-week activation plan. Read it online or download it as a PDF (Arabic).</span></p>
-      <div class="gstats"><span data-ar>16 خدمة</span><span data-en>16 services</span><span data-ar>5 أهداف استراتيجية</span><span data-en>5 strategic goals</span><span data-ar>8 أسابيع</span><span data-en>8 weeks</span></div>
-    </div>
-    <div class="acts">
-      <a class="btn primary" href="guide/"><span data-ar>عرض محتوى الدليل</span><span data-en>Read the guide online</span><svg class="arr" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-      <a class="btn ghost" href="LearningNeverStops-Guide-v1.0.pdf" download><svg viewBox="0 0 24 24"><path d="M12 4v12M7 11l5 5 5-5M5 20h14"/></svg><span data-ar>تحميل PDF</span><span data-en>Download PDF</span></a>
-    </div>
-  </section>
-
   <section class="band">
     <div>
       <h2><span data-ar>هل تحتاج إلى مساعدة؟</span><span data-en>Need a hand?</span></h2>
@@ -355,10 +345,33 @@ footer a{color:var(--cyan-deep);text-decoration:none;font-weight:600}
   </section>
 </main>
 
-<footer>
-  <div class="wrap">
-    <div><span data-ar>وحدة التدريب - نجاح الشركاء | كلاسيرا</span><span data-en>Training Unit - Partner Success | Classera</span></div>
+<section class="prefoot"><div class="wrap">
+  <div>
+    <h2><span data-ar>اطّلع على دليل المبادرة</span><span data-en>Explore the initiative guide</span></h2>
+    <p><span data-ar>16 خدمة و5 أهداف استراتيجية وجدول تفعيل خلال 8 أسابيع، مع أدوار ومسؤوليات كل فريق في المدرسة.</span><span data-en>16 services, 5 strategic goals and an 8-week activation plan, with the role and responsibilities of every school team (Arabic).</span></p>
   </div>
+  <div class="pf-acts">
+    <a class="btn gold" href="/LearningNeverStops/guide/"><svg viewBox="0 0 24 24"><path d="M4 4h7a3 3 0 0 1 3 3v13a2.5 2.5 0 0 0-2.5-2.5H4z"/><path d="M20 4h-7a3 3 0 0 0-3 3v13a2.5 2.5 0 0 1 2.5-2.5H20z"/></svg><span data-ar>عرض محتوى الدليل</span><span data-en>Read the guide online</span></a>
+    <a class="btn line" href="/LearningNeverStops/LearningNeverStops-Guide-v1.0.pdf" download><svg viewBox="0 0 24 24"><path d="M12 4v12M7 11l5 5 5-5M5 20h14"/></svg><span data-ar>تحميل الدليل (PDF)</span><span data-en>Download guide (PDF)</span></a>
+  </div>
+</div></section>
+<footer class="site">
+  <div class="wrap fgrid">
+    <div class="fbrand">
+      <img id="footLogo" alt="Classera">
+      <p><span data-ar>مبادرة تعليمنا لن يتوقف: استمرار التعلم على منصة كلاسيرا في أي وقت ومن أي مكان.</span><span data-en>Learning Never Stops: keep teaching and learning going on the Classera platform, anytime, anywhere.</span></p>
+      <b class="slogan"><span data-ar>وحدة التدريب - نجاح الشركاء</span><span data-en>Training Unit - Partner Success</span></b>
+    </div>
+    <div><h4><span data-ar>روابط سريعة</span><span data-en>Quick links</span></h4>
+      <ul>
+        <li><a href="#courses"><span data-ar>الدورات</span><span data-en>Courses</span></a></li>
+        <li><a href="/LearningNeverStops/guide/"><span data-ar>دليل المبادرة</span><span data-en>Initiative guide</span></a></li>
+        <li><a href="/LearningNeverStops/LearningNeverStops-Guide-v1.0.pdf" download><span data-ar>تحميل الدليل (PDF)</span><span data-en>Download guide (PDF)</span></a></li>
+        <li><a href="https://elearning.classera.com/login" target="_blank" rel="noopener"><span data-ar>تسجيل الدخول إلى المنصة</span><span data-en>Sign in to the LMS</span></a></li>
+      </ul></div>
+    <div><h4><span data-ar>الدورات</span><span data-en>Courses</span></h4><ul id="footCourses"></ul></div>
+  </div>
+  <div class="wrap fcopy"><span data-ar>© وحدة التدريب - نجاح الشركاء | كلاسيرا. جميع الحقوق محفوظة.</span><span data-en>© Training Unit - Partner Success | Classera. All rights reserved.</span></div>
 </footer>
 <div class="toast" id="toast"></div>
 
@@ -422,7 +435,11 @@ function renderCourses(){
       +'</div></div></article>';
   }).join('') : '<div class="empty">'+bi('لا توجد دورات متاحة حالياً.','No courses available right now.')+'</div>';
 }
-function renderAll(){ renderHero(); renderSign(); renderCourses() }
+function renderFoot(){
+  var l=document.querySelector('.brand .dk'), f=$('#footLogo'); if(l&&f&&!f.src) f.src=l.src;
+  $('#footCourses').innerHTML=courses().map(function(c){ return '<li><a href="#courses">'+bi(c.role_ar,c.role_en)+'</a></li>' }).join('');
+}
+function renderAll(){ renderHero(); renderSign(); renderCourses(); renderFoot() }
 
 /* ---- Excel loading ---- */
 var HEAD = { 'key':'key','order':'order','title (ar)':'title_ar','title (en)':'title_en','role (ar)':'role_ar','role (en)':'role_en',
@@ -462,6 +479,6 @@ $('#themeBtn').addEventListener('click',function(){
 })();
 </script>
 
-<script src="../assets/classera-fx-v1.js" defer></script>
+<script src="/assets/classera-fx-v1.js" defer></script>
 </body>
 </html>
