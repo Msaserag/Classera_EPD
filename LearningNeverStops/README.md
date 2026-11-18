@@ -14,3 +14,8 @@ Icon: `teacher`, `leader`, `supervisor`, `admin`, `book`. Accent: `cyan`, `blue`
 - Learners must sign in to the LMS first; the top note and bottom band carry a sign-in button.
 - Course links get `utm_source=lns&utm_medium=landing&utm_campaign=<key>` for tracking.
 - Design, fonts, dark mode and Arabic/English switch are shared with the Onboarding hub.
+
+## Initiative guide (PDF and online page)
+- `LearningNeverStops-Guide-v1.0.pdf` is the downloadable guide. The landing page links to it from the hero and from the guide section.
+- `guide/index.html` is the same content as a web page (goals, 16 services with roles, 8-week plan) at plans.classera.com/LearningNeverStops/guide/, with a role filter and search.
+- When the guide changes, replace the PDF with a new version number and update the file name in both pages, and update the text in `guide/index.html`.

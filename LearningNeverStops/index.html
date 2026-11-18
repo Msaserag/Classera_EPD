@@ -223,6 +223,17 @@ footer a{color:var(--cyan-deep);text-decoration:none;font-weight:600}
 .hero .tagline{display:inline-block;margin:0 0 18px;padding:6px 14px;border-radius:999px;background:rgba(240,172,62,.16);border:1px solid rgba(240,172,62,.45);color:#F7C77A;font-weight:700;font-size:14px}
 .signnote .signlinks{width:auto}
 .signnote .btn.sl,.band .btn.sl{flex:0 0 auto;min-width:240px}
+.heroactions{display:flex;flex-wrap:wrap;gap:10px;margin:20px 0 0}
+.hero .btn.gold{background:#D68A21;color:#1E2E3A}
+.hero .btn.line{color:#fff;border-color:rgba(255,255,255,.4)}
+.guide{margin-top:34px;display:grid;grid-template-columns:1fr auto;gap:22px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);padding:22px 26px;border-inline-start:6px solid var(--gold)}
+.guide h2{font-size:clamp(19px,2.1vw,23px);font-weight:800;margin:0 0 6px}
+.guide p{margin:0 0 12px;color:var(--ink-2);font-size:14.5px;max-width:62ch}
+.gstats{display:flex;gap:10px;flex-wrap:wrap}
+.gstats span{background:var(--gold-soft);color:#A9660F;font-weight:800;font-size:13px;padding:4px 12px;border-radius:999px}
+:root[data-theme="dark"] .gstats span{color:var(--gold)}
+.guide .acts{display:flex;flex-direction:column;gap:10px;min-width:210px}
+@media (max-width:760px){.guide{grid-template-columns:1fr;padding:20px}.guide .acts{min-width:0}}
 .how{margin-top:-40px;position:relative;z-index:2;background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:16px 18px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
 .how .step[data-state]{cursor:default}
 .cgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
@@ -250,7 +261,7 @@ footer a{color:var(--cyan-deep);text-decoration:none;font-weight:600}
 
 </style>
 <link rel="stylesheet" href="../assets/classera-fx-v1.css">
-<script>window.FX_EXTRA={reveal:'.course, .band', spot:'.course', ripple:'.course, .iconbtn'};</script>
+<script>window.FX_EXTRA={reveal:'.course, .band, .guide', spot:'.course', ripple:'.course, .iconbtn'};</script>
 </head>
 <body>
 <header class="topbar">
@@ -289,6 +300,10 @@ footer a{color:var(--cyan-deep);text-decoration:none;font-weight:600}
       <div><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span data-ar>ذاتية التعلم وفي الوقت المناسب لك</span><span data-en>Self-paced, whenever suits you</span></div>
       <div><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 20h8M12 18v2"/></svg><span class="ltr">elearning.classera.com</span></div>
     </div>
+    <div class="heroactions">
+      <a class="btn gold" href="guide/"><svg viewBox="0 0 24 24"><path d="M4 4h7a3 3 0 0 1 3 3v13a2.5 2.5 0 0 0-2.5-2.5H4z"/><path d="M20 4h-7a3 3 0 0 0-3 3v13a2.5 2.5 0 0 1 2.5-2.5H20z"/></svg><span data-ar>عرض دليل المبادرة</span><span data-en>View the initiative guide</span></a>
+      <a class="btn line" href="LearningNeverStops-Guide-v1.0.pdf" download><svg viewBox="0 0 24 24"><path d="M12 4v12M7 11l5 5 5-5M5 20h14"/></svg><span data-ar>تحميل الدليل (PDF)</span><span data-en>Download guide (PDF)</span></a>
+    </div>
     <div class="signnote" role="note">
       <div class="sn-txt">
         <svg viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="M10 17l5-5-5-5M15 12H3"/></svg>
@@ -314,6 +329,18 @@ footer a{color:var(--cyan-deep);text-decoration:none;font-weight:600}
       <p><span data-ar>دورة لكل دور، تفتح مباشرة على منصة كلاسيرا للتعلم.</span><span data-en>One course per role, opening directly on the Classera LMS.</span></p>
     </div>
     <div class="cgrid" id="cgrid"></div>
+  </section>
+
+  <section class="guide" id="guide">
+    <div>
+      <h2><span data-ar>دليل المبادرة: الخدمات والأدوار وجدول التفعيل</span><span data-en>Initiative guide: services, roles and activation plan</span></h2>
+      <p><span data-ar>دليل تعريفي بخدمات المبادرة ومسؤوليات كل دور، مع جدول مقترح لتفعيل الخدمات خلال 8 أسابيع. اقرأه مباشرة في الصفحة أو حمّله بصيغة PDF.</span><span data-en>An introduction to the initiative's services and each role's responsibilities, with a suggested 8-week activation plan. Read it online or download it as a PDF (Arabic).</span></p>
+      <div class="gstats"><span data-ar>16 خدمة</span><span data-en>16 services</span><span data-ar>5 أهداف استراتيجية</span><span data-en>5 strategic goals</span><span data-ar>8 أسابيع</span><span data-en>8 weeks</span></div>
+    </div>
+    <div class="acts">
+      <a class="btn primary" href="guide/"><span data-ar>عرض محتوى الدليل</span><span data-en>Read the guide online</span><svg class="arr" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      <a class="btn ghost" href="LearningNeverStops-Guide-v1.0.pdf" download><svg viewBox="0 0 24 24"><path d="M12 4v12M7 11l5 5 5-5M5 20h14"/></svg><span data-ar>تحميل PDF</span><span data-en>Download PDF</span></a>
+    </div>
   </section>
 
   <section class="band">
