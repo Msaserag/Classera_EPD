@@ -98,12 +98,15 @@
     f.classList.add('cl-site');
     var strip = document.createElement('div'); strip.className = 'cl-wrap cl-strip';
     old.forEach(function (n) { if (n.nodeType === 1 || (n.nodeType === 3 && n.textContent.trim())) strip.appendChild(n); else f.removeChild(n); });
+    /* no logos in the strip: the header and the brand block already carry them */
+    [].slice.call(strip.querySelectorAll('img,svg,.plate,.footer-logos,.flogo,.fclassera')).forEach(function (n) { if (n.parentNode) n.parentNode.removeChild(n); });
+    [].slice.call(strip.children).forEach(function (n) { if (!n.textContent.trim() && !n.querySelector('a')) strip.removeChild(n); });
     f.innerHTML = '';
     var grid = document.createElement('div'); grid.className = 'cl-wrap cl-fgrid';
     grid.innerHTML = '<div class="cl-brand"><img src="' + LOGO + '" alt="Classera"><p>' + bi(TEXT.tag) + '</p><b class="cl-slogan">' + bi(TEXT.unit) + '</b></div>'
       + col(TEXT.h1, LINKS.h1) + col(TEXT.h2, LINKS.h2);
     var copy = document.createElement('div'); copy.className = 'cl-wrap cl-fcopy'; copy.innerHTML = bi(TEXT.copy);
-    f.appendChild(grid); if (strip.childNodes.length) f.appendChild(strip); f.appendChild(copy);
+    f.appendChild(grid); if (strip.textContent.trim()) f.appendChild(strip); f.appendChild(copy);
     function sync() { f.setAttribute('data-cl-lang', lang()); }
     sync();
     new MutationObserver(sync).observe(document.documentElement, { attributes: true, attributeFilter: ['data-lang', 'lang'] });
