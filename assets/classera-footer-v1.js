@@ -84,7 +84,8 @@
     }).join('') + '</ul></div>';
   }
   function lang() {
-    var h = document.documentElement, l = (h.getAttribute('data-lang') || h.getAttribute('lang') || 'en').toLowerCase();
+    var h = document.documentElement, l = h.getAttribute('data-lang');
+    l = (l || h.getAttribute('lang') || 'en').toLowerCase();
     return l.indexOf('ar') === 0 ? 'ar' : 'en';
   }
   function build() {
