@@ -215,6 +215,19 @@ footer a{color:var(--cyan-deep);text-decoration:none;font-weight:600}
 .rsearch input{border:0;outline:0;background:transparent;font:inherit;font-size:14.5px;color:var(--ink);width:100%}
 .rnone{color:var(--muted,#6B7C8F);font-size:14px;padding:6px 2px}
 .role[hidden],.rsearch[hidden],.rnone[hidden]{display:none!important}
+/* Site footer (same style as Learning Never Stops) */
+footer.site{margin:40px 0 0;border-top:0;background:#071C2B;color:#B6C8D6;padding:34px 0 22px}
+footer.site .fgrid{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:30px;align-items:start}
+footer.site .fbrand img{height:44px;width:auto;margin-bottom:12px}
+footer.site .fbrand p{margin:0 0 10px;font-size:14px;line-height:1.7;max-width:46ch}
+footer.site .slogan{color:#F0AC3E;font-size:14px}
+footer.site h4{margin:0 0 12px;color:#fff;font-size:15px;font-family:var(--f-display)}
+footer.site ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+footer.site a{color:#B6C8D6;text-decoration:none;font-weight:500;font-size:14px}
+footer.site a:hover{color:#fff;text-decoration:underline}
+footer.site .fcopy{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-top:26px;padding-top:16px;border-top:1px solid rgba(255,255,255,.14);font-size:13px;color:#8FA6B7}
+footer.site .src{color:#8FA6B7}
+@media (max-width:760px){footer.site .fgrid{grid-template-columns:1fr}footer.site .fcopy{justify-content:center;text-align:center}}
 /* Keep card content above the FX cursor glow */
 .pcard > .inner, .track > :not(.fx-glow){position:relative;z-index:1}
 </style>
@@ -347,12 +360,22 @@ footer a{color:var(--cyan-deep);text-decoration:none;font-weight:600}
 
 </main>
 
-<footer>
-  <div class="wrap">
-    <div><span data-ar>وحدة التدريب - نجاح الشركاء | كلاسيرا</span><span data-en>Training Unit - Partner Success | Classera</span></div>
-    <div class="src" id="srcTag"></div>
-    <div><a href="mailto:partnersuccess@classera.com">partnersuccess@classera.com</a></div>
+<footer class="site">
+  <div class="wrap fgrid">
+    <div class="fbrand">
+      <img id="footLogo" alt="Classera">
+      <p><span data-ar>مركز التهيئة والتعلم الذاتي: مسارات تعلم جاهزة لكل منتج ولكل دور داخل كلاسيرا.</span><span data-en>Self-service onboarding hub: ready-made learning tracks for every Classera product and role.</span></p>
+      <b class="slogan"><span data-ar>وحدة التدريب - نجاح الشركاء</span><span data-en>Training Unit - Partner Success</span></b>
+    </div>
+    <div><h4><span data-ar>روابط سريعة</span><span data-en>Quick links</span></h4>
+      <ul>
+        <li><a href="#pgrid"><span data-ar>المنتجات</span><span data-en>Products</span></a></li>
+        <li><a href="https://plans.classera.com/" target="_blank" rel="noopener"><span data-ar>خطط العام الأكاديمي</span><span data-en>Academic year plans</span></a></li>
+        <li><a href="mailto:partnersuccess@classera.com"><span data-ar>تواصل مع نجاح الشركاء</span><span data-en>Contact Partner Success</span></a></li>
+      </ul></div>
+    <div><h4><span data-ar>المنتجات</span><span data-en>Products</span></h4><ul id="footProducts"></ul></div>
   </div>
+  <div class="wrap fcopy"><span data-ar>© وحدة التدريب - نجاح الشركاء | كلاسيرا. جميع الحقوق محفوظة.</span><span data-en>© Training Unit - Partner Success | Classera. All rights reserved.</span><span class="src" id="srcTag"></span></div>
 </footer>
 
 <div class="toast" id="toast"></div>
@@ -583,6 +606,10 @@ function renderSign(){
   }).join('');
   ['#signTop','#signBottom'].forEach(function(id){ var el=$(id); if(el) el.innerHTML=h; });
 }
+function renderFoot(){
+  var l=document.querySelector('.brand .dk'), f=document.getElementById('footLogo'); if(l&&f&&!f.src) f.src=l.src;
+  var ul=document.getElementById('footProducts'); if(ul) ul.innerHTML=products().map(function(p){ return '<li><a href="#pgrid">'+bi(p.name_ar,p.name_en)+'</a></li>' }).join('');
+}
 function renderHero(){
   renderSign();
   var ps=products(), roles=0, tr=0;
@@ -773,9 +800,9 @@ $('#themeBtn').addEventListener('click', function(){
     var l=localStorage.getItem('cl_lang'); if(l) setLang(l);
     var t=localStorage.getItem('cl_theme'); if(t) document.documentElement.setAttribute('data-theme',t);
   }catch(e){}
-  renderHero(); renderProducts(); setStep(1);
+  renderHero(); renderProducts(); renderFoot(); setStep(1);
   loadContent().then(function(){
-    renderHero(); renderProducts();
+    renderHero(); renderProducts(); renderFoot();
     if(state.product){ renderRoles(); if(state.role) renderTracks(); }
   });
 })();
