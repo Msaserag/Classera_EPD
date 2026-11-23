@@ -318,3 +318,6 @@ html.theme-anim *{transition:background-color .22s,color .22s,border-color .22s!
 body.is-busy{cursor:progress}
 .side a.devhidden{opacity:.65;outline:1px dashed var(--line);outline-offset:-2px}
 @media (prefers-reduced-motion:reduce){#busybar i,.spin{animation-duration:3s}}
+
+/* v1.2: embedded Events dashboard */
+.evframe{display:block;width:100%;height:calc(100vh - 190px);min-height:560px;border:1px solid var(--line);border-radius:var(--r3);background:#fff}

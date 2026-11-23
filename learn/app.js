@@ -10,8 +10,8 @@
   var PATH_NOTE = { Teacher: 'Teacher accreditation program', Admin: 'System administrator program', School: 'School program: Silver, Gold, Diamond Tech School', Other: 'Activation supervisor and trainer' };
 
   var I18N = {
-    en: { dashboard: 'Dashboard', platforms: 'Overall Academies Performance', academies: 'Platforms', clients: 'Clients', requests: 'Training Requests', actions: 'Actions', reports: 'Reports', users: 'Users', settings: 'Settings', search: 'Search people, schools, courses...', refresh: 'Refresh', print: 'Print', export: 'Export CSV', logout: 'Log out', changepw: 'Change password', login: 'LOGIN', user: 'Username', pass: 'Password', remember: 'Remember me', forgot: 'Forgot password?', forgotmsg: 'Ask a PS Training HUB admin to reset your password.' },
-    ar: { dashboard: 'لوحة التحكم', platforms: 'الأداء العام للأكاديميات', academies: 'المنصات', clients: 'العملاء', requests: 'طلبات التدريب', actions: 'الإجراءات', reports: 'التقارير', users: 'المستخدمون', settings: 'الإعدادات', search: 'ابحث عن الأشخاص والمدارس والدورات...', refresh: 'تحديث', print: 'طباعة', export: 'تصدير CSV', logout: 'تسجيل الخروج', changepw: 'تغيير كلمة المرور', login: 'دخول', user: 'اسم المستخدم', pass: 'كلمة المرور', remember: 'تذكرني', forgot: 'نسيت كلمة المرور؟', forgotmsg: 'اطلب من مسؤول المنصة إعادة تعيين كلمة المرور.' }
+    en: { dashboard: 'Dashboard', platforms: 'Overall Academies Performance', academies: 'Platforms', events: 'Events', clients: 'Clients', requests: 'Training Requests', actions: 'Actions', reports: 'Reports', users: 'Users', settings: 'Settings', search: 'Search people, schools, courses...', refresh: 'Refresh', print: 'Print', export: 'Export CSV', logout: 'Log out', changepw: 'Change password', login: 'LOGIN', user: 'Username', pass: 'Password', remember: 'Remember me', forgot: 'Forgot password?', forgotmsg: 'Ask a PS Training HUB admin to reset your password.' },
+    ar: { dashboard: 'لوحة التحكم', platforms: 'الأداء العام للأكاديميات', academies: 'المنصات', events: 'الفعاليات', clients: 'العملاء', requests: 'طلبات التدريب', actions: 'الإجراءات', reports: 'التقارير', users: 'المستخدمون', settings: 'الإعدادات', search: 'ابحث عن الأشخاص والمدارس والدورات...', refresh: 'تحديث', print: 'طباعة', export: 'تصدير CSV', logout: 'تسجيل الخروج', changepw: 'تغيير كلمة المرور', login: 'دخول', user: 'اسم المستخدم', pass: 'كلمة المرور', remember: 'تذكرني', forgot: 'نسيت كلمة المرور؟', forgotmsg: 'اطلب من مسؤول المنصة إعادة تعيين كلمة المرور.' }
   };
   var S = { token: null, user: null, real: null, viewAs: null, theme: 'dark', lang: 'en', route: 'dashboard', cache: {}, collapsed: false };
   function t(k) { return (I18N[S.lang] && I18N[S.lang][k]) || I18N.en[k] || k; }
@@ -157,10 +157,11 @@
   function vis(n) { return !isHidden(n) || showDev(n); }
   function linkOk(l) { var u = String(l.url || ''); if (u.charAt(0) !== '#') return true; return vis(u.replace(/^#\//, '').split('/')[0]); }
   function showDev(n) { return isHidden(n) && S.real && S.real.role === 'Super Admin' && !S.viewAs; }
-  var NAV = [['dashboard'], ['academies'], ['clients'], ['requests'], ['actions'], ['reports'], ['users'], ['settings']];
+  var NAV = [['dashboard'], ['events'], ['academies'], ['clients'], ['requests'], ['actions'], ['reports'], ['users'], ['settings']];
   var ICON = {
     dashboard: '<rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/>',
     platforms: '<path d="M12 3 3 8l9 5 9-5-9-5Z"/><path d="m3 13 9 5 9-5"/>',
+    events: '<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/>',
     academies: '<path d="m2 9 10-5 10 5-10 5L2 9Z"/><path d="M6 11.5V16c0 1.4 2.7 3 6 3s6-1.6 6-3v-4.5"/><path d="M22 9v6"/>',
     clients: '<path d="M4 21V9l8-5 8 5v12"/><path d="M9 21v-6h6v6"/>',
     requests: '<rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M8 3v4M16 3v4M3 10h18"/>',
@@ -578,6 +579,14 @@
       } }, 'Save'))));
   }
 
+  /** v1.2: the whole Events dashboard (plans.classera.com/Events/) inside the hub. Same site, so it is always the live page, driven by events-tracker.xlsx. */
+  PAGES.events = function (box) {
+    var src = '/Events/', note = h('div', { class: 'applying', role: 'status' }, h('span', { class: 'spin' }), h('span', {}, 'Loading the Events dashboard...'));
+    var fr = h('iframe', { class: 'evframe', src: src, title: 'Events dashboard', loading: 'eager', referrerpolicy: 'same-origin' });
+    fr.addEventListener('load', function () { note.remove(); });
+    box.appendChild(head(t('events'), 'AY26-27 programs and events: schedule, registrations, attendance and what needs attention. Live from the events tracker.', [h('a', { class: 'btn', href: src, target: '_blank', rel: 'noopener' }, 'Open in new tab')]));
+    box.appendChild(note); box.appendChild(fr);
+  };
   PAGES.reports = function (box) {
     box.appendChild(head(t('reports'), 'Performance across the Partner Success operation', [h('button', { class: 'btn', onclick: function () { window.print(); } }, t('print'))]));
     var ph = skeleton(); box.appendChild(ph);
