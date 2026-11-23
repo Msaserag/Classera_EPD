@@ -10,8 +10,8 @@
   var PATH_NOTE = { Teacher: 'Teacher accreditation program', Admin: 'System administrator program', School: 'School program: Silver, Gold, Diamond Tech School', Other: 'Activation supervisor and trainer' };
 
   var I18N = {
-    en: { dashboard: 'Dashboard', platforms: 'Platforms', academies: 'Academies', clients: 'Clients', requests: 'Training Requests', actions: 'Actions', reports: 'Reports', users: 'Users', settings: 'Settings', search: 'Search clients, academies, requests...', refresh: 'Refresh', print: 'Print', export: 'Export CSV', logout: 'Log out', changepw: 'Change password', login: 'LOGIN', user: 'Username', pass: 'Password', remember: 'Remember me', forgot: 'Forgot password?', forgotmsg: 'Ask a PS Training HUB admin to reset your password.' },
-    ar: { dashboard: 'لوحة التحكم', platforms: 'المنصات', academies: 'الأكاديميات', clients: 'العملاء', requests: 'طلبات التدريب', actions: 'الإجراءات', reports: 'التقارير', users: 'المستخدمون', settings: 'الإعدادات', search: 'ابحث في العملاء والشهادات والطلبات...', refresh: 'تحديث', print: 'طباعة', export: 'تصدير CSV', logout: 'تسجيل الخروج', changepw: 'تغيير كلمة المرور', login: 'دخول', user: 'اسم المستخدم', pass: 'كلمة المرور', remember: 'تذكرني', forgot: 'نسيت كلمة المرور؟', forgotmsg: 'اطلب من مسؤول المنصة إعادة تعيين كلمة المرور.' }
+    en: { dashboard: 'Dashboard', platforms: 'Overall Academies Performance', academies: 'Platforms', clients: 'Clients', requests: 'Training Requests', actions: 'Actions', reports: 'Reports', users: 'Users', settings: 'Settings', search: 'Search people, schools, courses...', refresh: 'Refresh', print: 'Print', export: 'Export CSV', logout: 'Log out', changepw: 'Change password', login: 'LOGIN', user: 'Username', pass: 'Password', remember: 'Remember me', forgot: 'Forgot password?', forgotmsg: 'Ask a PS Training HUB admin to reset your password.' },
+    ar: { dashboard: 'لوحة التحكم', platforms: 'الأداء العام للأكاديميات', academies: 'المنصات', clients: 'العملاء', requests: 'طلبات التدريب', actions: 'الإجراءات', reports: 'التقارير', users: 'المستخدمون', settings: 'الإعدادات', search: 'ابحث عن الأشخاص والمدارس والدورات...', refresh: 'تحديث', print: 'طباعة', export: 'تصدير CSV', logout: 'تسجيل الخروج', changepw: 'تغيير كلمة المرور', login: 'دخول', user: 'اسم المستخدم', pass: 'كلمة المرور', remember: 'تذكرني', forgot: 'نسيت كلمة المرور؟', forgotmsg: 'اطلب من مسؤول المنصة إعادة تعيين كلمة المرور.' }
   };
   var S = { token: null, user: null, real: null, viewAs: null, theme: 'dark', lang: 'en', route: 'dashboard', cache: {}, collapsed: false };
   function t(k) { return (I18N[S.lang] && I18N[S.lang][k]) || I18N.en[k] || k; }
@@ -154,8 +154,10 @@
   // v1.1: sidebar tabs listed in config.js HIDE_TABS are hidden from the team while they are in development.
   // A real Super Admin still sees them (dashed outline) unless previewing another role.
   function isHidden(n) { return (CFG.HIDE_TABS || []).indexOf(n) >= 0; }
+  function vis(n) { return !isHidden(n) || showDev(n); }
+  function linkOk(l) { var u = String(l.url || ''); if (u.charAt(0) !== '#') return true; return vis(u.replace(/^#\//, '').split('/')[0]); }
   function showDev(n) { return isHidden(n) && S.real && S.real.role === 'Super Admin' && !S.viewAs; }
-  var NAV = [['dashboard'], ['platforms'], ['academies'], ['clients'], ['requests'], ['actions'], ['reports'], ['users'], ['settings']];
+  var NAV = [['dashboard'], ['academies'], ['clients'], ['requests'], ['actions'], ['reports'], ['users'], ['settings']];
   var ICON = {
     dashboard: '<rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/>',
     platforms: '<path d="M12 3 3 8l9 5 9-5-9-5Z"/><path d="m3 13 9 5 9-5"/>',
@@ -177,8 +179,8 @@
       var badge = n[0] === 'requests' && counts.req ? h('span', { class: 'n', style: 'background:var(--active)' }, counts.req) : n[0] === 'actions' && counts.overdue ? h('span', { class: 'n' }, counts.overdue) : null;
       var link = h('a', { href: '#/' + (n[0] === 'academies' ? 'academies/accreditation' : n[0]), class: (S.route === n[0] ? 'on' : '') + (isHidden(n[0]) ? ' devhidden' : ''), title: isHidden(n[0]) ? 'Hidden from the team (HIDE_TABS in config.js)' : null }, icon(n[0]), h('span', { class: 'l' }, t(n[0])), badge);
       if (n[0] !== 'academies') return link;
-      var fly = h('div', { class: 'fly', role: 'menu' }, [['elearning', 'eLearning'], ['accreditation', 'Accreditation'], ['enrichment', 'Enrichment']].map(function (x) {
-        var soon = x[0] !== 'accreditation';
+      var fly = h('div', { class: 'fly', role: 'menu' }, [['elearning', 'eLearning'], ['accreditation', 'Accreditation'], ['enrichment', 'Enrichment'], ['performance', t('platforms')]].map(function (x) {
+        var soon = x[0] === 'elearning' || x[0] === 'enrichment';
         return h('a', { href: '#/academies/' + x[0], role: 'menuitem', class: (S.route === 'academies' && S.sub === x[0] ? 'on' : '') + (soon ? ' soon' : '') }, h('span', { class: 'l' }, x[1]), soon ? h('span', { class: 'soon-tag' }, 'Soon') : null);
       }));
       var grp = h('div', { class: 'navgrp' }, link, fly);
@@ -232,7 +234,7 @@
     var c = r0 ? kpi(p + ' path', pct(r0.validPct), num(r0.valid) + ' valid · ' + num(r0.expired) + ' expired') : kpi(p + ' path', '-', 'no data');
     c.classList.add('click'); c.title = 'Open ' + p + ' details'; c.tabIndex = 0;
     if (r0) { c.classList.add('hasring'); c.appendChild(ring(Number(r0.validPct))); }
-    var go = function () { S.pathTab = p; location.hash = '#/platforms'; };
+    var go = function () { S.pathTab = p; location.hash = '#/academies/performance'; };
     c.addEventListener('click', go); c.addEventListener('keydown', function (e) { if (e.key === 'Enter') go(); }); return c;
   }
   function rankList(items, fmt, max, onPick) {
@@ -286,7 +288,7 @@
       box.appendChild(healthHero(sum, tot, { clients: sum.clients, open: open, reqs: reqs.length, overdue: overdue, acts: acts.length }));
       var sup = sum.bySupervisor.filter(function (x) { return x.path === 'Teacher'; }).sort(function (a, b) { return b.validPct - a.validPct; }).map(function (x) { return { n: x.supervisor, v: Number(x.validPct) }; });
       box.appendChild(h('div', { class: 'grid g2' }, h('div', { class: 'card' }, h('h3', {}, 'Teacher path: valid % by supervisor'), rankList(sup.slice(0, 10), pct, 1, pickSup)),
-        h('div', { class: 'card' }, h('h3', {}, 'Quick links'), h('div', { class: 'links' }, hub.links.length ? hub.links.map(function (l) { var internal = String(l.url).charAt(0) === '#'; return h('a', { href: l.url, target: internal ? null : '_blank', rel: 'noopener' }, h('b', {}, l.title), h('div', { class: 'sub', style: 'margin:2px 0 0' }, l.group)); }) : h('div', { class: 'empty' }, 'No links configured')))));
+        h('div', { class: 'card' }, h('h3', {}, 'Quick links'), h('div', { class: 'links' }, hub.links.filter(linkOk).length ? hub.links.filter(linkOk).map(function (l) { var internal = String(l.url).charAt(0) === '#'; return h('a', { href: l.url, target: internal ? null : '_blank', rel: 'noopener' }, h('b', {}, l.title), h('div', { class: 'sub', style: 'margin:2px 0 0' }, l.group)); }) : h('div', { class: 'empty' }, 'No links configured')))));
       shellRefreshBadges();
     }).catch(fail(box, ph));
   };
@@ -302,7 +304,7 @@
     var overall = tot.p ? tot.v / tot.p : 0;
     function setMid(r) { if (r) { countUp(big, pct(r.people ? r.valid / r.people : 0)); lbl.textContent = r.p + ' valid'; } else { countUp(big, tot.p ? pct(overall) : '-'); lbl.textContent = 'valid across all paths'; } }
     function focus(p) { donut.classList.toggle('hov', !!p); segs.forEach(function (e) { e.classList.toggle('on', e.dataset.p === p); }); Object.keys(rowEls).forEach(function (k) { rowEls[k].classList.toggle('on', k === p); }); setMid(rows.filter(function (r) { return r.p === p; })[0]); }
-    var go = function (p) { S.pathTab = p; location.hash = '#/platforms'; };
+    var go = function (p) { S.pathTab = p; location.hash = '#/academies/performance'; };
     var plan = [];
     rows.forEach(function (r) {
       var len = Math.max(0, r.people / total * 100 - GAP), v = len * (r.people ? r.valid / r.people : 0), x = len - v, col = PCOL[r.p];
@@ -323,8 +325,8 @@
     var health = h('div', { class: 'card panel' }, h('div', { class: 'hd' }, h('div', {}, h('h3', {}, 'Certificate health'), h('div', { class: 'sub', style: 'margin:2px 0 0' }, 'Newest certificate per person, valid for 3 years. Arc length is the number of people on each path.'))),
       rows.length ? h('div', { class: 'hbody' }, donut, h('div', {}, legend, h('div', { class: 'keyline' }, h('span', {}, h('i'), 'Valid (solid arc)'), h('span', {}, h('i', { class: 'x' }), 'Expired (faded arc)')))) : h('div', { class: 'empty' }, 'No certificate data yet. An admin needs to run the pipeline.'));
     var today = h('div', { class: 'card today' }, h('h3', {}, 'Needs attention'),
-      trow(c.overdue, 'Overdue actions', c.acts + (c.acts === 1 ? ' action in total' : ' actions in total'), '#/actions', c.overdue ? 'alert' : 'zero'), trow(c.open, 'Open training requests', c.reqs + (c.reqs === 1 ? ' request in total' : ' requests in total'), '#/requests', c.open ? '' : 'zero'), trow(c.clients, 'Clients in scope', 'Projects from the CRM', '#/clients', ''));
-    return h('div', { class: 'hero' }, health, today);
+      vis('actions') && trow(c.overdue, 'Overdue actions', c.acts + (c.acts === 1 ? ' action in total' : ' actions in total'), '#/actions', c.overdue ? 'alert' : 'zero'), vis('requests') && trow(c.open, 'Open training requests', c.reqs + (c.reqs === 1 ? ' request in total' : ' requests in total'), '#/requests', c.open ? '' : 'zero'), vis('clients') && trow(c.clients, 'Clients in scope', 'Projects from the CRM', '#/clients', ''));
+    return h('div', { class: 'hero' }, health, (vis('actions') || vis('requests') || vis('clients')) ? today : null);
   }
   function shellRefreshBadges() { /* badges refresh on next render */ }
   function fail(box, ph) { return function (e) { if (ph) ph.remove(); box.appendChild(h('div', { class: 'card' }, h('b', {}, 'Could not load data'), h('p', { class: 'sub' }, e.message))); }; }
@@ -351,6 +353,7 @@
   }
 
   PAGES.academies = function (box) {
+    if (S.sub === 'performance') return PAGES.platforms(box);
     if (S.sub === 'elearning' || S.sub === 'enrichment') {
       var nm = S.sub === 'elearning' ? 'eLearning' : 'Enrichment';
       box.appendChild(head(t('academies') + ' · ' + nm, 'Coming soon', []));
@@ -613,7 +616,7 @@
   };
 
   // ---------- router / render
-  function route() { var p = ((location.hash || '#/dashboard').replace('#/', '') || 'dashboard').split('/'), r = p[0]; if (r === 'certificates') r = 'academies'; S.route = PAGES[r] ? r : 'dashboard'; if (isHidden(S.route) && !showDev(S.route) && S.route !== 'dashboard') S.route = 'dashboard'; S.sub = S.route === 'academies' ? (['elearning', 'enrichment'].indexOf(p[1]) >= 0 ? p[1] : 'accreditation') : ''; }
+  function route() { var p = ((location.hash || '#/dashboard').replace('#/', '') || 'dashboard').split('/'), r = p[0]; if (r === 'certificates') r = 'academies'; if (r === 'platforms') { r = 'academies'; p[1] = 'performance'; } S.route = PAGES[r] ? r : 'dashboard'; if (isHidden(S.route) && !showDev(S.route) && S.route !== 'dashboard') S.route = 'dashboard'; S.sub = S.route === 'academies' ? (['elearning', 'enrichment', 'performance'].indexOf(p[1]) >= 0 ? p[1] : 'accreditation') : ''; }
   function render(quiet) {
     applyPrefs(); var root = document.getElementById('app'); root.replaceChildren(); route();
     if (!S.token) { root.appendChild(loginView()); return; }
