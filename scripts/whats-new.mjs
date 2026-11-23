@@ -5,9 +5,10 @@
    It keeps assets/whats-new.json up to date. For every event in the Google Sheet and every
    page folder of the site it remembers a "fingerprint" of the content. When a fingerprint
    changes, or a new event or page appears, it stamps today's date. The site (classera-new-v1.js)
-   shows a NEW label on anything stamped within the last 14 days.
+   shows a NEW label on items ADDED within the last 7 days (edits do not count).
 
-   First run: everything is recorded as the starting point and nothing is labeled.
+   First run, or a sudden bulk change (more than BULK_LIMIT new events in one run, for example
+   after the sheet is re-keyed): everything is recorded as the starting point and nothing is labeled.
    You never edit this file.
    ============================================================ */
 import { readFileSync, writeFileSync, existsSync, readdirSync, statSync } from 'node:fs';
@@ -19,6 +20,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const REG = join(ROOT, 'assets', 'whats-new.json');
 const SHEET_ID = '1bFWi7YwE08F9AQbx1WfcEztUSB-UMi8YQx87ahRCMPY';   // keep in step with assets/classera-source-v1.js
 const EVENTS_GID = '1171779694';
+const BULK_LIMIT = 10;
 const NOW = process.env.WN_NOW || new Date().toISOString();
 const norm = s => String(s == null ? '' : s).toLowerCase().replace(/[^a-z0-9]/g, '');
 const clean = s => String(s == null ? '' : s).replace(/\s+/g, ' ').trim();
@@ -82,31 +84,16 @@ async function readEvents() {
   return out;
 }
 
-/* ---------- page folders ---------- */
-function walk(dir, base = '') {
-  return readdirSync(dir).sort().flatMap(n => {
-    const p = join(dir, n), rel = base ? base + '/' + n : n;
-    return statSync(p).isDirectory() ? walk(p, rel) : [rel];
-  });
-}
-function readPages() {
-  const out = {};
-  readdirSync(ROOT).filter(d => !d.startsWith('.') && d !== 'assets' && d !== 'scripts' && d !== 'node_modules'
-    && statSync(join(ROOT, d)).isDirectory() && existsSync(join(ROOT, d, 'index.html'))).sort().forEach(d => {
-    const h = createHash('sha1');
-    walk(join(ROOT, d)).filter(f => !/\.md$/i.test(f)).forEach(f => { h.update(f + '\0'); h.update(readFileSync(join(ROOT, d, f))); });
-    out[d] = { h: h.digest('hex').slice(0, 12) };
-  });
-  return out;
-}
-
 /* ---------- compare with the saved registry ---------- */
 function stamp(prev, now, extra) {
   /* prev: saved section or undefined (first run => baseline, nothing labeled) */
   const out = {};
+  const fresh = Object.keys(now).filter(k => !(prev && prev[k])).length;
+  const bulk = prev && fresh > BULK_LIMIT;
+  if (bulk) console.warn(`${fresh} new events in one run: treated as a re-key, not labeled`);
   Object.keys(now).forEach(k => {
     const n = now[k], o = prev && prev[k];
-    if (!prev) out[k] = { ...n, a: null, c: null };
+    if (!prev || bulk) out[k] = { ...n, a: (o && o.a) || null, c: (o && o.c) || null };
     else if (!o) out[k] = { ...n, a: NOW, c: NOW };
     else if (o.h !== n.h) out[k] = { ...n, a: o.a || null, c: NOW };
     else out[k] = { ...n, a: o.a || null, c: o.c || null };
@@ -114,15 +101,16 @@ function stamp(prev, now, extra) {
   return out;
 }
 
-const reg = existsSync(REG) ? JSON.parse(readFileSync(REG, 'utf8')) : { version: 1, windowDays: 14 };
+const reg = existsSync(REG) ? JSON.parse(readFileSync(REG, 'utf8')) : { version: 1, windowDays: 7 };
 const before = JSON.stringify(reg);
 let events = null;
 try { events = await readEvents(); } catch (e) { console.warn('Events skipped, keeping the saved ones:', e.message); }
 if (events) reg.events = stamp(reg.events, events);
-reg.pages = stamp(reg.pages, readPages());
+reg.windowDays = 7;
+delete reg.pages;
 /* only touch the timestamp when something really changed, so quiet runs make no commit */
 const after = JSON.stringify({ ...reg, updated: undefined });
 if (after !== JSON.stringify({ ...JSON.parse(before), updated: undefined })) reg.updated = NOW;
 writeFileSync(REG, JSON.stringify(reg, null, 1) + '\n');
 const n = o => Object.keys(o || {}).length;
-console.log(`events: ${n(reg.events)}, pages: ${n(reg.pages)}, updated: ${reg.updated || 'unchanged'}`);
+console.log(`events: ${n(reg.events)}, updated: ${reg.updated || 'unchanged'}`);

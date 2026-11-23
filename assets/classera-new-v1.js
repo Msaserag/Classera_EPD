@@ -1,7 +1,9 @@
 /* ============================================================
    CLASSERA NEW LABELS v1
-   Shows a small NEW (جديد) label on anything that was added or changed in the last 14 days:
-   events on the plan pages, plan cards and plan tabs on the hub.
+   Shows a small NEW (جديد) label on items that were ADDED in the last 7 days (edits and page
+   changes do not count). Each item is labeled once: the event itself, and the hub card of the
+   plan that contains it. The plan tabs never carry the label. The label sits inline after the
+   title, is hidden in print, and removes itself when the 7 days are over.
    It reads assets/whats-new.json, which GitHub Actions keeps up to date automatically
    (after every push, and every 3 hours for edits made only in the Google Sheet).
    You never edit this file or the json.
@@ -10,7 +12,7 @@
 (function () {
   'use strict';
   var SHOW = true;
-  var DAYS = 0;                       /* 0 = use windowDays from whats-new.json (14) */
+  var DAYS = 7;                       /* how many days a label stays after the item is added */
   var SELF = document.currentScript;
   var ROOT = new URL('../', SELF.src).href;
   if (!SHOW) return;
@@ -33,25 +35,19 @@
   /* ---- is this registry entry "new" right now? returns {kind, when} or null ---- */
   function fresh(e) {
     if (!e) return null;
-    var win = (DAYS || reg.windowDays || 14) * DAY, now = Date.now(), a = e.a && Date.parse(e.a), c = e.c && Date.parse(e.c);
+    var win = DAYS * DAY, now = Date.now(), a = e.a && Date.parse(e.a);
     if (e.s && /^(cancel|deliver)/i.test(e.s)) return null;          /* cancelled or already delivered */
     if (e.e && e.e < today()) return null;                           /* event is over */
-    if (a && now - a < win) return { kind: 'added', when: e.a };
-    if (c && now - c < win) return { kind: 'updated', when: e.c };
-    return null;
+    if (a && now - a >= 0 && now - a < win) return { kind: 'added', when: e.a };
+    return null;                                                     /* edits and baseline items never count */
   }
-  function freshPage(e) {
-    if (!e || !e.c) return null;
-    return Date.now() - Date.parse(e.c) < (DAYS || reg.windowDays || 14) * DAY ? { kind: 'updated', when: e.c } : null;
-  }
-  /* newest label among a plan's events and its page */
+  /* newest label among a plan's events (page edits do not count) */
   function planState(id) {
     var P = PLANS[id], best = null;
-    function take(s) { if (s && (!best || Date.parse(s.when) > Date.parse(best.when))) best = s; }
-    if (!P) return null;
-    take(freshPage(reg.pages && reg.pages[P.folder]));
-    if (P.program) Object.keys(reg.events || {}).forEach(function (k) {
-      var e = reg.events[k]; if (e.p && e.p.toLowerCase() === P.program) take(fresh(e));
+    if (!P || !P.program) return null;
+    Object.keys(reg.events || {}).forEach(function (k) {
+      var e = reg.events[k], s = e.p && e.p.toLowerCase() === P.program ? fresh(e) : null;
+      if (s && (!best || Date.parse(s.when) > Date.parse(best.when))) best = s;
     });
     return best;
   }
@@ -61,7 +57,7 @@
     var b = document.createElement('span');
     b.className = 'cnew' + (cls ? ' ' + cls : '');
     b.setAttribute('data-cnew', '1');
-    b.title = (s.kind === 'added' ? 'Added ' : 'Updated ') + fmt(s.when) + ' | ' + (s.kind === 'added' ? 'أضيفت ' : 'تم التحديث ') + fmt(s.when);
+    b.title = 'Added ' + fmt(s.when) + ' | أضيف ' + fmt(s.when);
     b.innerHTML = '<i aria-hidden="true"></i><span class="en">NEW</span><span class="ar">جديد</span>';
     return b;
   }
@@ -76,8 +72,7 @@
       '@keyframes cnewp{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.45;transform:scale(.7)}}' +
       'html[data-lang="en"] .cnew .ar,html:not([data-lang="en"]) .cnew .en{display:none}' +
       'html:not([data-lang="en"]) .cnew{letter-spacing:0;text-transform:none;font-size:12px}' +
-      '.cnew.cnew-corner{position:absolute;top:12px;inset-inline-end:14px;margin:0;z-index:3}' +
-      '.cnew.cnew-tab{margin-inline:6px 0;padding:1px 7px 1px 5px;font-size:10px}' +
+      '.cnew.cnew-title{margin-inline:10px 0;font-size:10px;padding:1px 8px 1px 6px;position:relative;top:-2px}' +
       '@media (prefers-reduced-motion:reduce){.cnew i{animation:none}}' +
       '@media print{.cnew{display:none!important}}';
     document.head.appendChild(s);
@@ -117,17 +112,13 @@
       if (!s) { if (old) old.remove(); return; }
       if (!old && host) host.appendChild(makeBadge(s));
     });
-    /* hub: plan cards and plan tabs */
+    /* hub: one label on the plan card, inline after its title (never on the tabs) */
     document.querySelectorAll('.prog[data-plan]').forEach(function (card) {
-      var s = planState(card.getAttribute('data-plan')), old = card.querySelector(':scope > [data-cnew]');
+      var s = planState(card.getAttribute('data-plan')), h = card.querySelector('h2'), old = card.querySelector('[data-cnew]');
       if (!s) { if (old) old.remove(); return; }
-      if (!old) { if (getComputedStyle(card).position === 'static') card.style.position = 'relative'; card.appendChild(makeBadge(s, 'cnew-corner')); }
+      if (!old && h) h.appendChild(makeBadge(s, 'cnew-title'));
     });
-    document.querySelectorAll('[data-go]').forEach(function (tab) {
-      var s = planState(tab.getAttribute('data-go')), old = tab.querySelector('[data-cnew]');
-      if (!s) { if (old) old.remove(); return; }
-      if (!old) tab.appendChild(makeBadge(s, 'cnew-tab'));
-    });
+    document.querySelectorAll('[data-go] [data-cnew]').forEach(function (b) { b.remove(); });
   }
 
   function start() {
