@@ -99,6 +99,39 @@
 
   // ---------- auth
   function storeToken(tok, remember) { S.token = tok; if (remember) { ls('pshub.token', tok); ss('pshub.token', null); } else { ss('pshub.token', tok); ls('pshub.token', null); } }
+  /** v1.4: multi-select dropdown with checkboxes for short lists (path, status, role, country, supervisor). */
+  function mi(sel, val) { if (sel === undefined || sel === null || sel === '') return true; return Array.isArray(sel) ? (!sel.length || sel.indexOf(val) >= 0) : sel === val; }
+  function fActive(v) { return Array.isArray(v) ? v.length > 0 : !!v; }
+  function cleanFilters(f) { var o = {}; Object.keys(f).forEach(function (k) { var v = f[k]; if (Array.isArray(v)) { if (v.length === 1) o[k] = v[0]; else if (v.length > 1) o[k] = v.slice(); } else if (v) o[k] = v; }); return o; }
+  function multiSel(st, key, label, opts, all, change) {
+    var cur = st.f[key]; var chosen = Array.isArray(cur) ? cur.slice() : (cur ? [cur] : []);
+    st.f[key] = chosen;
+    var btn = h('button', { type: 'button', class: 'msbtn', 'aria-haspopup': 'listbox', 'aria-expanded': 'false' });
+    var panel = h('div', { class: 'mspanel', role: 'listbox', hidden: true });
+    function text() { return chosen.length === 0 ? all : chosen.length === 1 ? chosen[0] : chosen.length + ' selected'; }
+    function paint() { btn.replaceChildren(h('span', { class: 'mstext' + (chosen.length ? ' on' : '') }, text()), h('i', { class: 'mscar' }, '▾')); }
+    var list = h('div', { class: 'mslist' });
+    var boxes = [];
+    (opts || []).forEach(function (o) {
+      var cb = h('input', { type: 'checkbox', checked: chosen.indexOf(o) >= 0, onchange: function () {
+        var i = chosen.indexOf(o); if (cb.checked && i < 0) chosen.push(o); if (!cb.checked && i >= 0) chosen.splice(i, 1);
+        st.f[key] = chosen; paint(); change(250); } });
+      var row = h('label', { class: 'msrow', 'data-v': String(o).toLowerCase() }, cb, h('span', {}, o)); boxes.push({ row: row, cb: cb, o: o }); list.appendChild(row);
+    });
+    var q = (opts || []).length > 8 ? h('input', { type: 'text', class: 'mssearch', placeholder: 'Search...', oninput: function () { var v = q.value.toLowerCase(); boxes.forEach(function (b) { b.row.style.display = b.row.getAttribute('data-v').indexOf(v) >= 0 ? '' : 'none'; }); } }) : null;
+    var foot = h('div', { class: 'msfoot' },
+      h('button', { type: 'button', class: 'mslink', onclick: function () { chosen.length = 0; boxes.forEach(function (b) { b.cb.checked = false; }); st.f[key] = chosen; paint(); change(0); } }, 'Clear'),
+      h('button', { type: 'button', class: 'mslink', onclick: function () { close(); } }, 'Done'));
+    panel.appendChild(h('div', { class: 'msbody' }, q, list, foot));
+    function close() { panel.hidden = true; btn.setAttribute('aria-expanded', 'false'); document.removeEventListener('mousedown', outside, true); document.removeEventListener('keydown', esc, true); }
+    function outside(e) { if (!wrap.contains(e.target)) close(); }
+    function esc(e) { if (e.key === 'Escape') { close(); btn.focus(); } }
+    function open() { document.querySelectorAll('.mspanel:not([hidden])').forEach(function (p) { p.hidden = true; }); panel.hidden = false; btn.setAttribute('aria-expanded', 'true'); document.addEventListener('mousedown', outside, true); document.addEventListener('keydown', esc, true); if (q) q.focus(); }
+    btn.onclick = function () { panel.hidden ? open() : close(); };
+    paint();
+    var wrap = h('div', { class: 'ff msel' }, h('span', {}, label), btn, panel);
+    return wrap;
+  }
   function logoImg(mode) {
     var base = (window.PSHUB && window.PSHUB.LOGO_BASE) || '/assets/';
     function im(file, cls) { return h('img', { class: 'lg ' + cls, src: base + file, alt: 'Classera' }); }
@@ -373,7 +406,7 @@
     box.appendChild(head(t('academies') + ' · Accreditation', 'Newest certificate per person per path. Valid for 3 years. Counts and filters cover every certificate.', [h('button', { class: 'btn', onclick: function () { api('export', { dataset: 'certs', filter: cleanF(st.f) }).then(function (r) { csv(r, 'certificates'); }).catch(function (e) { toast(e.message, true); }); } }, t('export') + ' (filtered)')]));
     var st = S.certState = S.certState || { page: 1, f: {}, period: '' };
     if (S.search) { st.f.q = S.search; S.search = null; st.page = 1; }
-    function cleanF(f) { var o = {}; Object.keys(f).forEach(function (k) { if (f[k]) o[k] = f[k]; }); return o; }
+    function cleanF(f) { return cleanFilters(f); }
     var sumBox = h('div'), filt = h('div'), tbl = h('div'), pg = h('div'), ph = skeleton(), seq = 0, timer = null, stat = mkStatus(sumBox);
     function iso(d) { return d.toISOString().slice(0, 10); }
     function setPeriod(v) {
@@ -410,12 +443,12 @@
       var issT = h('input', { type: 'date', value: st.f.issuedTo || '', oninput: function () { st.f.issuedTo = issT.value; st.period = 'custom'; per.value = 'custom'; change(); } });
       filt.replaceChildren(h('div', { class: 'card fgrid' },
         txt('q', 'Search', 'Name, school, course...'),
-        sel('path', 'Path', fc.paths || PATHS, 'All paths'),
-        sel('status', 'Status', ['Valid', 'Expired'], 'All statuses'),
-        sel('role', 'Role', fc.roles || [], 'All roles'),
+        multiSel(st, 'path', 'Path', fc.paths || PATHS, 'All paths', change),
+        multiSel(st, 'status', 'Status', ['Valid', 'Expired'], 'All statuses', change),
+        multiSel(st, 'role', 'Role', fc.roles || [], 'All roles', change),
         txt('school', 'School', 'School name contains...'),
-        sel('country', 'Country', fc.countries || [], 'All countries'),
-        sel('supervisor', 'Supervisor', fc.supervisors || [], 'All supervisors'),
+        multiSel(st, 'country', 'Country', fc.countries || [], 'All countries', change),
+        multiSel(st, 'supervisor', 'Supervisor', fc.supervisors || [], 'All supervisors', change),
         sel('course', 'Course', fc.courses || [], 'All courses'),
         h('label', { class: 'ff' }, h('span', {}, 'Issued period'), per),
         h('label', { class: 'ff' }, h('span', {}, 'Issued from'), issF),
@@ -424,7 +457,7 @@
         h('div', { class: 'ff', style: 'align-self:end' }, h('button', { class: 'btn', onclick: function () { st.f = {}; st.period = ''; st.page = 1; buildFilters(); fetchRows(false); } }, 'Reset filters'))));
     }
     function drawSummary(sm) {
-      var bp = sm.byPath || {}, n = Object.keys(st.f).filter(function (k) { return st.f[k]; }).length;
+      var bp = sm.byPath || {}, n = Object.keys(st.f).filter(function (k) { return fActive(st.f[k]); }).length;
       var tiles = [kpi('Matching certificates', num(sm.total), n ? n + ' filter' + (n > 1 ? 's' : '') + ' active' : 'no filters'), kpi('Valid', num(sm.valid), sm.total ? pct(sm.valid / sm.total) : '-'), kpi('Expired', num(sm.expired), sm.total ? pct(sm.expired / sm.total) : '-')];
       var chips = PATHS.filter(function (p) { return bp[p]; }).map(function (p) { var b = bp[p]; return h('button', { class: 'chipb' + (st.f.path === p ? ' on' : ''), title: 'Filter to ' + p + ' path', onclick: function () { st.f.path = st.f.path === p ? '' : p; buildFilters(); change(); } }, h('b', {}, p), h('span', {}, num(b.valid) + ' valid'), h('small', {}, 'of ' + num(b.total) + ' · ' + num(b.expired) + ' expired')); });
       var lv = sm.schoolLevels || {}, lvNames = ['Silver', 'Gold', 'Diamond', 'Unclassified'].filter(function (k) { return lv[k]; });
@@ -450,7 +483,7 @@
     box.appendChild(head(t('academies') + ' · Accreditation', 'Every enrollment on the Accreditation platform, whether or not the person is certified. Use the status filter to see who is certified.', [h('button', { class: 'btn', onclick: function () { api('export', { dataset: 'enrollments', filter: cleanF(st.f) }).then(function (r) { csv(r, 'accreditation-enrollments'); }).catch(function (e) { toast(e.message, true); }); } }, t('export') + ' (filtered)')]));
     var st = S.enrState = S.enrState || { page: 1, f: {}, period: '' };
     if (S.search) { st.f.q = S.search; S.search = null; st.page = 1; }
-    function cleanF(f) { var o = {}; Object.keys(f).forEach(function (k) { if (f[k]) o[k] = f[k]; }); return o; }
+    function cleanF(f) { return cleanFilters(f); }
     var sumBox = h('div'), filt = h('div'), tbl = h('div'), pg = h('div'), ph = skeleton(), seq = 0, timer = null, stat = mkStatus(sumBox);
     function iso(d) { return d.toISOString().slice(0, 10); }
     function setPeriod(v) {
@@ -488,12 +521,12 @@
       var fT = h('input', { type: 'date', value: st.f.enrolledTo || '', oninput: function () { st.f.enrolledTo = fT.value; st.period = 'custom'; per.value = 'custom'; change(); } });
       filt.replaceChildren(h('div', { class: 'card fgrid' },
         txt('q', 'Search', 'Name, school, course...'),
-        sel('path', 'Path', fc.paths || PATHS, 'All paths'),
-        sel('state', 'Status', ENR_STATES, 'All statuses'),
-        sel('role', 'Role', fc.roles || [], 'All roles'),
+        multiSel(st, 'path', 'Path', fc.paths || PATHS, 'All paths', change),
+        multiSel(st, 'state', 'Status', ENR_STATES, 'All statuses', change),
+        multiSel(st, 'role', 'Role', fc.roles || [], 'All roles', change),
         txt('school', 'School', 'School name contains...'),
-        sel('country', 'Country', fc.countries || [], 'All countries'),
-        sel('supervisor', 'Supervisor', fc.supervisors || [], 'All supervisors'),
+        multiSel(st, 'country', 'Country', fc.countries || [], 'All countries', change),
+        multiSel(st, 'supervisor', 'Supervisor', fc.supervisors || [], 'All supervisors', change),
         sel('course', 'Course', fc.courses || [], 'All courses'),
         h('label', { class: 'ff' }, h('span', {}, 'Enrollment period'), per),
         h('label', { class: 'ff' }, h('span', {}, 'Enrolled from'), fF),
@@ -501,7 +534,7 @@
         h('div', { class: 'ff', style: 'align-self:end' }, h('button', { class: 'btn', onclick: function () { st.f = {}; st.period = ''; st.page = 1; buildFilters(); fetchRows(false); } }, 'Reset filters'))));
     }
     function drawSummary(sm) {
-      var bs = sm.byState || {}, bp = sm.byPath || {}, n = Object.keys(st.f).filter(function (k) { return st.f[k]; }).length;
+      var bs = sm.byState || {}, bp = sm.byPath || {}, n = Object.keys(st.f).filter(function (k) { return fActive(st.f[k]); }).length;
       var cert = bs.Certified || 0, tiles = [kpi('Enrollments', num(sm.total), n ? n + ' filter' + (n > 1 ? 's' : '') + ' active' : 'no filters'), kpi('Certified', num(cert), sm.total ? pct(cert / sm.total) : '-'), kpi('Passed, no certificate', num(bs['Passed, no certificate'] || 0), 'passed the course'), kpi('In progress', num(bs['In progress'] || 0), 'started, not passed'), kpi('Not started', num(bs.Enrolled || 0), 'enrolled, no activity')];
       var chips = PATHS.filter(function (p) { return bp[p]; }).map(function (p) { var b = bp[p]; return h('button', { class: 'chipb' + (st.f.path === p ? ' on' : ''), title: 'Filter to ' + p + ' path', onclick: function () { st.f.path = st.f.path === p ? '' : p; buildFilters(); change(); } }, h('b', {}, p), h('span', {}, num(b.total) + ' enrollments'), h('small', {}, num(b.certified) + ' certified')); });
       var chipsRow = ENR_STATES.filter(function (x) { return bs[x]; }).map(function (x) { return h('button', { class: 'chipb' + (st.f.state === x ? ' on' : ''), onclick: function () { st.f.state = st.f.state === x ? '' : x; buildFilters(); change(); } }, h('b', {}, x), h('span', {}, num(bs[x]))); });
@@ -661,7 +694,7 @@
           S.mockCerts = rows; }
         var f = p.filter || {}, q = (f.q || '').toLowerCase(), sc = (f.school || '').toLowerCase(), base = S.mockCerts;
         if (S.viewAs && S.viewAs.role === 'PS Supervisor' && S.viewAs.name) base = base.filter(function (r) { return r.supervisor === S.viewAs.name; });
-        var rows = base.filter(function (r) { return (!f.path || r.path === f.path) && (!f.status || r.status === f.status) && (!f.role || r.role === f.role) && (!f.country || r.country === f.country) && (!f.course || r.course === f.course) && (!f.supervisor || r.supervisor === f.supervisor) && (!sc || r.school.toLowerCase().indexOf(sc) >= 0) && (!f.issuedFrom || r.issueDate >= f.issuedFrom) && (!f.issuedTo || r.issueDate <= f.issuedTo) && (!f.expFrom || r.expiresOn >= f.expFrom) && (!f.expTo || r.expiresOn <= f.expTo) && (!q || [r.name, r.school, r.course, r.role, r.country].join(' ').toLowerCase().indexOf(q) >= 0); });
+        var rows = base.filter(function (r) { return mi(f.path, r.path) && mi(f.status, r.status) && mi(f.role, r.role) && mi(f.country, r.country) && (!f.course || r.course === f.course) && mi(f.supervisor, r.supervisor) && (!sc || r.school.toLowerCase().indexOf(sc) >= 0) && (!f.issuedFrom || r.issueDate >= f.issuedFrom) && (!f.issuedTo || r.issueDate <= f.issuedTo) && (!f.expFrom || r.expiresOn >= f.expFrom) && (!f.expTo || r.expiresOn <= f.expTo) && (!q || [r.name, r.school, r.course, r.role, r.country].join(' ').toLowerCase().indexOf(q) >= 0); });
         var by = {}, lv = {}, sch = {}, valid = 0; rows.forEach(function (r) { var b = by[r.path] = by[r.path] || { total: 0, valid: 0, expired: 0 }; b.total++; if (r.status === 'Valid') { b.valid++; valid++; } else b.expired++; if (r.path === 'School') { var k = r.course.split(' ')[0], l = lv[k] = lv[k] || { total: 0, valid: 0 }; l.total++; if (r.status === 'Valid') { l.valid++; sch[r.schoolId] = 1; } } });
         var per = p.per || 50, page = p.page || 1, uq = function (k) { return Object.keys(base.reduce(function (a, r) { a[r[k]] = 1; return a; }, {})).sort(); };
         var out = { rows: rows.slice((page - 1) * per, page * per), total: rows.length, page: page, per: per, summary: { total: rows.length, valid: valid, expired: rows.length - valid, byPath: by, schoolLevels: lv, validSchools: Object.keys(sch).length } };
@@ -672,7 +705,7 @@
           S.mockEnr = rows; }
         var f = p.filter || {}, q = (f.q || '').toLowerCase(), sc = (f.school || '').toLowerCase(), base = S.mockEnr;
         if (S.viewAs && S.viewAs.role === 'PS Supervisor' && S.viewAs.name) base = base.filter(function (r) { return r.supervisor === S.viewAs.name; });
-        var rows2 = base.filter(function (r) { return (!f.path || r.path === f.path) && (!f.state || r.state === f.state) && (!f.role || r.role === f.role) && (!f.country || r.country === f.country) && (!f.course || r.course === f.course) && (!f.supervisor || r.supervisor === f.supervisor) && (!sc || r.school.toLowerCase().indexOf(sc) >= 0) && (!f.enrolledFrom || r.enrollDate >= f.enrolledFrom) && (!f.enrolledTo || r.enrollDate <= f.enrolledTo) && (!q || [r.name, r.school, r.course, r.role, r.country].join(' ').toLowerCase().indexOf(q) >= 0); });
+        var rows2 = base.filter(function (r) { return mi(f.path, r.path) && mi(f.state, r.state) && mi(f.role, r.role) && mi(f.country, r.country) && (!f.course || r.course === f.course) && mi(f.supervisor, r.supervisor) && (!sc || r.school.toLowerCase().indexOf(sc) >= 0) && (!f.enrolledFrom || r.enrollDate >= f.enrolledFrom) && (!f.enrolledTo || r.enrollDate <= f.enrolledTo) && (!q || [r.name, r.school, r.course, r.role, r.country].join(' ').toLowerCase().indexOf(q) >= 0); });
         var bs = {}, bp = {}; rows2.forEach(function (r) { bs[r.state] = (bs[r.state] || 0) + 1; var b = bp[r.path] = bp[r.path] || { total: 0, certified: 0 }; b.total++; if (r.certified === 'Yes') b.certified++; });
         var per = p.per || 50, page = p.page || 1, uq = function (k) { return Object.keys(base.reduce(function (a, r) { a[r[k]] = 1; return a; }, {})).sort(); };
         var out = { rows: rows2.slice((page - 1) * per, page * per), total: rows2.length, page: page, per: per, summary: { total: rows2.length, byState: bs, byPath: bp }, scope: { available: base.length } };
