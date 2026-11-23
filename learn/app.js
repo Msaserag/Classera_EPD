@@ -449,7 +449,7 @@
         txt('school', 'School', 'School name contains...'),
         multiSel(st, 'country', 'Country', fc.countries || [], 'All countries', change),
         multiSel(st, 'supervisor', 'Supervisor', fc.supervisors || [], 'All supervisors', change),
-        sel('course', 'Course', fc.courses || [], 'All courses'),
+        multiSel(st, 'course', 'Course', fc.courses || [], 'All courses', change),
         h('label', { class: 'ff' }, h('span', {}, 'Issued period'), per),
         h('label', { class: 'ff' }, h('span', {}, 'Issued from'), issF),
         h('label', { class: 'ff' }, h('span', {}, 'Issued to'), issT),
@@ -527,7 +527,7 @@
         txt('school', 'School', 'School name contains...'),
         multiSel(st, 'country', 'Country', fc.countries || [], 'All countries', change),
         multiSel(st, 'supervisor', 'Supervisor', fc.supervisors || [], 'All supervisors', change),
-        sel('course', 'Course', fc.courses || [], 'All courses'),
+        multiSel(st, 'course', 'Course', fc.courses || [], 'All courses', change),
         h('label', { class: 'ff' }, h('span', {}, 'Enrollment period'), per),
         h('label', { class: 'ff' }, h('span', {}, 'Enrolled from'), fF),
         h('label', { class: 'ff' }, h('span', {}, 'Enrolled to'), fT),
@@ -694,7 +694,7 @@
           S.mockCerts = rows; }
         var f = p.filter || {}, q = (f.q || '').toLowerCase(), sc = (f.school || '').toLowerCase(), base = S.mockCerts;
         if (S.viewAs && S.viewAs.role === 'PS Supervisor' && S.viewAs.name) base = base.filter(function (r) { return r.supervisor === S.viewAs.name; });
-        var rows = base.filter(function (r) { return mi(f.path, r.path) && mi(f.status, r.status) && mi(f.role, r.role) && mi(f.country, r.country) && (!f.course || r.course === f.course) && mi(f.supervisor, r.supervisor) && (!sc || r.school.toLowerCase().indexOf(sc) >= 0) && (!f.issuedFrom || r.issueDate >= f.issuedFrom) && (!f.issuedTo || r.issueDate <= f.issuedTo) && (!f.expFrom || r.expiresOn >= f.expFrom) && (!f.expTo || r.expiresOn <= f.expTo) && (!q || [r.name, r.school, r.course, r.role, r.country].join(' ').toLowerCase().indexOf(q) >= 0); });
+        var rows = base.filter(function (r) { return mi(f.path, r.path) && mi(f.status, r.status) && mi(f.role, r.role) && mi(f.country, r.country) && mi(f.course, r.course) && mi(f.supervisor, r.supervisor) && (!sc || r.school.toLowerCase().indexOf(sc) >= 0) && (!f.issuedFrom || r.issueDate >= f.issuedFrom) && (!f.issuedTo || r.issueDate <= f.issuedTo) && (!f.expFrom || r.expiresOn >= f.expFrom) && (!f.expTo || r.expiresOn <= f.expTo) && (!q || [r.name, r.school, r.course, r.role, r.country].join(' ').toLowerCase().indexOf(q) >= 0); });
         var by = {}, lv = {}, sch = {}, valid = 0; rows.forEach(function (r) { var b = by[r.path] = by[r.path] || { total: 0, valid: 0, expired: 0 }; b.total++; if (r.status === 'Valid') { b.valid++; valid++; } else b.expired++; if (r.path === 'School') { var k = r.course.split(' ')[0], l = lv[k] = lv[k] || { total: 0, valid: 0 }; l.total++; if (r.status === 'Valid') { l.valid++; sch[r.schoolId] = 1; } } });
         var per = p.per || 50, page = p.page || 1, uq = function (k) { return Object.keys(base.reduce(function (a, r) { a[r[k]] = 1; return a; }, {})).sort(); };
         var out = { rows: rows.slice((page - 1) * per, page * per), total: rows.length, page: page, per: per, summary: { total: rows.length, valid: valid, expired: rows.length - valid, byPath: by, schoolLevels: lv, validSchools: Object.keys(sch).length } };
@@ -705,7 +705,7 @@
           S.mockEnr = rows; }
         var f = p.filter || {}, q = (f.q || '').toLowerCase(), sc = (f.school || '').toLowerCase(), base = S.mockEnr;
         if (S.viewAs && S.viewAs.role === 'PS Supervisor' && S.viewAs.name) base = base.filter(function (r) { return r.supervisor === S.viewAs.name; });
-        var rows2 = base.filter(function (r) { return mi(f.path, r.path) && mi(f.state, r.state) && mi(f.role, r.role) && mi(f.country, r.country) && (!f.course || r.course === f.course) && mi(f.supervisor, r.supervisor) && (!sc || r.school.toLowerCase().indexOf(sc) >= 0) && (!f.enrolledFrom || r.enrollDate >= f.enrolledFrom) && (!f.enrolledTo || r.enrollDate <= f.enrolledTo) && (!q || [r.name, r.school, r.course, r.role, r.country].join(' ').toLowerCase().indexOf(q) >= 0); });
+        var rows2 = base.filter(function (r) { return mi(f.path, r.path) && mi(f.state, r.state) && mi(f.role, r.role) && mi(f.country, r.country) && mi(f.course, r.course) && mi(f.supervisor, r.supervisor) && (!sc || r.school.toLowerCase().indexOf(sc) >= 0) && (!f.enrolledFrom || r.enrollDate >= f.enrolledFrom) && (!f.enrolledTo || r.enrollDate <= f.enrolledTo) && (!q || [r.name, r.school, r.course, r.role, r.country].join(' ').toLowerCase().indexOf(q) >= 0); });
         var bs = {}, bp = {}; rows2.forEach(function (r) { bs[r.state] = (bs[r.state] || 0) + 1; var b = bp[r.path] = bp[r.path] || { total: 0, certified: 0 }; b.total++; if (r.certified === 'Yes') b.certified++; });
         var per = p.per || 50, page = p.page || 1, uq = function (k) { return Object.keys(base.reduce(function (a, r) { a[r[k]] = 1; return a; }, {})).sort(); };
         var out = { rows: rows2.slice((page - 1) * per, page * per), total: rows2.length, page: page, per: per, summary: { total: rows2.length, byState: bs, byPath: bp }, scope: { available: base.length } };
