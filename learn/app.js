@@ -132,13 +132,20 @@
     var wrap = h('div', { class: 'ff msel' }, h('span', {}, label), btn, panel);
     return wrap;
   }
+  /** v1.5: remembers the answer for the same filters and page for 5 minutes, so going back to a combination you already used is instant. */
+  function memoApi(action, payload) {
+    S.memo = S.memo || {}; var f = Object.assign({}, payload); delete f.facets;
+    var key = action + '|' + (S.viewAs ? S.viewAs.role + ':' + (S.viewAs.name || '') : '') + '|' + JSON.stringify(f), hit = S.memo[key];
+    if (hit && Date.now() - hit.t < 300000) return Promise.resolve(hit.d);
+    return api(action, payload).then(function (d) { var keys = Object.keys(S.memo); if (keys.length > 40) delete S.memo[keys[0]]; S.memo[key] = { t: Date.now(), d: d }; return d; });
+  }
   function logoImg(mode) {
     var base = (window.PSHUB && window.PSHUB.LOGO_BASE) || '/assets/';
     function im(file, cls) { return h('img', { class: 'lg ' + cls, src: base + file, alt: 'Classera' }); }
     if (mode === 'white') return h('span', { class: 'brandlogo' }, im('classera-logo-white-v1.png', 'lg-dark'));
     return h('span', { class: 'brandlogo' }, im('classera-logo-color-v1.png', 'lg-light'), im('classera-logo-white-v1.png', 'lg-dark'));
   }
-  function doLogout(silent) { if (S.token && !silent) api('logout').catch(function () { }); S.token = null; S.user = null; S.real = null; S.viewAs = null; S.cache = {}; ls('pshub.token', null); ss('pshub.token', null); render(); }
+  function doLogout(silent) { if (S.token && !silent) api('logout').catch(function () { }); S.token = null; S.user = null; S.real = null; S.viewAs = null; S.cache = {}; S.memo = {}; ls('pshub.token', null); ss('pshub.token', null); render(); }
 
   var recaptchaId = null;
   function loginView() {
@@ -262,7 +269,7 @@
   }
   function setView(v) {
     S.viewAs = v; S.user = v ? Object.assign({}, S.real, { role: v.role, name: v.name || S.real.name }) : S.real;
-    S.cache = {}; S.certState = null; S.enrState = null;
+    S.cache = {}; S.memo = {}; S.certState = null; S.enrState = null;
     if (S.route === 'users' && lvl() < 80) location.hash = '#/dashboard';
     toast(v ? 'Previewing as ' + v.role + (v.name ? ' · ' + v.name : '') : 'Back to your own view'); render(true);
   }
@@ -318,7 +325,7 @@
   // ---------- pages
   var PAGES = {};
   PAGES.dashboard = function (box) {
-    box.appendChild(head(t('dashboard'), 'Partner Success overview · ' + new Date().toDateString(), [h('button', { class: 'btn', onclick: function () { S.cache = {}; render(); } }, t('refresh'))]));
+    box.appendChild(head(t('dashboard'), 'Partner Success overview · ' + new Date().toDateString(), [h('button', { class: 'btn', onclick: function () { S.cache = {}; S.memo = {}; render(); } }, t('refresh'))]));
     var ph = skeleton(); box.appendChild(ph);
     Promise.all([load('hub', 'hub'), load('requests', 'requests'), load('actions', 'actions')]).then(function (r) {
       ph.remove(); var hub = r[0], sum = hub.summary, reqs = r[1], acts = r[2], today = new Date().toISOString().slice(0, 10);
@@ -418,7 +425,7 @@
     }
     function fetchRows(first) {
       var my = ++seq; tbl.style.opacity = '.55'; stat.on(first ? 'Loading data' : 'Applying filters');
-      api('certs', { filter: cleanF(st.f), page: st.page, per: 50, facets: !S.cache.certFacets }).then(function (d) {
+      memoApi('certs', { filter: cleanF(st.f), page: st.page, per: 50, facets: !S.cache.certFacets }).then(function (d) {
         if (my !== seq) return; tbl.style.opacity = ''; stat.off();
         if (d.facets) S.cache.certFacets = d.facets;
         if (ph.parentNode) ph.remove();
@@ -496,7 +503,7 @@
     }
     function fetchRows(first) {
       var my = ++seq; tbl.style.opacity = '.55'; stat.on(first ? 'Loading data' : 'Applying filters');
-      api('enrolls', { filter: cleanF(st.f), page: st.page, per: 50, facets: !S.cache.enrFacets }).then(function (d) {
+      memoApi('enrolls', { filter: cleanF(st.f), page: st.page, per: 50, facets: !S.cache.enrFacets }).then(function (d) {
         if (my !== seq) return; tbl.style.opacity = ''; stat.off();
         if (d.facets) S.cache.enrFacets = d.facets;
         if (ph.parentNode) ph.remove();
@@ -641,7 +648,7 @@
 
   PAGES.users = function (box) {
     if (lvl() < 80) { box.appendChild(h('div', { class: 'empty' }, 'Not allowed for your role')); return; }
-    box.appendChild(head(t('users'), 'Roles: Super Admin, Admin, Manager, PS Supervisor', [h('button', { class: 'btn p', onclick: function () { userForm(); } }, '+ Add user'), h('button', { class: 'btn', onclick: function () { api('runPipeline').then(function (r) { toast('Data refreshed: ' + r.certificates + ' certificates'); S.cache = {}; }).catch(function (e) { toast(e.message, true); }); } }, 'Refresh data')]));
+    box.appendChild(head(t('users'), 'Roles: Super Admin, Admin, Manager, PS Supervisor', [h('button', { class: 'btn p', onclick: function () { userForm(); } }, '+ Add user'), h('button', { class: 'btn', onclick: function () { api('runPipeline').then(function (r) { toast('Data refreshed: ' + r.certificates + ' certificates'); S.cache = {}; S.memo = {}; }).catch(function (e) { toast(e.message, true); }); } }, 'Refresh data')]));
     var ph = skeleton(); box.appendChild(ph);
     load('users', 'users', null, true).then(function (rows) {
       ph.remove(); box.appendChild(h('div', { class: 'card' }, table([{ h: 'Username', k: 'username' }, { h: 'Name', k: 'name' }, { h: 'Role', k: 'role' }, { h: 'Email', k: 'email' }, { h: 'Active', f: function (r) { return h('span', { class: 'tag ' + (String(r.active).toUpperCase() === 'FALSE' ? 'bad' : 'ok') }, String(r.active).toUpperCase() === 'FALSE' ? 'No' : 'Yes'); } }, { h: '', f: function (r) { return h('button', { class: 'btn', onclick: function (e) { e.stopPropagation(); if (!confirm('Reset password for ' + r.username + '?')) return; api('resetPassword', { id: r.id }).then(function (d) { showTemp(r.username, d.temporaryPassword); }).catch(function (x) { toast(x.message, true); }); } }, 'Reset'); } }], rows, userForm)));
