@@ -52,14 +52,32 @@
   function pct(n) { return (Number(n || 0) * 100).toFixed(1) + '%'; }
 
   // ---------- API
+  // v1.1: thin progress bar at the top of the page while ANY request to the server is running
+  var _busy = 0, _bar = null;
+  function busy(d) {
+    _busy = Math.max(0, _busy + d);
+    if (!_bar) { _bar = document.createElement('div'); _bar.id = 'busybar'; _bar.setAttribute('role', 'progressbar'); _bar.setAttribute('aria-label', 'Loading'); _bar.appendChild(document.createElement('i')); document.body.appendChild(_bar); }
+    _bar.classList.toggle('on', _busy > 0); document.body.classList.toggle('is-busy', _busy > 0);
+  }
+  /** v1.1: "Applying filters... 7s" line above the table, with a spinner and a running timer; also dims the summary tiles. */
+  function mkStatus(dimEl) {
+    var el = h('div', { class: 'applying', role: 'status', 'aria-live': 'polite' }, h('span', { class: 'spin' })), tx = h('span', {}), tm = null, t0 = 0, label = '';
+    el.appendChild(tx); el.hidden = true;
+    function paint() { var sec = Math.round((Date.now() - t0) / 1000); tx.textContent = label + '... ' + sec + 's' + (sec >= 8 ? '  (large data set, please wait)' : ''); }
+    return { el: el,
+      on: function (txt) { label = txt; t0 = Date.now(); paint(); el.hidden = false; if (dimEl) dimEl.classList.add('busy'); clearInterval(tm); tm = setInterval(paint, 1000); },
+      off: function () { clearInterval(tm); el.hidden = true; if (dimEl) dimEl.classList.remove('busy'); } };
+  }
   function api(action, params) {
     if (MOCK) return mockApi(action, params || {});
     var bodyObj = Object.assign({ action: action, token: S.token }, params || {});
     if (S.viewAs && !bodyObj._noView) bodyObj.viewAs = S.viewAs; delete bodyObj._noView;
     var body = JSON.stringify(bodyObj);
+    busy(1);
     return fetch(CFG.API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: body, redirect: 'follow' })
       .then(function (r) { return r.json(); })
-      .then(function (j) { if (!j.ok) { if (/expired|not signed/i.test(j.error)) { doLogout(true); } throw new Error(j.error || 'Request failed'); } return j.data; });
+      .then(function (j) { if (!j.ok) { if (/expired|not signed/i.test(j.error)) { doLogout(true); } throw new Error(j.error || 'Request failed'); } return j.data; })
+      .then(function (d) { busy(-1); return d; }, function (e) { busy(-1); throw e; });
   }
   function load(key, action, params, force) {
     if (!force && S.cache[key]) return Promise.resolve(S.cache[key]);
@@ -133,6 +151,10 @@
   }
 
   // ---------- layout
+  // v1.1: sidebar tabs listed in config.js HIDE_TABS are hidden from the team while they are in development.
+  // A real Super Admin still sees them (dashed outline) unless previewing another role.
+  function isHidden(n) { return (CFG.HIDE_TABS || []).indexOf(n) >= 0; }
+  function showDev(n) { return isHidden(n) && S.real && S.real.role === 'Super Admin' && !S.viewAs; }
   var NAV = [['dashboard'], ['platforms'], ['academies'], ['clients'], ['requests'], ['actions'], ['reports'], ['users'], ['settings']];
   var ICON = {
     dashboard: '<rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/>',
@@ -151,9 +173,9 @@
   function svgIcon(n) { var sp = document.createElement('span'); sp.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:16px;height:16px;display:block">' + (ICON[n] || '') + '</svg>'; return sp.firstChild; }
   function shell() {
     var counts = S.cache.counts || {};
-    var side = h('nav', { class: 'side' }, NAV.filter(function (n) { return n[0] !== 'users' || lvl() >= 80; }).map(function (n) {
+    var side = h('nav', { class: 'side' }, NAV.filter(function (n) { return (n[0] !== 'users' || lvl() >= 80) && (!isHidden(n[0]) || showDev(n[0])); }).map(function (n) {
       var badge = n[0] === 'requests' && counts.req ? h('span', { class: 'n', style: 'background:var(--active)' }, counts.req) : n[0] === 'actions' && counts.overdue ? h('span', { class: 'n' }, counts.overdue) : null;
-      var link = h('a', { href: '#/' + (n[0] === 'academies' ? 'academies/accreditation' : n[0]), class: S.route === n[0] ? 'on' : '' }, icon(n[0]), h('span', { class: 'l' }, t(n[0])), badge);
+      var link = h('a', { href: '#/' + (n[0] === 'academies' ? 'academies/accreditation' : n[0]), class: (S.route === n[0] ? 'on' : '') + (isHidden(n[0]) ? ' devhidden' : ''), title: isHidden(n[0]) ? 'Hidden from the team (HIDE_TABS in config.js)' : null }, icon(n[0]), h('span', { class: 'l' }, t(n[0])), badge);
       if (n[0] !== 'academies') return link;
       var fly = h('div', { class: 'fly', role: 'menu' }, [['elearning', 'eLearning'], ['accreditation', 'Accreditation'], ['enrichment', 'Enrichment']].map(function (x) {
         var soon = x[0] !== 'accreditation';
@@ -342,7 +364,7 @@
     var st = S.certState = S.certState || { page: 1, f: {}, period: '' };
     if (S.search) { st.f.q = S.search; S.search = null; st.page = 1; }
     function cleanF(f) { var o = {}; Object.keys(f).forEach(function (k) { if (f[k]) o[k] = f[k]; }); return o; }
-    var sumBox = h('div'), filt = h('div'), tbl = h('div'), pg = h('div'), ph = skeleton(), seq = 0, timer = null;
+    var sumBox = h('div'), filt = h('div'), tbl = h('div'), pg = h('div'), ph = skeleton(), seq = 0, timer = null, stat = mkStatus(sumBox);
     function iso(d) { return d.toISOString().slice(0, 10); }
     function setPeriod(v) {
       st.period = v; var now = new Date(), y = now.getFullYear(), f = st.f;
@@ -352,14 +374,14 @@
       else if (v === 'lastyear') { f.issuedFrom = (y - 1) + '-01-01'; f.issuedTo = (y - 1) + '-12-31'; }
     }
     function fetchRows(first) {
-      var my = ++seq; tbl.style.opacity = '.55';
+      var my = ++seq; tbl.style.opacity = '.55'; stat.on(first ? 'Loading data' : 'Applying filters');
       api('certs', { filter: cleanF(st.f), page: st.page, per: 50, facets: !S.cache.certFacets }).then(function (d) {
-        if (my !== seq) return; tbl.style.opacity = '';
+        if (my !== seq) return; tbl.style.opacity = ''; stat.off();
         if (d.facets) S.cache.certFacets = d.facets;
         if (ph.parentNode) ph.remove();
         if (first || !filt.firstChild) buildFilters();
         drawSummary(d.summary); drawTable(d);
-      }).catch(function (e) { if (my !== seq) return; tbl.style.opacity = ''; if (ph.parentNode) ph.remove(); tbl.replaceChildren(h('div', { class: 'card' }, h('b', {}, 'Could not load data'), h('p', { class: 'sub' }, e.message))); });
+      }).catch(function (e) { if (my !== seq) return; tbl.style.opacity = ''; stat.off(); if (ph.parentNode) ph.remove(); tbl.replaceChildren(h('div', { class: 'card' }, h('b', {}, 'Could not load data'), h('p', { class: 'sub' }, e.message))); });
     }
     function change(delay) { st.page = 1; clearTimeout(timer); timer = setTimeout(function () { fetchRows(false); }, delay || 0); }
     function sel(key, label, opts, all) {
@@ -404,7 +426,7 @@
       var pages = Math.max(1, Math.ceil(d.total / d.per));
       pg.replaceChildren(h('div', { class: 'pager' }, h('button', { class: 'btn', disabled: st.page <= 1, onclick: function () { st.page--; fetchRows(false); } }, '‹'), 'Page ' + st.page + ' of ' + pages + ' · ' + num(d.total) + ' rows', h('button', { class: 'btn', disabled: st.page >= pages, onclick: function () { st.page++; fetchRows(false); } }, '›')));
     }
-    box.appendChild(tabsBar); box.appendChild(sumBox); box.appendChild(filt); box.appendChild(ph); box.appendChild(tbl); box.appendChild(pg);
+    box.appendChild(tabsBar); box.appendChild(sumBox); box.appendChild(filt); box.appendChild(stat.el); box.appendChild(ph); box.appendChild(tbl); box.appendChild(pg);
     fetchRows(true);
   };
   /** Explains a zero for supervisors: records are linked to them through the CRM School Group ID. */
@@ -419,7 +441,7 @@
     var st = S.enrState = S.enrState || { page: 1, f: {}, period: '' };
     if (S.search) { st.f.q = S.search; S.search = null; st.page = 1; }
     function cleanF(f) { var o = {}; Object.keys(f).forEach(function (k) { if (f[k]) o[k] = f[k]; }); return o; }
-    var sumBox = h('div'), filt = h('div'), tbl = h('div'), pg = h('div'), ph = skeleton(), seq = 0, timer = null;
+    var sumBox = h('div'), filt = h('div'), tbl = h('div'), pg = h('div'), ph = skeleton(), seq = 0, timer = null, stat = mkStatus(sumBox);
     function iso(d) { return d.toISOString().slice(0, 10); }
     function setPeriod(v) {
       st.period = v; var now = new Date(), y = now.getFullYear(), f = st.f;
@@ -430,14 +452,14 @@
       else if (v === 'lastyear') { f.enrolledFrom = (y - 1) + '-01-01'; f.enrolledTo = (y - 1) + '-12-31'; }
     }
     function fetchRows(first) {
-      var my = ++seq; tbl.style.opacity = '.55';
+      var my = ++seq; tbl.style.opacity = '.55'; stat.on(first ? 'Loading data' : 'Applying filters');
       api('enrolls', { filter: cleanF(st.f), page: st.page, per: 50, facets: !S.cache.enrFacets }).then(function (d) {
-        if (my !== seq) return; tbl.style.opacity = '';
+        if (my !== seq) return; tbl.style.opacity = ''; stat.off();
         if (d.facets) S.cache.enrFacets = d.facets;
         if (ph.parentNode) ph.remove();
         if (first || !filt.firstChild) buildFilters();
         drawSummary(d.summary); drawTable(d);
-      }).catch(function (e) { if (my !== seq) return; tbl.style.opacity = ''; if (ph.parentNode) ph.remove(); tbl.replaceChildren(h('div', { class: 'card' }, h('b', {}, 'Could not load enrollments'), h('p', { class: 'sub' }, e.message), h('p', { class: 'sub' }, 'If this says Unknown action, the Apps Script deployment is older than the hub. Paste the latest Code.gs and deploy a new version.'))); });
+      }).catch(function (e) { if (my !== seq) return; tbl.style.opacity = ''; stat.off(); if (ph.parentNode) ph.remove(); tbl.replaceChildren(h('div', { class: 'card' }, h('b', {}, 'Could not load enrollments'), h('p', { class: 'sub' }, e.message), h('p', { class: 'sub' }, 'If this says Unknown action, the Apps Script deployment is older than the hub. Paste the latest Code.gs and deploy a new version.'))); });
     }
     function change(delay) { st.page = 1; clearTimeout(timer); timer = setTimeout(function () { fetchRows(false); }, delay || 0); }
     function sel(key, label, opts, all) {
@@ -480,7 +502,7 @@
       var pages = Math.max(1, Math.ceil(d.total / d.per));
       pg.replaceChildren(h('div', { class: 'pager' }, h('button', { class: 'btn', disabled: st.page <= 1, onclick: function () { st.page--; fetchRows(false); } }, '‹'), 'Page ' + st.page + ' of ' + pages + ' · ' + num(d.total) + ' rows', h('button', { class: 'btn', disabled: st.page >= pages, onclick: function () { st.page++; fetchRows(false); } }, '›')));
     }
-    box.appendChild(tabsBar); box.appendChild(sumBox); box.appendChild(filt); box.appendChild(ph); box.appendChild(tbl); box.appendChild(pg);
+    box.appendChild(tabsBar); box.appendChild(sumBox); box.appendChild(filt); box.appendChild(stat.el); box.appendChild(ph); box.appendChild(tbl); box.appendChild(pg);
     fetchRows(true);
   }
 
@@ -591,7 +613,7 @@
   };
 
   // ---------- router / render
-  function route() { var p = ((location.hash || '#/dashboard').replace('#/', '') || 'dashboard').split('/'), r = p[0]; if (r === 'certificates') r = 'academies'; S.route = PAGES[r] ? r : 'dashboard'; S.sub = S.route === 'academies' ? (['elearning', 'enrichment'].indexOf(p[1]) >= 0 ? p[1] : 'accreditation') : ''; }
+  function route() { var p = ((location.hash || '#/dashboard').replace('#/', '') || 'dashboard').split('/'), r = p[0]; if (r === 'certificates') r = 'academies'; S.route = PAGES[r] ? r : 'dashboard'; if (isHidden(S.route) && !showDev(S.route) && S.route !== 'dashboard') S.route = 'dashboard'; S.sub = S.route === 'academies' ? (['elearning', 'enrichment'].indexOf(p[1]) >= 0 ? p[1] : 'accreditation') : ''; }
   function render(quiet) {
     applyPrefs(); var root = document.getElementById('app'); root.replaceChildren(); route();
     if (!S.token) { root.appendChild(loginView()); return; }
