@@ -321,3 +321,16 @@ body.is-busy{cursor:progress}
 
 /* v1.2: embedded Events dashboard */
 .evframe{display:block;width:100%;height:calc(100vh - 190px);min-height:560px;border:1px solid var(--line);border-radius:var(--r3);background:#fff}
+
+/* ---------- Classera logo (theme aware) ---------- */
+.brandlogo{display:inline-flex;align-items:center}
+.brandlogo .lg{height:40px;width:auto;display:block}
+.top .brandlogo .lg{height:38px}
+.login .lp .brandlogo .lg{height:56px}
+.login .box .brandlogo .lg{height:48px}
+.lg-dark{display:none!important}
+[data-theme=dark] .brandlogo .lg-light{display:none!important}
+[data-theme=dark] .brandlogo .lg-dark{display:block!important}
+.login .lp .brandlogo .lg-dark{display:block!important}
+.shell.collapsed .top .brandlogo .lg{height:30px}
+@media(max-width:800px){.top .brandlogo .lg{height:30px}}

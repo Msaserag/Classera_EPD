@@ -99,6 +99,12 @@
 
   // ---------- auth
   function storeToken(tok, remember) { S.token = tok; if (remember) { ls('pshub.token', tok); ss('pshub.token', null); } else { ss('pshub.token', tok); ls('pshub.token', null); } }
+  function logoImg(mode) {
+    var base = (window.PSHUB && window.PSHUB.LOGO_BASE) || '/assets/';
+    function im(file, cls) { return h('img', { class: 'lg ' + cls, src: base + file, alt: 'Classera' }); }
+    if (mode === 'white') return h('span', { class: 'brandlogo' }, im('classera-logo-white-v1.png', 'lg-dark'));
+    return h('span', { class: 'brandlogo' }, im('classera-logo-color-v1.png', 'lg-light'), im('classera-logo-white-v1.png', 'lg-dark'));
+  }
   function doLogout(silent) { if (S.token && !silent) api('logout').catch(function () { }); S.token = null; S.user = null; S.real = null; S.viewAs = null; S.cache = {}; ls('pshub.token', null); ss('pshub.token', null); render(); }
 
   var recaptchaId = null;
@@ -115,7 +121,7 @@
         storeToken(d.token, rem.checked); S.user = S.real = d.user; p.value = ''; render();
       }).catch(function (x) { err.textContent = x.message; go.disabled = false; go.textContent = t('login'); form.classList.remove('shake'); void form.offsetWidth; form.classList.add('shake'); if (window.grecaptcha && recaptchaId !== null) window.grecaptcha.reset(recaptchaId); });
     } },
-      h('div', { class: 'brand' }, h('div', { class: 'logo' }, 'C'), h('div', {}, h('b', {}, 'Classera®'), h('small', {}, 'The Learning Super Platform'))),
+      h('div', { class: 'brand' }, logoImg()),
       h('h1', {}, 'Sign in to PS Training HUB'), h('p', { class: 'lead' }, 'Use the account the Partner Success team gave you.'),
       u, h('div', { class: 'pw' }, p, eye), cap, err,
       h('div', { class: 'row' }, h('label', {}, rem, ' ' + t('remember')), h('a', { href: '#', onclick: function (e) { e.preventDefault(); toast(t('forgotmsg')); } }, t('forgot'))),
@@ -128,7 +134,7 @@
       mount();
     }, 0);
     var rings = '<svg class="rings" viewBox="0 0 200 200" fill="none" stroke-linecap="round" aria-hidden="true"><circle cx="100" cy="100" r="92" stroke="#ffffff" stroke-opacity=".12" stroke-width="2"/><circle cx="100" cy="100" r="68" stroke="#ffffff" stroke-opacity=".12" stroke-width="2"/><circle cx="100" cy="100" r="44" stroke="#ffffff" stroke-opacity=".12" stroke-width="2"/><circle cx="100" cy="100" r="92" stroke="#2bc4a9" stroke-width="5" pathLength="100" stroke-dasharray="52 100" transform="rotate(-90 100 100)"/><circle cx="100" cy="100" r="68" stroke="#f0b445" stroke-width="5" pathLength="100" stroke-dasharray="38 100" transform="rotate(-90 100 100)"/><circle cx="100" cy="100" r="44" stroke="#9a8cff" stroke-width="5" pathLength="100" stroke-dasharray="24 100" transform="rotate(-90 100 100)"/></svg>';
-    var lp = h('div', { class: 'lp' }, h('div', { class: 'brand' }, h('div', { class: 'logo' }, 'C'), h('div', {}, h('b', {}, 'Classera®'), h('small', {}, 'Partner Success'))),
+    var lp = h('div', { class: 'lp' }, h('div', { class: 'brand' }, logoImg('white')),
       h('div', {}, h('h2', {}, 'Every certificate, enrollment and training request in one place.'), h('ul', {}, h('li', {}, h('i'), 'Certificate validity by path and by supervisor'), h('li', {}, h('i'), 'All Accreditation enrollments, certified or not'), h('li', {}, h('i'), 'Training requests from first ask to certificate'))), h('small', {}, 'Enterprise Classera portal. Authorized personnel only.'));
     lp.insertAdjacentHTML('afterbegin', rings);
     return h('div', { class: 'login' }, lp, h('div', { class: 'rp' }, form));
@@ -201,7 +207,7 @@
     var q = h('input', { id: 'gsearch', placeholder: t('search'), 'aria-label': t('search'), onkeydown: function (e) { if (e.key === 'Enter' && q.value.trim()) { S.search = q.value.trim(); location.hash = '#/academies/accreditation'; render(); } } });
     var top = h('header', { class: 'top' },
       h('button', { class: 'pill', 'aria-label': 'Menu', onclick: function () { if (window.innerWidth <= 800) { var sh = document.querySelector('.shell'); if (sh) sh.classList.toggle('navopen'); } else { S.collapsed = !S.collapsed; render(true); } } }, svgIcon('menu')),
-      h('div', { class: 'brand' }, h('div', { class: 'logo' }, 'C'), h('div', {}, h('b', {}, 'Classera®'), h('small', {}, 'The Learning Super Platform'))),
+      h('div', { class: 'brand' }, logoImg()),
       h('div', { class: 'title' }, 'PS Training HUB'), h('label', { class: 'sbox' }, q, h('kbd', {}, '/')),
       h('button', { class: 'pill', onclick: toggleLang }, S.lang === 'en' ? 'AR' : 'EN'),
       h('button', { class: 'pill', title: 'Theme', 'aria-label': 'Theme', onclick: function () { toggleTheme(); render(true); } }, svgIcon(S.theme === 'dark' ? 'sun' : 'moon')), chip);
