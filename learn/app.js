@@ -10,8 +10,8 @@
   var PATH_NOTE = { Teacher: 'Teacher accreditation program', Admin: 'System administrator program', School: 'School program: Silver, Gold, Diamond Tech School', Other: 'Activation supervisor and trainer' };
 
   var I18N = {
-    en: { dashboard: 'Dashboard', platforms: 'Overall Academies Performance', academies: 'Platforms', events: 'Events', clients: 'Clients', requests: 'Training Requests', actions: 'Actions', reports: 'Reports', users: 'Users', settings: 'Settings', search: 'Search people, schools, courses...', refresh: 'Refresh', print: 'Print', export: 'Export CSV', logout: 'Log out', changepw: 'Change password', login: 'LOGIN', user: 'Username', pass: 'Password', remember: 'Remember me', forgot: 'Forgot password?', forgotmsg: 'Ask a PS Training HUB admin to reset your password.' },
-    ar: { dashboard: 'لوحة التحكم', platforms: 'الأداء العام للأكاديميات', academies: 'المنصات', events: 'الفعاليات', clients: 'العملاء', requests: 'طلبات التدريب', actions: 'الإجراءات', reports: 'التقارير', users: 'المستخدمون', settings: 'الإعدادات', search: 'ابحث عن الأشخاص والمدارس والدورات...', refresh: 'تحديث', print: 'طباعة', export: 'تصدير CSV', logout: 'تسجيل الخروج', changepw: 'تغيير كلمة المرور', login: 'دخول', user: 'اسم المستخدم', pass: 'كلمة المرور', remember: 'تذكرني', forgot: 'نسيت كلمة المرور؟', forgotmsg: 'اطلب من مسؤول المنصة إعادة تعيين كلمة المرور.' }
+    en: { dashboard: 'Dashboard', platforms: 'Overall Academies Performance', academies: 'Platforms', events: 'Events', clients: 'Clients', requests: 'Training Requests', actions: 'Actions', reports: 'Reports', users: 'Users', settings: 'Settings', usage: 'Usage', search: 'Search people, schools, courses...', refresh: 'Refresh', print: 'Print', export: 'Export CSV', logout: 'Log out', changepw: 'Change password', login: 'LOGIN', user: 'Username', pass: 'Password', remember: 'Remember me', forgot: 'Forgot password?', forgotmsg: 'Ask a PS Training HUB admin to reset your password.' },
+    ar: { dashboard: 'لوحة التحكم', platforms: 'الأداء العام للأكاديميات', academies: 'المنصات', events: 'الفعاليات', clients: 'العملاء', requests: 'طلبات التدريب', actions: 'الإجراءات', reports: 'التقارير', users: 'المستخدمون', settings: 'الإعدادات', usage: 'الاستخدام', search: 'ابحث عن الأشخاص والمدارس والدورات...', refresh: 'تحديث', print: 'طباعة', export: 'تصدير CSV', logout: 'تسجيل الخروج', changepw: 'تغيير كلمة المرور', login: 'دخول', user: 'اسم المستخدم', pass: 'كلمة المرور', remember: 'تذكرني', forgot: 'نسيت كلمة المرور؟', forgotmsg: 'اطلب من مسؤول المنصة إعادة تعيين كلمة المرور.' }
   };
   var S = { token: null, user: null, real: null, viewAs: null, theme: 'dark', lang: 'en', route: 'dashboard', cache: {}, collapsed: false };
   function t(k) { return (I18N[S.lang] && I18N[S.lang][k]) || I18N.en[k] || k; }
@@ -145,7 +145,7 @@
     if (mode === 'white') return h('span', { class: 'brandlogo' }, im('classera-logo-white-v1.png', 'lg-dark'));
     return h('span', { class: 'brandlogo' }, im('classera-logo-color-v1.png', 'lg-light'), im('classera-logo-white-v1.png', 'lg-dark'));
   }
-  function doLogout(silent) { if (S.token && !silent) api('logout').catch(function () { }); S.token = null; S.user = null; S.real = null; S.viewAs = null; S.cache = {}; S.memo = {}; ls('pshub.token', null); ss('pshub.token', null); render(); }
+  function doLogout(silent) { if (S.token && !silent) api('logout').catch(function () { }); S.token = null; S.user = null; S.real = null; S.viewAs = null; S.lastTrack = null; S.cache = {}; S.memo = {}; ls('pshub.token', null); ss('pshub.token', null); render(); }
 
   var recaptchaId = null;
   function loginView() {
@@ -203,7 +203,7 @@
   function vis(n) { return !isHidden(n) || showDev(n); }
   function linkOk(l) { var u = String(l.url || ''); if (u.charAt(0) !== '#') return true; return vis(u.replace(/^#\//, '').split('/')[0]); }
   function showDev(n) { return isHidden(n) && S.real && S.real.role === 'Super Admin' && !S.viewAs; }
-  var NAV = [['dashboard'], ['events'], ['academies'], ['clients'], ['requests'], ['actions'], ['reports'], ['users'], ['settings']];
+  var NAV = [['dashboard'], ['events'], ['academies'], ['clients'], ['requests'], ['actions'], ['reports'], ['users'], ['usage'], ['settings']];
   var ICON = {
     dashboard: '<rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/>',
     platforms: '<path d="M12 3 3 8l9 5 9-5-9-5Z"/><path d="m3 13 9 5 9-5"/>',
@@ -214,6 +214,7 @@
     actions: '<rect x="3" y="3" width="18" height="18" rx="3"/><path d="m8 12 3 3 5-6"/>',
     reports: '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
     users: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.3c2.2.7 3.5 2.6 3.5 5.7"/>',
+    usage: '<path d="M3 17l5-5 4 4 8-9"/><path d="M15 7h5v5"/>',
     settings: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/>',
     menu: '<path d="M4 6h16M4 12h16M4 18h16"/>', sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>', moon: '<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/>',
     eye: '<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/>', refresh: '<path d="M20 11a8 8 0 0 0-14.9-3M4 4v4h4M4 13a8 8 0 0 0 14.9 3M20 20v-4h-4"/>', chev: '<path d="m9 6 6 6-6 6"/>'
@@ -222,7 +223,7 @@
   function svgIcon(n) { var sp = document.createElement('span'); sp.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:16px;height:16px;display:block">' + (ICON[n] || '') + '</svg>'; return sp.firstChild; }
   function shell() {
     var counts = S.cache.counts || {};
-    var side = h('nav', { class: 'side' }, NAV.filter(function (n) { return (n[0] !== 'users' || lvl() >= 80) && (!isHidden(n[0]) || showDev(n[0])); }).map(function (n) {
+    var side = h('nav', { class: 'side' }, NAV.filter(function (n) { return (n[0] !== 'users' || lvl() >= 80) && (n[0] !== 'usage' || (S.real && S.real.role === 'Super Admin' && !S.viewAs)) && (!isHidden(n[0]) || showDev(n[0])); }).map(function (n) {
       var badge = n[0] === 'requests' && counts.req ? h('span', { class: 'n', style: 'background:var(--active)' }, counts.req) : n[0] === 'actions' && counts.overdue ? h('span', { class: 'n' }, counts.overdue) : null;
       var link = h('a', { href: '#/' + (n[0] === 'academies' ? 'academies/accreditation' : n[0]), class: (S.route === n[0] ? 'on' : '') + (isHidden(n[0]) ? ' devhidden' : ''), title: isHidden(n[0]) ? 'Hidden from the team (HIDE_TABS in config.js)' : null }, icon(n[0]), h('span', { class: 'l' }, t(n[0])), badge);
       if (n[0] !== 'academies') return link;
@@ -654,6 +655,39 @@
       ph.remove(); box.appendChild(h('div', { class: 'card' }, table([{ h: 'Username', k: 'username' }, { h: 'Name', k: 'name' }, { h: 'Role', k: 'role' }, { h: 'Email', k: 'email' }, { h: 'Active', f: function (r) { return h('span', { class: 'tag ' + (String(r.active).toUpperCase() === 'FALSE' ? 'bad' : 'ok') }, String(r.active).toUpperCase() === 'FALSE' ? 'No' : 'Yes'); } }, { h: '', f: function (r) { return h('button', { class: 'btn', onclick: function (e) { e.stopPropagation(); if (!confirm('Reset password for ' + r.username + '?')) return; api('resetPassword', { id: r.id }).then(function (d) { showTemp(r.username, d.temporaryPassword); }).catch(function (x) { toast(x.message, true); }); } }, 'Reset'); } }], rows, userForm)));
     }).catch(fail(box, ph));
   };
+  // ---------- usage report (Super Admin only)
+  PAGES.usage = function (box) {
+    if (!(S.real && S.real.role === 'Super Admin')) { box.appendChild(h('div', { class: 'empty' }, 'Not allowed for your role')); return; }
+    var days = S.usageDays || 30;
+    function when(iso) { if (!iso) return '-'; var d = new Date(iso); return isNaN(d) ? '-' : d.toLocaleString(undefined, { year: 'numeric', month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit' }); }
+    function bars(list, key, label, color) {
+      var W = 640, H = 120, pad = 22, n = list.length, mx = Math.max(1, Math.max.apply(null, list.map(function (x) { return x[key]; }))), bw = (W - pad) / n, out = '';
+      list.forEach(function (x, i) { var bh = Math.round((H - 26) * x[key] / mx); out += '<rect x="' + (pad + i * bw + 1) + '" y="' + (H - 18 - bh) + '" width="' + Math.max(1, bw - 2) + '" height="' + Math.max(bh, x[key] ? 1 : 0) + '" rx="2" fill="' + color + '"><title>' + x.d + ': ' + x[key] + ' ' + label + '</title></rect>'; });
+      out += '<text x="' + pad + '" y="' + (H - 4) + '" font-size="10" fill="var(--muted)">' + list[0].d.slice(5) + '</text><text x="' + (W - 2) + '" y="' + (H - 4) + '" font-size="10" text-anchor="end" fill="var(--muted)">' + list[n - 1].d.slice(5) + '</text><text x="0" y="10" font-size="10" fill="var(--muted)">' + mx + '</text>';
+      var sp = document.createElement('div'); sp.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + label + ' per day" style="width:100%;height:auto;display:block">' + out + '</svg>'; return sp;
+    }
+    function csv(rows, cols, name) {
+      var q = function (v) { v = v == null ? '' : String(v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+      var txt = '﻿' + cols.map(function (c) { return q(c.h); }).join(',') + '\n' + rows.map(function (r) { return cols.map(function (c) { return q(c.f ? c.f(r) : r[c.k]); }).join(','); }).join('\n');
+      var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([txt], { type: 'text/csv;charset=utf-8' })); a.download = name; document.body.appendChild(a); a.click(); a.remove();
+    }
+    var sel = h('select', { class: 'viewas', 'aria-label': 'Period', onchange: function () { S.usageDays = Number(sel.value); S.cache.usage = null; render(true); } }, [7, 30, 90].map(function (d) { return h('option', { value: d, selected: d === days }, 'Last ' + d + ' days'); }));
+    box.appendChild(head(t('usage'), 'Who signs in and which pages they open. Visible to the Super Admin only.', [sel, h('button', { class: 'btn', onclick: function () { S.cache.usage = null; render(true); } }, t('refresh'))]));
+    var ph = skeleton(); box.appendChild(ph);
+    load('usage', 'usage', { days: days }, true).then(function (d) {
+      ph.remove(); var T = d.tiles;
+      box.appendChild(h('div', { class: 'grid g4 strip' }, kpi('Active users, 7 days', num(T.active7), 'of ' + num(T.users) + ' active accounts'), kpi('Active users, 30 days', num(T.active30), pct(T.users ? T.active30 / T.users : 0) + ' of accounts'), kpi('Logins, last ' + d.days + ' days', num(T.logins), num(T.failed) + ' failed attempts'), kpi('Page views, last ' + d.days + ' days', num(T.views), 'page names only'), kpi('Never signed in', num(T.never), 'accounts with no login on record')));
+      box.appendChild(h('div', { class: 'grid g2' }, h('div', { class: 'card' }, h('h3', {}, 'Logins per day'), bars(d.daily, 'logins', 'logins', 'var(--accent, #1f8a9e)')), h('div', { class: 'card' }, h('h3', {}, 'Page views per day'), bars(d.daily, 'views', 'page views', 'var(--active, #3b82f6)'))));
+      var mxv = Math.max(1, d.pages.length ? d.pages[0].views : 1);
+      box.appendChild(h('div', { class: 'card', style: 'margin-bottom:14px' }, h('h3', {}, 'Most visited pages'), h('p', { class: 'sub' }, d.note),
+        table([{ h: 'Page', k: 'page' }, { h: 'Views', f: function (r) { return num(r.views); } }, { h: 'People', f: function (r) { return num(r.users); } }, { h: 'Share', f: function (r) { return h('div', { style: 'height:8px;border-radius:99px;background:var(--line);min-width:120px' }, h('div', { style: 'height:100%;border-radius:99px;background:var(--accent, #1f8a9e);width:' + Math.round(100 * r.views / mxv) + '%' })); } }], d.pages)));
+      var pcols = [{ h: 'Name', k: 'name' }, { h: 'Username', k: 'username' }, { h: 'Role', k: 'role' }, { h: 'Last seen', f: function (r) { return when(r.lastSeen); } }, { h: 'Logins', f: function (r) { return num(r.logins); } }, { h: 'Page views', f: function (r) { return num(r.views); } }, { h: 'Top page', f: function (r) { return r.topPage || '-'; } }, { h: 'Failed', f: function (r) { return num(r.failed); } },
+        { h: 'Status', f: function (r) { var idle = r.lastSeen && (Date.now() - new Date(r.lastSeen).getTime()) > 30 * 86400000; return h('span', { class: 'tag ' + (r.neverLoggedIn ? 'bad' : idle ? 'warn' : 'ok') }, r.neverLoggedIn ? 'Never signed in' : idle ? 'Idle 30+ days' : 'Active'); } }];
+      box.appendChild(h('div', { class: 'card', style: 'margin-bottom:14px' }, h('div', { style: 'display:flex;justify-content:space-between;align-items:center;gap:8px' }, h('h3', {}, 'People'), h('button', { class: 'btn', onclick: function () { csv(d.people, pcols.slice(0, 8), 'ps-hub-usage-people.csv'); } }, t('export'))), table(pcols, d.people)));
+      box.appendChild(h('div', { class: 'card' }, h('h3', {}, 'Security and changes'), h('p', { class: 'sub' }, 'Failed logins, password changes, user changes and exports (latest 100 in the period).'),
+        table([{ h: 'When', f: function (r) { return when(r.time); } }, { h: 'User', k: 'user' }, { h: 'Event', k: 'action' }, { h: 'Detail', k: 'detail' }], d.security)));
+    }).catch(fail(box, ph));
+  };
   function showTemp(user, pw) { var m = modal(h('div', {}, h('h3', {}, 'Temporary password for ' + user), h('p', { class: 'sub' }, 'Shown once. The user must change it at first login.'), h('div', { class: 'card', style: 'font-family:monospace;font-size:18px;text-align:center' }, pw), h('div', { style: 'margin-top:12px;display:flex;gap:8px;justify-content:flex-end' }, h('button', { class: 'btn', onclick: function () { navigator.clipboard && navigator.clipboard.writeText(pw); toast('Copied'); } }, 'Copy'), h('button', { class: 'btn p', onclick: function () { m.remove(); } }, 'Done')))); }
   function userForm(rec) {
     rec = rec || {}; var f = {}; function inp(k, label, opts) { var el = opts ? h('select', {}, opts.map(function (o) { return h('option', { value: o, selected: rec[k] === o }, o); })) : h('input', { value: rec[k] || '' }); f[k] = el; return [h('label', {}, label), el]; }
@@ -678,7 +712,13 @@
     if (!S.user) { root.appendChild(h('div', { class: 'login' }, h('div', { class: 'box' }, 'Loading...'))); api('me').then(function (u) { S.user = S.real = u; render(); }).catch(function () { doLogout(true); }); return; }
     var sh = shell(); if (quiet) sh.main.setAttribute('data-quiet', '1'); root.appendChild(sh.el);
     if (S.user.mustChange) { passwordDialog(true); return; }
-    PAGES[S.route](sh.main);
+    PAGES[S.route](sh.main); track();
+  }
+  /** v1.9: tells the server which page was opened (page name only, nothing else). Fire and forget, no progress bar. */
+  function track() {
+    if (MOCK || !S.token || S.viewAs || !S.user || S.user.mustChange) return;
+    var key = S.route + (S.sub ? '/' + S.sub : ''); if (S.lastTrack === key) return; S.lastTrack = key;
+    try { fetch(CFG.API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'track', token: S.token, page: key }), redirect: 'follow', keepalive: true }).catch(function () { }); } catch (e) { }
   }
   window.addEventListener('hashchange', render);
   document.addEventListener('keydown', function (e) {
@@ -722,6 +762,16 @@
       saveRequest: function () { var r = p.record; r.id = 'TR00' + (D.requests().length + 1); r.status = 'Requested'; r.noticeOk = 'Yes'; D.requests().push(r); return r; },
       setRequestStatus: function () { D.requests().forEach(function (r) { if (r.id === p.id) r.status = p.status; }); return true; },
       actions: function () { return S.mockAct = S.mockAct || [{ id: 'A001', title: 'Follow up on training request', assignee: 'demo', status: 'Open', dueDate: '2026-11-01' }]; }, saveAction: function () { D.actions().push(Object.assign({ id: 'A00' + (D.actions().length + 1) }, p.record)); return true; },
+      track: function () { return true; },
+      usage: function (p) {
+        var n = p.days || 30, daily = [], i, seed = 7, rnd = function () { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; };
+        for (i = n - 1; i >= 0; i--) { var dt = new Date(Date.now() - i * 86400000).toISOString().slice(0, 10), lg = Math.round(rnd() * 14), vw = lg * (3 + Math.round(rnd() * 6)); daily.push({ d: dt, logins: lg, views: vw, users: Math.min(lg, 9) }); }
+        var pg = [['dashboard', 412], ['academies/accreditation', 305], ['academies/performance', 198], ['events', 143], ['reports', 87], ['users', 41], ['settings', 22]].map(function (x) { return { page: x[0], views: x[1], users: Math.max(2, Math.round(x[1] / 40)) }; });
+        var names = [['Rehab Negm', 'PS Supervisor'], ['Wafaa Ibrahim', 'PS Supervisor'], ['Abdelaziz Shahin', 'PS Supervisor'], ['Tamer Lithey', 'PS Supervisor'], ['Demo Manager', 'Manager'], ['Demo Admin', 'Super Admin'], ['Demo Idle', 'Manager'], ['Demo New', 'PS Supervisor']];
+        var ppl = names.map(function (x, k) { var never = k === 7, idle = k === 6, last = never ? '' : new Date(Date.now() - (idle ? 45 : k * 0.6) * 86400000).toISOString(); return { username: x[0].toLowerCase().replace(/ /g, '.'), name: x[0], role: x[1], lastLogin: last, lastSeen: last, logins: never ? 0 : 20 - k * 2, views: never ? 0 : 160 - k * 18, topPage: never ? '' : pg[k % 4].page, failed: k === 3 ? 2 : 0, neverLoggedIn: never }; });
+        return { days: n, asOf: new Date().toISOString(), tiles: { active7: 6, active30: 7, logins: 146, failed: 3, views: 1208, never: 1, users: 8 }, daily: daily, pages: pg, people: ppl,
+          security: [{ time: new Date().toISOString(), user: 'tamer.lithey', action: 'login_failed', detail: '' }, { time: new Date(Date.now() - 3600000).toISOString(), user: 'demo.admin', action: 'export', detail: 'certs' }, { time: new Date(Date.now() - 86400000).toISOString(), user: 'demo.admin', action: 'reset_password', detail: 'demo.new' }], note: 'Page tracking starts the day v1.9 is deployed; logins come from the Audit tab and go back further.' };
+      },
       users: function () { return [{ id: 'U1', username: 'demo', name: 'Demo Admin', role: 'Super Admin', email: 'demo@example.com', active: 'TRUE' }].concat(sup.map(function (n, i) { return { id: 'U' + (i + 2), username: 'sup' + i, name: n, role: 'PS Supervisor', email: '', active: 'TRUE' }; })); }, saveUser: function () { return { temporaryPassword: 'Demo-Temp-123' }; }, resetPassword: function () { return { temporaryPassword: 'Demo-Temp-456' }; }, runPipeline: function () { return { certificates: 0 }; }, export: function () { return (p.dataset === 'enrollments' ? D.enrolls : D.certs)({ filter: p.filter, per: 200, page: 1 }).rows; }
     };
     return new Promise(function (res, rej) { setTimeout(function () { try { res(D[action](p)); } catch (e) { rej(e); } }, 120); });
