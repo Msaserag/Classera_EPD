@@ -669,6 +669,15 @@ function pkCsv(t){ var rows=[],row=[],cell='',q=false,i=0,c; if(t.charCodeAt(0)=
   if(cell!==''||row.length){row.push(cell);rows.push(row)} return rows }
 function pkNum(v){ if(v==null) return null; v=String(v).replace(/[,%\s]/g,''); if(v==='') return null; var n=Number(v); return isNaN(n)?null:n }
 function pkFrac(v){ var raw=v==null?'':String(v), n=pkNum(v); if(n==null) return null; return (/%/.test(raw)||n>1) ? n/100 : n }
+/* Team Accreditation KPI, published by the PS Hub (publishEventsKpi) into the "Accreditation_KPI" tab, as key/value rows. */
+var ACC = null;
+function loadAcc(){
+  var url='https://docs.google.com/spreadsheets/d/'+PK_SHEET_ID+'/gviz/tq?tqx=out:csv&sheet=Accreditation_KPI&headers=1';
+  return fetch(url,{cache:'no-store'}).then(function(r){ if(!r.ok) throw 0; return r.text() }).then(function(t){
+    var o={}; pkCsv(t).slice(1).forEach(function(r){ var k=clean(r[0]).toLowerCase(); if(k) o[k]=(k==='asof')?clean(r[1]):pkNum(r[1]) });
+    if(o.achievement==null||o.schools==null) throw 0; ACC=o;
+  }).catch(function(){ ACC=null });
+}
 function loadPK(){
   var url='https://docs.google.com/spreadsheets/d/'+PK_SHEET_ID+'/gviz/tq?tqx=out:csv&sheet=KPIs&headers=1';
   return fetch(url,{cache:'no-store'}).then(function(r){ if(!r.ok) throw 0; return r.text() }).then(function(t){
@@ -691,6 +700,26 @@ function programKpis(){
     var cert=(k.cert!=null&&k.newEnr)?k.cert/k.newEnr:null, lastPct=(target&&k.last!=null)?k.last/target:null;
     var satGap=(k.sat!=null&&k.satT!=null)?(k.satT-k.sat)*100:null, renGap=(k.ren!=null&&k.renT!=null)?(k.renT-k.ren)*100:null;
     var d=document.createElement('div'); d.className='card pk';
+    if(ACC && /accredit/i.test(k.program)){ /* team wide school accreditation KPI + valid certificate rate, from the PS Hub */
+      var A=ACC, ach=Math.max(0,Math.min(1,A.achievement||0));
+      d.innerHTML='<div class="pk-h"><h3></h3><span class="asof"></span></div>'
+       +'<div class="pk-top"><div class="pk-ring" style="--v:'+(ach*100)+'"><b></b></div><div class="pk-stats">'
+       +'<div><small>Active schools</small><b class="sc"></b></div><div><small>L1 Silver (target 15%)</small><b class="l1"></b></div>'
+       +'<div><small>L2 Gold (target 7%)</small><b class="l2"></b></div><div><small>L3 Diamond (target 2%)</small><b class="l3"></b></div></div></div>'
+       +'<div class="pk-bar" aria-hidden="true"><i style="width:'+(ach*100)+'%"></i></div>'
+       +'<p class="pk-note" style="margin:0">Team school accreditation KPI: average of L1, L2 and L3 achievement against target.</p>'
+       +'<div class="pk-row"><div class="pk-m"><small>Enrollments</small><b class="en"></b><em class="eme"></em></div>'
+       +'<div class="pk-m"><small>Valid certificates</small><b class="vp"></b><em class="vpe"></em></div>'
+       +'<div class="pk-m"><small>Progress average</small><b class="av"></b><em></em></div></div>';
+      var qq=function(c,t){ d.querySelector(c).textContent=t };
+      qq('h3',k.program+(k.audience?' · '+k.audience:'')); qq('.asof',A.asof?'Team KPI as of '+A.asof:'');
+      qq('.pk-ring b',p1(ach,0)); qq('.sc',f1(A.schools));
+      qq('.l1',f1(A.l1)+' ('+p1(A.l1pct,1)+')'); qq('.l2',f1(A.l2)+' ('+p1(A.l2pct,1)+')'); qq('.l3',f1(A.l3)+' ('+p1(A.l3pct,1)+')');
+      qq('.en',f1(k.enr)); qq('.eme',k.uniq!=null?f1(k.uniq)+' unique users':'');
+      qq('.vp',p1(A.validpct,0)); qq('.vpe',f1(A.valid)+' of '+f1(A.people)+' people');
+      qq('.av',f1(k.avg));
+      box.appendChild(d); return;
+    }
     if(k.pop==null){ /* program without a population target (Accreditation): only the figures that were entered */
       var cells=[['Enrollments',f1(k.enr),''],['Unique users',f1(k.uniq),''],['Progress average',f1(k.avg),'']];
       if(k.prog!=null) cells.push(['Progressing',f1(k.prog),k.enr?Math.round(k.prog/k.enr*100)+'% of enrollments':'']);
@@ -719,7 +748,7 @@ function programKpis(){
     ['cert','sat'].forEach(function(c){ var m=d.querySelector('.'+c); if(/Pending/.test(m.querySelector('b').textContent)) m.classList.add('na') });
     box.appendChild(d);
   });
-  $('pk-note').textContent='Target = '+Math.round(((PK.filter(function(x){return x.pop!=null})[0]||{}).tpct||.4)*100)+'% of the teacher population (eLearning) or the student population (Enrichment). Fulfillment = enrollments ÷ target. eLearning uses unique enrollments, Enrichment total enrollments. Accreditation shows only the figures entered. Product renewal is a separate KPI. '
+  $('pk-note').textContent='Target = '+Math.round(((PK.filter(function(x){return x.pop!=null})[0]||{}).tpct||.4)*100)+'% of the teacher population (eLearning) or the student population (Enrichment). Fulfillment = enrollments ÷ target. eLearning uses unique enrollments, Enrichment total enrollments. Accreditation shows the team school accreditation KPI (published by the PS Hub when available) plus the figures entered. Product renewal is a separate KPI. '
     +(PK_SRC==='sheet'?'Figures come from the KPIs tab of the events tracker Google Sheet.':'Showing the built-in figures from the weekly deck. Add a tab named KPIs to the tracker Google Sheet to update them here.');
 }
 
@@ -970,7 +999,7 @@ addEventListener('scroll',hideTip,{passive:true});
 $('themeBtn').onclick=function(){ var r=document.documentElement, dark = r.getAttribute('data-theme') ? r.getAttribute('data-theme')==='dark' : matchMedia('(prefers-color-scheme: dark)').matches;
   r.setAttribute('data-theme', dark?'light':'dark'); try{ localStorage.setItem('ev_theme', dark?'light':'dark') }catch(e){} };
 try{ var th=localStorage.getItem('ev_theme'); if(th) document.documentElement.setAttribute('data-theme',th) }catch(e){}
-Promise.all([load(), loadPK()]).then(function(){ header(); render() });
+Promise.all([load(), loadPK(), loadAcc()]).then(function(){ header(); render() });
 })();
 </script>
 <script src="../assets/classera-fx-v1.js" defer></script>
