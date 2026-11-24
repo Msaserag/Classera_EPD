@@ -10,8 +10,8 @@
   var PATH_NOTE = { Teacher: 'Teacher accreditation program', Admin: 'System administrator program', School: 'School program: Silver, Gold, Diamond Tech School', Other: 'Activation supervisor and trainer' };
 
   var I18N = {
-    en: { dashboard: 'Dashboard', platforms: 'Overall Academies Performance', academies: 'Platforms', events: 'Events', clients: 'Clients', requests: 'Training Requests', actions: 'Actions', reports: 'Reports', users: 'Users', settings: 'Settings', usage: 'Usage', search: 'Search people, schools, courses...', refresh: 'Refresh', print: 'Print', export: 'Export CSV', logout: 'Log out', changepw: 'Change password', login: 'LOGIN', user: 'Username', pass: 'Password', remember: 'Remember me', forgot: 'Forgot password?', forgotmsg: 'Ask a PS Training HUB admin to reset your password.' },
-    ar: { dashboard: 'لوحة التحكم', platforms: 'الأداء العام للأكاديميات', academies: 'المنصات', events: 'الفعاليات', clients: 'العملاء', requests: 'طلبات التدريب', actions: 'الإجراءات', reports: 'التقارير', users: 'المستخدمون', settings: 'الإعدادات', usage: 'الاستخدام', search: 'ابحث عن الأشخاص والمدارس والدورات...', refresh: 'تحديث', print: 'طباعة', export: 'تصدير CSV', logout: 'تسجيل الخروج', changepw: 'تغيير كلمة المرور', login: 'دخول', user: 'اسم المستخدم', pass: 'كلمة المرور', remember: 'تذكرني', forgot: 'نسيت كلمة المرور؟', forgotmsg: 'اطلب من مسؤول المنصة إعادة تعيين كلمة المرور.' }
+    en: { dashboard: 'Dashboard', platforms: 'Overall Academies Performance', academies: 'Platforms', events: 'Events', clients: 'Clients', requests: 'Training Requests', actions: 'Actions', reports: 'Reports', users: 'Users', settings: 'Settings', usage: 'Usage', online: 'online', onlinenow: 'Online now', search: 'Search people, schools, courses...', refresh: 'Refresh', print: 'Print', export: 'Export CSV', logout: 'Log out', changepw: 'Change password', login: 'LOGIN', user: 'Username', pass: 'Password', remember: 'Remember me', forgot: 'Forgot password?', forgotmsg: 'Ask a PS Training HUB admin to reset your password.' },
+    ar: { dashboard: 'لوحة التحكم', platforms: 'الأداء العام للأكاديميات', academies: 'المنصات', events: 'الفعاليات', clients: 'العملاء', requests: 'طلبات التدريب', actions: 'الإجراءات', reports: 'التقارير', users: 'المستخدمون', settings: 'الإعدادات', usage: 'الاستخدام', online: 'متصل', onlinenow: 'المتصلون الآن', search: 'ابحث عن الأشخاص والمدارس والدورات...', refresh: 'تحديث', print: 'طباعة', export: 'تصدير CSV', logout: 'تسجيل الخروج', changepw: 'تغيير كلمة المرور', login: 'دخول', user: 'اسم المستخدم', pass: 'كلمة المرور', remember: 'تذكرني', forgot: 'نسيت كلمة المرور؟', forgotmsg: 'اطلب من مسؤول المنصة إعادة تعيين كلمة المرور.' }
   };
   var S = { token: null, user: null, real: null, viewAs: null, theme: 'dark', lang: 'en', route: 'dashboard', cache: {}, collapsed: false };
   function t(k) { return (I18N[S.lang] && I18N[S.lang][k]) || I18N.en[k] || k; }
@@ -145,7 +145,7 @@
     if (mode === 'white') return h('span', { class: 'brandlogo' }, im('classera-logo-white-v1.png', 'lg-dark'));
     return h('span', { class: 'brandlogo' }, im('classera-logo-color-v1.png', 'lg-light'), im('classera-logo-white-v1.png', 'lg-dark'));
   }
-  function doLogout(silent) { if (S.token && !silent) api('logout').catch(function () { }); S.token = null; S.user = null; S.real = null; S.viewAs = null; S.lastTrack = null; S.cache = {}; S.memo = {}; ls('pshub.token', null); ss('pshub.token', null); render(); }
+  function doLogout(silent) { if (S.token && !silent) api('logout').catch(function () { }); S.token = null; S.user = null; S.real = null; S.viewAs = null; S.lastTrack = null; S.online = null; S.onlineOpen = false; S.lastPing = 0; S.cache = {}; S.memo = {}; ls('pshub.token', null); ss('pshub.token', null); render(); }
 
   var recaptchaId = null;
   function loginView() {
@@ -250,6 +250,7 @@
       h('button', { class: 'pill', 'aria-label': 'Menu', onclick: function () { if (window.innerWidth <= 800) { var sh = document.querySelector('.shell'); if (sh) sh.classList.toggle('navopen'); } else { S.collapsed = !S.collapsed; render(true); } } }, svgIcon('menu')),
       h('div', { class: 'brand' }, logoImg()),
       h('div', { class: 'title' }, 'PS Training HUB'), h('label', { class: 'sbox' }, q, h('kbd', {}, '/')),
+      onlineChip(),
       h('button', { class: 'pill', onclick: toggleLang }, S.lang === 'en' ? 'AR' : 'EN'),
       h('button', { class: 'pill', title: 'Theme', 'aria-label': 'Theme', onclick: function () { toggleTheme(); render(true); } }, svgIcon(S.theme === 'dark' ? 'sun' : 'moon')), chip);
     var main = h('main', { class: 'main', id: 'main' });
@@ -712,7 +713,33 @@
     if (!S.user) { root.appendChild(h('div', { class: 'login' }, h('div', { class: 'box' }, 'Loading...'))); api('me').then(function (u) { S.user = S.real = u; render(); }).catch(function () { doLogout(true); }); return; }
     var sh = shell(); if (quiet) sh.main.setAttribute('data-quiet', '1'); root.appendChild(sh.el);
     if (S.user.mustChange) { passwordDialog(true); return; }
-    PAGES[S.route](sh.main); track();
+    PAGES[S.route](sh.main); track(); startPresence();
+  }
+  /** v2.0: who is online. Shown to every signed in person. Hidden until the server answers, so an older backend never shows a wrong number. */
+  function onlineChip() {
+    var o = S.online; if (!o) return h('span', { id: 'onwrap', class: 'onwrap', hidden: true });
+    var list = h('div', { class: 'menu olist' }, h('div', { class: 'ohead' }, t('onlinenow') + ' (' + o.count + ')'),
+      o.users.map(function (u) { return h('div', { class: 'orow' }, h('i', { class: 'odot' }), h('span', {}, u.name), h('small', {}, u.role)); }));
+    list.hidden = !S.onlineOpen;
+    var btn = h('button', { class: 'pill online', title: t('onlinenow'), 'aria-label': o.count + ' ' + t('online'), onclick: function (e) { e.stopPropagation(); S.onlineOpen = !S.onlineOpen; list.hidden = !S.onlineOpen; if (S.onlineOpen) ping(true); } },
+      h('i', { class: 'odot' }), h('b', {}, String(o.count)), h('span', {}, ' ' + t('online')));
+    return h('div', { id: 'onwrap', class: 'onwrap' }, btn, list);
+  }
+  function paintOnline() { var w = document.getElementById('onwrap'); if (w) w.replaceWith(onlineChip()); }
+  /** Quiet heartbeat: no progress bar. Throttled to once a minute unless forced; repeats every 3 minutes while the tab is visible. */
+  function ping(force) {
+    if (!S.token || !S.user || S.user.mustChange) return;
+    if (!force && Date.now() - (S.lastPing || 0) < 60000) return; S.lastPing = Date.now();
+    if (MOCK) { mockApi('ping', {}).then(function (d) { S.online = d; paintOnline(); }); return; }
+    fetch(CFG.API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'ping', token: S.token }), redirect: 'follow' })
+      .then(function (r) { return r.json(); }).then(function (j) { if (j && j.ok) { S.online = j.data; paintOnline(); } }).catch(function () { });
+  }
+  function startPresence() {
+    ping();
+    if (S.presenceTimer) return;
+    S.presenceTimer = setInterval(function () { if (document.visibilityState === 'visible') ping(true); }, 180000);
+    document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') ping(); });
+    document.addEventListener('click', function () { if (S.onlineOpen) { S.onlineOpen = false; var w = document.getElementById('onwrap'); var l = w && w.querySelector('.olist'); if (l) l.hidden = true; } });
   }
   /** v1.9: tells the server which page was opened (page name only, nothing else). Fire and forget, no progress bar. */
   function track() {
@@ -763,6 +790,7 @@
       setRequestStatus: function () { D.requests().forEach(function (r) { if (r.id === p.id) r.status = p.status; }); return true; },
       actions: function () { return S.mockAct = S.mockAct || [{ id: 'A001', title: 'Follow up on training request', assignee: 'demo', status: 'Open', dueDate: '2026-11-01' }]; }, saveAction: function () { D.actions().push(Object.assign({ id: 'A00' + (D.actions().length + 1) }, p.record)); return true; },
       track: function () { return true; },
+      ping: function () { return { count: 4, minutes: 7, users: [{ name: 'Ahmad Alghzaly', role: 'Executive' }, { name: 'Demo Admin', role: 'Super Admin' }, { name: 'Sara Baker', role: 'Manager' }, { name: 'Walid Abdelmoeen', role: 'PS Supervisor' }] }; },
       usage: function (p) {
         var n = p.days || 30, daily = [], i, seed = 7, rnd = function () { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; };
         for (i = n - 1; i >= 0; i--) { var dt = new Date(Date.now() - i * 86400000).toISOString().slice(0, 10), lg = Math.round(rnd() * 14), vw = lg * (3 + Math.round(rnd() * 6)); daily.push({ d: dt, logins: lg, views: vw, users: Math.min(lg, 9) }); }
